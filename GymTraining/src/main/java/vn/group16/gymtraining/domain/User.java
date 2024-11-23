@@ -20,8 +20,6 @@ public class User {
     private String email;
     private String password;
     private String gender;
-    private Instant createdAt;
-    private Instant updateAt;
     private long age;
     private String refreshToken;
 
@@ -33,22 +31,6 @@ public class User {
 
     public void setGender(String gender) {
         this.gender = gender;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Instant getUpdateAt() {
-        return updateAt;
-    }
-
-    public void setUpdateAt(Instant updateAt) {
-        this.updateAt = updateAt;
     }
 
     public long getAge() {
