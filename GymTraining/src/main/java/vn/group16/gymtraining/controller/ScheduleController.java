@@ -24,7 +24,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedule")
-    public ResponseEntity<Schedule> getSchedule(@RequestParam("startTime") String startTime,
+    public ResponseEntity<List<Schedule>> getSchedule(@RequestParam("startTime") String startTime,
             @RequestParam("endTime") String endTime, @RequestParam("date") LocalDate date) {
 
         return ResponseEntity.ok(this.scheduleService.getScheduleByTime(startTime, endTime, date));
@@ -34,5 +34,11 @@ public class ScheduleController {
     public ResponseEntity<List<EventDTO>> getSchedules() {
         List<EventDTO> events = scheduleService.getAllEvents();
         return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/get-schedule-by-date")
+    public ResponseEntity<List<Schedule>> getSchedulesByDate(@RequestParam("date") LocalDate date) {
+        List<Schedule> schedules = scheduleService.getScheduleByDate(date);
+        return ResponseEntity.ok(schedules);
     }
 }
