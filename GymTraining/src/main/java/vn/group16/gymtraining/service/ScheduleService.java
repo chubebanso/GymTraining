@@ -20,8 +20,8 @@ public class ScheduleService {
         this.scheduleRepository = scheduleRepository;
     }
 
-    public Schedule getScheduleByTime(String startTime, String endTime, LocalDate date) {
-        Optional<Schedule> scheduleOptional = this.scheduleRepository
+    public List<Schedule> getScheduleByTime(String startTime, String endTime, LocalDate date) {
+        Optional<List<Schedule>> scheduleOptional = this.scheduleRepository
                 .findScheduleByStartTimeAndEndTimeAndDate(startTime, endTime, date);
         if (scheduleOptional.isPresent()) {
             return scheduleOptional.get();
@@ -47,5 +47,13 @@ public class ScheduleService {
         }
 
         return events;
+    }
+
+    public List<Schedule> getScheduleByDate(LocalDate date) {
+        Optional<List<Schedule>> listSchedule = this.scheduleRepository.findScheduleByDate(date);
+        if (listSchedule.isPresent()) {
+            return listSchedule.get();
+        } else
+            return null;
     }
 }
