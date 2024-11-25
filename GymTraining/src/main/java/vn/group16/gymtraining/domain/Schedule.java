@@ -6,8 +6,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
+import jakarta.persistence.JoinColumn;
 @Entity
 @Table(name = "schedule")
 public class Schedule {
@@ -18,6 +19,9 @@ public class Schedule {
     private String startTime;
     private String endTime;
     private LocalDate date;
+    @ManyToOne
+    @JoinColumn(name = "workout_id")
+    private Workout workout;
 
     public long getId() {
         return id;
@@ -57,6 +61,14 @@ public class Schedule {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Workout getWorkout() {
+        return workout;
+    }       
+
+    public void setWorkout(Workout workout) {
+        this.workout = workout;
     }
 
 }
