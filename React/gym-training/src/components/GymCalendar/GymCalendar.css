@@ -1,0 +1,87 @@
+/* styles.css */
+.fc {
+  font-size: 14px;
+  color: black;
+  background-color: white;
+}
+
+.fc-daygrid-event {
+  border-radius: 5px;
+  /* Thay đổi góc của sự kiện */
+}
+
+.fc-daygrid-event:hover {
+  background-color: #f0f0f0;
+  /* Màu nền khi hover */
+}
+
+.fc-toolbar {
+  background-color: tomato;
+  /* Màu nền của thanh công cụ */
+}
+
+.fc-toolbar-chunk {
+  color: black;
+}
+
+.fc-daygrid-day {
+  background-color: white;
+  /* Màu nền của các ngày */
+}
+
+.fc th {
+  background-color: tomato;
+  color: black;
+}
+
+a {
+  color: black;
+}
+
+.fc-daygrid-day-frame fc-scrollgrid-sync-inner {
+  background-color: blueviolet;
+  color: blue;
+}
+
+.fc-day fc-day-mon fc-day-today fc-daygrid-day {
+  background-color: blueviolet;
+  color: blue;
+}
+
+.fc-button-group {
+  color: black;
+  background-color: white;
+}
+
+:root {
+  --fc-button-bg-color: tomato;
+  --fc-button-border-color: white;
+  --fc-button-active-bg-color: rgba(255, 99, 71, 0.585);
+  --fc-button-hover-bg-color: tomato;
+  --fc-button-hover-border-color: white;
+  --fc-button-active-border-color: tomato;
+}
+
+:root {
+  --gym-calendar-width: 100%;
+  --gym-calendar-height: 100vh;
+}
+
+.gym-calendar {
+  width: var(--gym-calendar-width);
+  height: var(--gym-calendar-height);
+}
+
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background-color: #f0f0f0;
+  display: inline;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+}

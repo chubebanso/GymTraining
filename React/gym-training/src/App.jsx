@@ -1,13 +1,12 @@
 import './App.css'
-import User from './pages/User'
+import GymCalendar from "./components/gymCalendar/GymCalendar"
 
 function App() {
-
   return (
     <>
-      <User />
+      <GymCalendar />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
