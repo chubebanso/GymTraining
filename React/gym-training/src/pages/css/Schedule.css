@@ -1,0 +1,7 @@
+.schedule{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    top: 40px;
+}

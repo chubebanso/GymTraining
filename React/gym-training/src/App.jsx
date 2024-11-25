@@ -1,10 +1,10 @@
-import './App.css'
-import GymCalendar from "./components/gymCalendar/GymCalendar"
+import './App.css';
+import User from './pages/User';
 
 function App() {
   return (
     <>
-      <GymCalendar />
+      <User />
     </>
   );
 }

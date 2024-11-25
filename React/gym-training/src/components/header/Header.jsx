@@ -3,7 +3,16 @@ import "./Header.css"
 
 const Header = () => {
   return (
-    <div>Header</div>
+    <div className="header">
+      <img src="" alt="logo"/>
+      <span>Home</span>
+      <span>Schedule</span>
+      <span>Workouts</span>
+      <span>Squad</span>
+      <span>Nutrition</span>
+      <span>Performance</span>
+      <img src="" alt="avatar"/>
+    </div>
   )
 }
 
