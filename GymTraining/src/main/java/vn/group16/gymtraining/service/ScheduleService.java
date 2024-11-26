@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -36,14 +37,11 @@ public class ScheduleService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
         for (Schedule schedule : schedules) {
-            String title = schedule.getWorkout() != null
-             ? schedule.getWorkout().getName() // Tên bài tập
-             : "Unknown Workout";
-
+            String title = schedule.getTitle();
             String start = schedule.getDate() + "T" + schedule.getStartTime() + ":00";
             String end = schedule.getDate() + "T" + schedule.getEndTime() + ":00";
 
-            events.add(new EventDTO(start, end));
+            events.add(new EventDTO(title, start, end));
         }
 
         return events;
