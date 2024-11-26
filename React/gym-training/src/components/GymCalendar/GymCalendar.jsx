@@ -21,8 +21,8 @@ const GymCalendar = () => {
         if (response.data.statusCode === 200) {
           const events = response.data.data.map((event) => ({
             title: event.title,
-            start: event.start.replace(/:00:00$/, ''), // Loại bỏ giây không hợp lệ
-            end: event.end.replace(/:00:00$/, ''),
+            start: event.start, // Loại bỏ giây không hợp lệ
+            end: event.end,
           }));
           callback(events); // Trả danh sách sự kiện
         }
