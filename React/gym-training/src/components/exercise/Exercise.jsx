@@ -4,8 +4,6 @@ import gym_img from "../../assets/gym.jpg"
 
 // eslint-disable-next-line react/prop-types
 const Exercise = ({ name, description, image, duration, calories }) => {
-  console.log("exercise1:", description)
-  console.log("name:", name)
   return (
     <div className="exercise">
       <div className="exercise-img">

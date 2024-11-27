@@ -11,7 +11,7 @@
   background-color: #fff;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 }
-.navbar span{
-  padding: 1rem;
-}
 
+.navbar span{
+  padding: 0px 1rem;
+}

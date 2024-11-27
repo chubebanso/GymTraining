@@ -7,7 +7,7 @@ const Header = () => {
     <div className="header">
       <img src="" alt="logo" />
       <div className="navbar">
-        <span>Home</span>
+        <Link to="/">Home</Link>
         <Link to="/schedule">Schedule</Link>
         <span>Workouts</span>
         <span>Squad</span>
@@ -16,7 +16,7 @@ const Header = () => {
       </div>
       <img src="" alt="avatar" />
     </div>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

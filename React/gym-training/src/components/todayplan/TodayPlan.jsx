@@ -33,6 +33,15 @@ const TodayPlan = () => {
   }, []);
 
   return (
+    // <div className="todayplan">
+    //   <LeftCircleOutlined />
+    //   <div className="todayplan-exercise">
+    //     <Exercise name="Push up" description="100 push up a day" progress="30%"/>
+    //     <Exercise name="Sit up" description="20 sit up a day" progress="30%" />
+    //     <Exercise name="Plank" description="10min plank a day" progress="30%"/>
+    //   </div>
+    //   <RightCircleOutlined />
+    // </div>
     <div className="todayplan">
       <div className="todayplan-head">
         <h3>Today Plan</h3>

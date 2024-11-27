@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useRef } from 'react';
-import { Calendar } from '@fullcalendar/core';
-import googleCalendarPlugin from '@fullcalendar/google-calendar';
+import React, { useEffect, useRef } from "react";
+import { Calendar } from "@fullcalendar/core";
+import googleCalendarPlugin from "@fullcalendar/google-calendar";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -33,12 +33,18 @@ const GymCalendar = () => {
 
     // Khởi tạo lịch FullCalendar
     const calendar = new Calendar(calendarEl, {
-      plugins: [googleCalendarPlugin, dayGridPlugin, timeGridPlugin],
-      googleCalendarApiKey: 'AIzaSyC1zOMS5TDNiSnaVN8kiZ03xNdlzjhisvI', // Thay thế bằng API Key của bạn
+      plugins: [
+        googleCalendarPlugin,
+        dayGridPlugin,
+        timeGridPlugin,
+        interactionPlugin,
+      ],
+      googleCalendarApiKey: "AIzaSyC1zOMS5TDNiSnaVN8kiZ03xNdlzjhisvI", // Thay thế bằng API Key của bạn
       eventSources: [
         {
-          googleCalendarId: '3ikfa3tlqp6mes51b8erostteo@group.calendar.google.com', // Thay thế bằng ID lịch của bạn
-          className: 'gcal-event' // Tùy chọn để thêm class cho sự kiện
+          googleCalendarId:
+            "3ikfa3tlqp6mes51b8erostteo@group.calendar.google.com", // Thay thế bằng ID lịch của bạn
+          className: "gcal-event", // Tùy chọn để thêm class cho sự kiện
         },
       ],
       headerToolbar: {
