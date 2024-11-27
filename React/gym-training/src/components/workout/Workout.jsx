@@ -1,17 +1,15 @@
 //import React from 'react'
-import "./Exercise.css";
+import "./workout.css";
 import gym_img from "../../assets/gym.jpg"
 
 // eslint-disable-next-line react/prop-types
-const Exercise = ({ name, description, image, duration, calories }) => {
-  console.log("exercise1:", description)
-  console.log("name:", name)
+const Workout = ({ name, description, image, duration, calories }) => {
   return (
-    <div className="exercise">
-      <div className="exercise-img">
+    <div className="workout">
+      <div className="workout-img">
         <img src={gym_img} alt={image} />
       </div>
-      <div className="exercise-description">
+      <div className="workout-description">
         <span>{name}</span>
         <span>{description}</span>
         <span>Duration: {duration}min</span>
@@ -21,4 +19,4 @@ const Exercise = ({ name, description, image, duration, calories }) => {
   );
 };
 
-export default Exercise;
+export default Workout;
