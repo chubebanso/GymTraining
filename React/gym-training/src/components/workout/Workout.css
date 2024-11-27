@@ -1,4 +1,4 @@
-.exercise {
+.workout {
     display: flex;
     flex-direction: row;
     border: 2px solid black;
@@ -7,7 +7,7 @@
     justify-content: space-between;
     border-radius: 10px;
 }
-.exercise-description{
+.workout-description{
     display: flex;
     flex-direction: column;
 }
