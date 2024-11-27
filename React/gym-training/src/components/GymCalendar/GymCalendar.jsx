@@ -17,7 +17,7 @@ const GymCalendar = () => {
     // Hàm gọi API sử dụng axios
     const loadEvents = async (callback) => {
       try {
-        const response = await axios.get('http://127.0.0.1:8080/api/v1/get-all-event');
+        const response = await axios.get('http://localhost:8080/api/v1/get-all-event');
         if (response.data.statusCode === 200) {
           const events = response.data.data.map((event) => ({
             title: event.title,
@@ -34,11 +34,26 @@ const GymCalendar = () => {
     // Khởi tạo lịch FullCalendar
     const calendar = new Calendar(calendarEl, {
       plugins: [googleCalendarPlugin, dayGridPlugin, timeGridPlugin],
-      
+      googleCalendarApiKey: 'AIzaSyC1zOMS5TDNiSnaVN8kiZ03xNdlzjhisvI', // Thay thế bằng API Key của bạn
+      eventSources: [
+        {
+          googleCalendarId: '3ikfa3tlqp6mes51b8erostteo@group.calendar.google.com', // Thay thế bằng ID lịch của bạn
+          className: 'gcal-event' // Tùy chọn để thêm class cho sự kiện
+        },
+      ],
       headerToolbar: {
         left: 'prev,next today',
         center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        right: 'addCalendar,dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      customButtons: {
+        addCalendar: {
+          text: "+ Calendar",
+          click: function () {
+            alert("từ từ sẽ có chức năng này");
+            //  thêm hành động hoặc thực hiện thêm sự kiện tại đây
+          },
+        },
       },
       height: '100vh',
       width: '150wh',
