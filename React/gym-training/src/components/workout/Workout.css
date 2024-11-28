@@ -1,13 +1,20 @@
-.exercise {
+.workout {
     display: flex;
     flex-direction: row;
     border: 2px solid black;
     padding: 10px;
     box-sizing: border-box;
-    justify-content: space-between;
     border-radius: 10px;
 }
-.exercise-description{
+.workout-description{
     display: flex;
+    width: 100%;
     flex-direction: column;
+    padding-left: 15px;
+}
+.workout-img{
+    width: 50%;
+}
+.workout-img img{
+    width: 100%;
 }

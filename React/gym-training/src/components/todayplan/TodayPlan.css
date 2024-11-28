@@ -1,20 +1,32 @@
 .todayplan {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
-.todayplan-head{
-    text-align: left;
+.todayplan-head {
+  text-align: left;
 }
-.todayplan-main{
-    display: flex;
-    flex-direction: row;
+.todayplan-main {
+  display: flex;
+  flex-direction: row;
 }
-.todayplan-exercises{
+.todayplan-workouts{
     width: 100%;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-gap: 10px;
     align-items: center;
     justify-items: center;
+}
+.left-arrow {
+  cursor: pointer;
+  scale: 1.5;
+}
+.right-arrow {
+  cursor: pointer;
+  scale: 1.5;
+}
+.todayplan hr {
+  border: 2px solid gray;
+  width: 100%;
 }

@@ -3,5 +3,9 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    top: 40px;
+    top: 4rem;
+}
+.home{
+    position: relative;
+    top: 4rem;
 }
