@@ -1,6 +1,6 @@
 //import React from 'react'
 import "./workout.css";
-import gym_img from "../../assets/gym.jpg"
+import gym_img from "../../../assets/gym.jpg"
 
 // eslint-disable-next-line react/prop-types
 const Workout = ({ name, description, image, duration, calories }) => {
