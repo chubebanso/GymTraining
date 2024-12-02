@@ -1,0 +1,11 @@
+.account-item {
+  display: grid;
+  grid-template-columns: 0.75fr 0.75fr 1.5fr 0.75fr 0.75fr 1fr 0.5fr 0.5fr 0.5fr;
+  padding: 1rem;
+  background-color: #fff;
+  place-items: center;
+}
+.item-icon :hover{
+  cursor: pointer;
+  scale: 1.5;
+}
