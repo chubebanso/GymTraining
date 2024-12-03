@@ -1,0 +1,38 @@
+.login{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: calc(30vh / 2) calc(30vw / 2);
+    box-sizing: border-box;
+}
+.login h2{
+    text-align: center;
+}
+.login-img {
+    width: 50%;
+    height: 40rem;
+}
+.login-form{
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    padding: 4rem;
+    gap: 1rem;
+}
+.login-form h2{
+    margin: 0;
+}
+.login-form-input{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+}
+.login-checkbox{
+    display: flex;
+    justify-content: space-between;
+}
+.login-btn{
+    padding: 3px 0;  
+}

@@ -1,8 +1,8 @@
 //import React from 'react'
-import TodoPlan from "../components/todayplan/TodayPlan"
-import GymCalendar from "../components/gymcalendar/GymCalendar"
+import TodoPlan from "../../components/user/todayplan/TodayPlan"
+import GymCalendar from "../../components/user/gymcalendar/GymCalendar"
+import '../css/Schedule.css'
 
-import './css/Schedule.css'
 const Schedule = () => {
   return (
     <div className="schedule">

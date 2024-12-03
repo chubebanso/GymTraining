@@ -209,7 +209,7 @@ const GymCalendar = () => {
           ))} 
         </Checkbox.Group>
       </Drawer>
-      <div ref={calendarRef} />;
+      <div ref={calendarRef} />
     </>
   );
 };
