@@ -1,8 +1,11 @@
 package vn.group16.gymtraining.dto;
 
+import vn.group16.gymtraining.domain.Role;
+
 public class ResLoginDTO {
     private String accessToken;
     private UserLogin userLogin;
+    Role role;
 
     public static class UserLogin {
         private long id;
@@ -43,6 +46,14 @@ public class ResLoginDTO {
 
         }
 
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public String getAccessToken() {
