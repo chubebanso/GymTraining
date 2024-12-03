@@ -37,3 +37,11 @@
 .nothing{
     height: 20rem;
 }
+.logout{
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+}
+.logout :hover{
+    cursor: pointer;
+}

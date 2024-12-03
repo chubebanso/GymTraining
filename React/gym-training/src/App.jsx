@@ -11,7 +11,7 @@ import Home from "./pages/user/Home";
 import LayoutAdmin from "./components/admin/layout/LayoutAdmin";
 
 function App() {
-  const userRole = "admin";
+  const userRole = "user";
 
   return (
     <WorkoutContextProvide>
@@ -27,7 +27,7 @@ function App() {
           {/* Routes cho Admin */}
           {userRole === "admin" && (
             <Route element={<LayoutAdmin />}>
-              <Route path="/admin/account" element={<Account />} />
+              <Route path="/admin/account/*" element={<Account />} />
             </Route>
           )}
           {/* Routes cho trang đăng nhập và đăng ký */}

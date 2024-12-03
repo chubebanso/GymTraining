@@ -1,4 +1,4 @@
-import "../css/Schedule.css";
+
 
 const Home = () => {
   return (
