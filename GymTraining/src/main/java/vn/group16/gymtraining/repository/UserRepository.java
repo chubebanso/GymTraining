@@ -9,4 +9,6 @@ import vn.group16.gymtraining.domain.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
     User findByEmail(String email);
+
+    User findByEmailAndRefreshToken(String email, String refreshToken);
 }
