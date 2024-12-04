@@ -3,12 +3,12 @@ package vn.group16.gymtraining.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "workout")
@@ -19,8 +19,7 @@ public class Workout {
     private String name;
     private String description;
     private String image;
-    private int duration;
-    private int calories;
+    
 
     @ManyToOne
     @JoinColumn(name = "schedule_id")
@@ -59,22 +58,7 @@ public class Workout {
         this.image = image;
     }
 
-    public int getDuration() {
-        return duration;
-    }
-
-    public void setDuration(int duration) {
-        this.duration = duration;
-    }
-
-    public int getCalories() {
-        return calories;
-    }
-
-    public void setCalories(int calories) {
-        this.calories = calories;
-    }
-
+    
     public Schedule getSchedule() {
         return schedule;
     }
