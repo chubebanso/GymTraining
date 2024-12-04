@@ -19,7 +19,6 @@ import {
 import "./GymCalendar.css";
 import moment from "moment";
 
-
 const GymCalendar = () => {
   const calendarRef = useRef(null);
   const [isOpen, setIsOpen] = useState(true);
@@ -83,6 +82,11 @@ const GymCalendar = () => {
       height: "100vh",
       width: "150wh",
       initialView: "dayGridMonth",
+      dateClick: (info) => {
+        const selectedDate = moment(info.date); // Ensure using moment object
+        form.setFieldsValue({ startDate: selectedDate }); // Set the moment object directly
+        setIsOpen(true);
+      },
     });
 
     // Gọi API để tải dữ liệu sự kiện
@@ -135,7 +139,7 @@ const GymCalendar = () => {
   return (
     <>
       <Modal
-        title="Add Workout"
+        title="Workout"
         open={isOpen}
         onCancel={handleCancel}
         onOk={handleOk}
@@ -180,14 +184,21 @@ const GymCalendar = () => {
           <Form.Item
             label="Workout"
             name="workout"
-            rules={[{ required: true, message: 'Please select at least one workout!' }]}
+            rules={[
+              {
+                required: true,
+                message: "Please select at least one workout!",
+              },
+            ]}
           >
-            <Input 
-              value={selectedWorkouts.length > 0 ? selectedWorkouts.join(', ') : ''}
+            <Input
+              value={
+                selectedWorkouts.length > 0 ? selectedWorkouts.join(", ") : ""
+              }
               onClick={showDrawer}
               readOnly
             />
-          </Form.Item> 
+          </Form.Item>
         </Form>
       </Modal>
       {/* Drawer (Sidebar) for selecting workout */}
@@ -198,18 +209,18 @@ const GymCalendar = () => {
         open={drawerVisible}
       >
         <Checkbox.Group
-          style={{ width: '100%', top: "inherit" }}
+          style={{ width: "100%", top: "inherit" }}
           value={selectedWorkouts}
           onChange={handleWorkoutSelect}
         >
-          {workouts.map(option => (
+          {workouts.map((option) => (
             <Checkbox key={option.id} value={option.name}>
               {option.description}
             </Checkbox>
-          ))} 
+          ))}
         </Checkbox.Group>
       </Drawer>
-      <div ref={calendarRef} />;
+      <div ref={calendarRef} />
     </>
   );
 };

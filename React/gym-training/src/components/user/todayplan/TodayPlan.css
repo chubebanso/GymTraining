@@ -1,0 +1,32 @@
+.todayplan {
+    display: flex;
+    flex-direction: column;
+    margin: 1rem 2rem;
+}
+.todayplan-head{
+    text-align: left;
+}
+.todayplan-main{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    gap: 1rem;
+}
+.todayplan-workouts{  
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px;
+    align-items: center;
+    justify-items: center;
+    
+}
+.today-icon{
+    scale: 2;
+    cursor: pointer;
+}
+.todayplan hr{
+    border: none;
+    height: 1px;
+    width: calc(100vw - 4rem);
+    background: linear-gradient(to right, gray, lightgray);
+}

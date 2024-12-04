@@ -1,0 +1,27 @@
+.add-account-header{
+    display: flex;
+    gap: 1rem;
+}
+.back-icon{
+    scale: 1.5;
+}
+.add-account-ava{
+    display: flex;
+    flex-direction: column;
+    width: 15rem;
+}
+.add-account-ava img{
+    scale:0.5;
+}
+.add-account-form{
+    display: flex;
+    justify-content: flex-start;
+}
+.add-account-input{
+
+    width: 50%;
+}
+.form-btn{
+    margin: 1rem;
+    background-color: #00BB3E;
+}
