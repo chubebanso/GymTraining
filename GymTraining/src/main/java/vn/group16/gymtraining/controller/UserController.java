@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import vn.group16.gymtraining.domain.User;
+import vn.group16.gymtraining.dto.CreateUserDTO;
 import vn.group16.gymtraining.service.UploadService;
 import vn.group16.gymtraining.service.UserService;
 import vn.group16.gymtraining.util.error.IdInvalidException;
@@ -38,39 +39,24 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user, BindingResult result) throws IdInvalidException {
+    public ResponseEntity<User> createUser(@Valid @RequestBody CreateUserDTO user, BindingResult result)
+            throws IdInvalidException {
         String hashPassWord = this.passwordEncoder.encode(user.getPassword());
         user.setPassword(hashPassWord);
         if (this.userService.getUserByUserName(user.getEmail()) != null) {
             throw new IdInvalidException("Email already exist");
         }
         if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body(null);  
+            return ResponseEntity.badRequest().body(null);
         }
 
         User createdUser = userService.handleCreateUser(user);
         if (createdUser == null) {
-            
+
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser); 
-    }
-
-    @PostMapping("/users/create")
-    public ResponseEntity<User> createUser(@Valid @RequestPart("user") User postmanUser,
-            @RequestParam("imageFile") MultipartFile imageFile) throws IdInvalidException {
-        String avatar = "";
-        if (imageFile != null) {
-            avatar = this.uploadService.handleSaveUploadFile(imageFile, "avatars");
-        } else {
-            throw new IdInvalidException("Chưa chọn ảnh");
-        }
-        String hashPassWord = this.passwordEncoder.encode(postmanUser.getPassword());
-        postmanUser.setPassword(hashPassWord);
-        postmanUser.setAvatar(avatar);
-        User user = this.userService.handleCreateUser(postmanUser);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
     @PostMapping("/users/upload")

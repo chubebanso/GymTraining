@@ -5,22 +5,33 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import vn.group16.gymtraining.domain.Role;
 import vn.group16.gymtraining.domain.User;
+import vn.group16.gymtraining.dto.CreateUserDTO;
+import vn.group16.gymtraining.repository.RoleRepository;
 import vn.group16.gymtraining.repository.UserRepository;
 
 @Service
 public class UserService {
     final private UserRepository userRepository;
+    final private RoleRepository roleRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
-
-    public User handleCreateUser(User user) {
-        User userCheck = this.userRepository.findByEmail(user.getEmail());
-        if (userCheck == null) {
-            return this.userRepository.save(user);
+    public User handleCreateUser(CreateUserDTO user) {
+        Role role = this.roleRepository.findByName(user.getRoleName());
+        if (role != null) {
+            User currentUser = new User();
+            currentUser.setAge(user.getAge());
+            currentUser.setEmail(user.getEmail());
+            currentUser.setName(user.getName());
+            currentUser.setPassword(user.getPassword());
+            currentUser.setGender(user.getGender());
+            currentUser.setRole(role);
+            return this.userRepository.save(currentUser);
         }
         return null;
     }
