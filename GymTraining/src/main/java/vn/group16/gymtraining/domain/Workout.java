@@ -1,14 +1,17 @@
 package vn.group16.gymtraining.domain;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "workout")
@@ -19,13 +22,17 @@ public class Workout {
     private String name;
     private String description;
     private String image;
-    private int duration;
-    private int calories;
+    private Integer duration;
+    private Integer caloriesBurned;
+    
 
     @ManyToOne
     @JoinColumn(name = "schedule_id")
     @JsonBackReference
     Schedule schedule;
+
+    @OneToMany(mappedBy = "workout")
+    private List<Exercise> exercise;
 
     public long getId() {
         return id;
@@ -59,28 +66,37 @@ public class Workout {
         this.image = image;
     }
 
-    public int getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(Integer duration) {
         this.duration = duration;
     }
 
-    public int getCalories() {
-        return calories;
+    public Integer getCalories() {
+        return caloriesBurned;
     }
 
-    public void setCalories(int calories) {
-        this.calories = calories;
+    public void setCalories(Integer caloriesBurned) {
+        this.caloriesBurned = caloriesBurned;
     }
 
+    
     public Schedule getSchedule() {
         return schedule;
     }
 
     public void setSchedule(Schedule schedule) {
         this.schedule = schedule;
+    }
+
+    public List<Exercise> getExercise() {
+        return exercise;
+    }
+
+    public void setExercise(List<Exercise> exercise) {
+        this.exercise = exercise;
     }
 
 }
