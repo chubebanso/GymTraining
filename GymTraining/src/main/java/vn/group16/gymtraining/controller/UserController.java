@@ -6,15 +6,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -80,8 +85,28 @@ public class UserController {
         }
 
         User createdUser = userService.handleCreateUser(user);
+        if (createdUser == null) {
+            
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser); 
+    }
+
+    @PostMapping("/users/create")
+    public ResponseEntity<User> createUser(@Valid @RequestPart("user") User postmanUser,
+            @RequestParam("imageFile") MultipartFile imageFile) throws IdInvalidException {
+        String avatar = "";
+        if (imageFile != null) {
+            avatar = this.uploadService.handleSaveUploadFile(imageFile, "avatars");
+        } else {
+            throw new IdInvalidException("Chưa chọn ảnh");
+        }
+        String hashPassWord = this.passwordEncoder.encode(postmanUser.getPassword());
+        postmanUser.setPassword(hashPassWord);
+        postmanUser.setAvatar(avatar);
+        User user = this.userService.handleCreateUser(postmanUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @PostMapping("/users/upload")
