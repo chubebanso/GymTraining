@@ -1,5 +1,6 @@
 package vn.group16.gymtraining.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -15,7 +16,11 @@ public class UserService {
     }
 
     public User handleCreateUser(User user) {
-        return this.userRepository.save(user);
+        User userCheck = this.userRepository.findByEmail(user.getEmail());
+        if (userCheck == null) {
+            return this.userRepository.save(user);
+        }
+        return null;
     }
 
     public void handleDeteteUser(long id) {
@@ -56,5 +61,9 @@ public class UserService {
 
     public User getUserByRefreshTokenAndEmail(String email, String token) {
         return this.userRepository.findByEmailAndRefreshToken(email, token);
+    }
+
+    public List<User> getAllUsers() {
+        return this.userRepository.findAll();
     }
 }

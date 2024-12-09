@@ -16,7 +16,7 @@
 }
 
 .fc-toolbar {
-  background-color: tomato;
+  background-color: #23B8FC;
   /* Màu nền của thanh công cụ */
 }
 
@@ -30,7 +30,7 @@
 }
 
 .fc th {
-  background-color: tomato;
+  background-color: #23B8FC;
   color: black;
 }
 
@@ -54,12 +54,12 @@ a {
 }
 
 :root {
-  --fc-button-bg-color: tomato;
+  --fc-button-bg-color: #23B8FC;
   --fc-button-border-color: white;
   --fc-button-active-bg-color: rgba(255, 99, 71, 0.585);
-  --fc-button-hover-bg-color: tomato;
+  --fc-button-hover-bg-color: #23B8FC;
   --fc-button-hover-border-color: white;
-  --fc-button-active-border-color: tomato;
+  --fc-button-active-border-color: #23B8FC;
 }
 
 :root {
