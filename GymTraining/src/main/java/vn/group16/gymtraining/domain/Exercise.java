@@ -31,17 +31,9 @@ public class Exercise {
     @Size(max = 500, message = "Description cannot exceed 500 characters")
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    @NotNull(message = "Muscle group cannot be null")
-    private MuscleGroup muscleGroup;
-
-    @Enumerated(EnumType.STRING)
-    private DifficultyLevel difficultyLevel;
-
     private String videoUrl;
 
-    @Min(value = 0, message = "Recommended sets must be non-negative")
-    private Integer recommendedSets;
+    private String recommendedSets;
 
     @ManyToOne
     @JoinColumn(name = "workout_id")
@@ -49,24 +41,7 @@ public class Exercise {
     private Workout workout;
 
     // Enums for classification
-    public enum MuscleGroup {
-        CHEST,
-        BACK,
-        SHOULDERS,
-        BICEPS,
-        TRICEPS,
-        LEGS,
-        CORE,
-        FULL_BODY
-    }
-
-    public enum DifficultyLevel {
-        BEGINNER,
-        INTERMEDIATE,
-        ADVANCED,
-        EXPERT
-    }
-
+   
     // Getters and setters
 
     public Long getId() {
@@ -93,22 +68,6 @@ public class Exercise {
         this.description = description;
     }
 
-    public MuscleGroup getMuscleGroup() {
-        return muscleGroup;
-    }
-
-    public void setMuscleGroup(MuscleGroup muscleGroup) {
-        this.muscleGroup = muscleGroup;
-    }
-
-    public DifficultyLevel getDifficultyLevel() {
-        return difficultyLevel;
-    }
-
-    public void setDifficultyLevel(DifficultyLevel difficultyLevel) {
-        this.difficultyLevel = difficultyLevel;
-    }
-
     public String getVideoUrl() {
         return videoUrl;
     }
@@ -117,11 +76,11 @@ public class Exercise {
         this.videoUrl = videoUrl;
     }
 
-    public Integer getRecommendedSets() {
+    public String getRecommendedSets() {
         return recommendedSets;
     }
 
-    public void setRecommendedSets(Integer recommendedSets) {
+    public void setRecommendedSets(String recommendedSets) {
         this.recommendedSets = recommendedSets;
     }
 

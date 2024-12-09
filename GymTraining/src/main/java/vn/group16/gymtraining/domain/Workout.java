@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.List;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,6 +19,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 
 @Entity
@@ -30,9 +33,50 @@ public class Workout {
     private String image;
     private Integer duration;
     private Integer calories;
-    private String category;
-    private String targetMuscle;
-    private String level;
+    private Category category;
+
+    
+
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "Muscle group cannot be null")
+    private MuscleGroup muscleGroup;
+
+    @Enumerated(EnumType.STRING)
+    private DifficultyLevel difficultyLevel;
+
+    public enum MuscleGroup {
+        CHEST,
+        BACK,
+        SHOULDERS,
+        BICEPS,
+        TRICEPS,
+        LEGS,
+        CORE,
+        FULL_BODY
+    }
+
+    public enum DifficultyLevel {
+        BEGINNER,
+        INTERMEDIATE,
+        ADVANCED,
+        EXPERT
+    }
+
+    public enum Category {
+        Strength, 
+        Cardio, 
+        Stretching, 
+        Endurance, 
+        Flexibility, 
+        HIIT,
+        Core, 
+        Yoga,
+        Pilates,
+        Recovery, 
+        Functional_Movement,
+        Plyometrics,
+        Full_Body_Strength,
+    }
 
     @ManyToOne
     @JoinColumn(name = "schedule_id")
@@ -109,27 +153,28 @@ public class Workout {
         this.exercise = exercise;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 
-    public String getTargetMuscle() {
-        return targetMuscle;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setTargetMuscle(String targetMuscle) {
-        this.targetMuscle = targetMuscle;
+    public MuscleGroup getMuscleGroup() {
+        return muscleGroup;
     }
 
-    public String getLevel() {
-        return level;
+    public DifficultyLevel getDifficultyLevel() {
+        return difficultyLevel;
     }
 
-    public void setLevel(String level) {
-        this.level = level;
+    public void setMuscleGroup(MuscleGroup muscleGroup) {
+        this.muscleGroup = muscleGroup;
     }
+
+    public void setDifficultyLevel(DifficultyLevel difficultyLevel) {
+        this.difficultyLevel = difficultyLevel;
+    }
+    
 }
