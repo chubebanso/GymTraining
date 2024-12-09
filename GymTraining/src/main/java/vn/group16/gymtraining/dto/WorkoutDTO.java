@@ -1,25 +1,8 @@
-package vn.group16.gymtraining.domain;
+package vn.group16.gymtraining.dto;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import java.util.Collection;
 import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-
-@Entity
-@Table(name = "workout")
-public class Workout {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class WorkoutDTO {
     private long id;
     private String name;
     private String description;
@@ -29,17 +12,9 @@ public class Workout {
     private String category;
     private String targetMuscle;
     private String level;
+    private List<ExerciseDTO> exercises;
 
-    @ManyToOne
-    @JoinColumn(name = "schedule_id")
-    @JsonBackReference
-    Schedule schedule;
-
-    @OneToMany(mappedBy = "workout")
-    // @JoinColumn(name = "workout_id")
-    @JsonManagedReference
-    private List<WorkoutExercise> workoutExercises;
-
+    // Getters and setters
     public long getId() {
         return id;
     }
@@ -88,14 +63,6 @@ public class Workout {
         this.calories = calories;
     }
 
-    public Schedule getSchedule() {
-        return schedule;
-    }
-
-    public void setSchedule(Schedule schedule) {
-        this.schedule = schedule;
-    }
-
     public String getCategory() {
         return category;
     }
@@ -120,8 +87,11 @@ public class Workout {
         this.level = level;
     }
 
-    public Collection<Workout> getWorkoutExercises() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getWorkoutExercises'");
+    public List<ExerciseDTO> getExercises() {
+        return exercises;
+    }
+
+    public void setExercises(List<ExerciseDTO> exercises) {
+        this.exercises = exercises;
     }
 }

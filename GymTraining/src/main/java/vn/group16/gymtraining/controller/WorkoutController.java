@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vn.group16.gymtraining.domain.Schedule;
 import vn.group16.gymtraining.domain.Workout;
 import vn.group16.gymtraining.dto.EventDTO;
+import vn.group16.gymtraining.dto.WorkoutDTO;
 import vn.group16.gymtraining.service.ScheduleService;
 import vn.group16.gymtraining.service.WorkoutService;
 
@@ -32,4 +33,28 @@ public class WorkoutController {
         return workoutService.searchWorkoutsByName(name);
     }
 
+    @GetMapping("/workouts/getAll")
+    public ResponseEntity<List<Workout>> getAllWorkouts() {
+        return ResponseEntity.ok(workoutService.getAllWorkouts());
+    }
+
+    @GetMapping("/workouts/getById/{id}")
+    public ResponseEntity<WorkoutDTO> getWorkoutById(@PathVariable long id) {
+        return ResponseEntity.ok(workoutService.getWorkoutById(id));
+    }
+
+    @PostMapping("/workouts/create")
+    public ResponseEntity<Workout> createWorkout(@RequestBody WorkoutDTO workout) {
+        return ResponseEntity.ok(workoutService.handleCreateWorkout(workout));
+    }
+
+    @DeleteMapping("/workouts/delete/{id}")
+    public ResponseEntity<String> deleteWorkout(@PathVariable long id) {
+        return ResponseEntity.ok(workoutService.handleDeleteWorkout(id));
+    }
+
+    @PutMapping("/workouts/update")
+    public ResponseEntity<WorkoutDTO> updateWorkout(@RequestBody WorkoutDTO workout) {
+        return ResponseEntity.ok(workoutService.handleUpdateWorkout(workout));
+    }
 }
