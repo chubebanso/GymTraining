@@ -13,6 +13,8 @@ public class WorkoutDTO {
     private String name;
     private String description;
     private String image;
+    private Integer duration;
+    private Integer caloriesBurned;
     private Long scheduleId;
 
     public WorkoutDTO(Workout workout) {
@@ -21,5 +23,7 @@ public class WorkoutDTO {
         this.description = workout.getDescription();
         this.image = workout.getImage();
         this.scheduleId = workout.getSchedule().getId();
+        this.duration = workout.getDuration();
+        this.caloriesBurned = workout.getCalories();
     }
 }

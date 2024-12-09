@@ -1,12 +1,7 @@
 package vn.group16.gymtraining.domain;
 
-import java.time.Duration;
-import java.util.HashSet;
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -14,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -42,24 +38,15 @@ public class Exercise {
     @Enumerated(EnumType.STRING)
     private DifficultyLevel difficultyLevel;
 
-    @Min(value = 0, message = "Calories burned must be non-negative")
-    private Integer caloriesBurned;
-
     private String videoUrl;
-    private String imageUrl;
-
-    @ElementCollection
-    @CollectionTable(name = "exercise_equipment", joinColumns = @JoinColumn(name = "exercise_id"))
-    @Column(name = "equipment")
-    private Set<String> requiredEquipment;
 
     @Min(value = 0, message = "Recommended sets must be non-negative")
     private Integer recommendedSets;
 
-    @Min(value = 0, message = "Recommended reps must be non-negative")
-    private Integer recommendedReps;
-
-    private Duration recommendedDuration;
+    @ManyToOne
+    @JoinColumn(name = "workout_id")
+    @JsonBackReference
+    private Workout workout;
 
     // Enums for classification
     public enum MuscleGroup {
@@ -80,37 +67,72 @@ public class Exercise {
         EXPERT
     }
 
-    // Validation method
-    public boolean isValidExercise() {
-        return name != null && !name.trim().isEmpty() 
-               && muscleGroup != null 
-               && (recommendedSets == null || recommendedSets > 0)
-               && (recommendedReps == null || recommendedReps > 0);
+    // Getters and setters
+
+    public Long getId() {
+        return id;
     }
 
-    // Helper method to add equipment
-    public void addEquipment(String equipment) {
-        if (requiredEquipment == null) {
-            requiredEquipment = new HashSet<>();
-        }
-        requiredEquipment.add(equipment);
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    // Calculate exercise intensity
-    public DifficultyLevel calculateIntensity() {
-        if (difficultyLevel != null) {
-            return difficultyLevel;
-        }
-        
-        // Default intensity calculation logic
-        if (recommendedSets != null && recommendedReps != null) {
-            int totalVolume = recommendedSets * recommendedReps;
-            if (totalVolume <= 10) return DifficultyLevel.BEGINNER;
-            if (totalVolume <= 20) return DifficultyLevel.INTERMEDIATE;
-            if (totalVolume <= 30) return DifficultyLevel.ADVANCED;
-            return DifficultyLevel.EXPERT;
-        }
-        
-        return DifficultyLevel.BEGINNER;
+    public String getName() {
+        return name;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public MuscleGroup getMuscleGroup() {
+        return muscleGroup;
+    }
+
+    public void setMuscleGroup(MuscleGroup muscleGroup) {
+        this.muscleGroup = muscleGroup;
+    }
+
+    public DifficultyLevel getDifficultyLevel() {
+        return difficultyLevel;
+    }
+
+    public void setDifficultyLevel(DifficultyLevel difficultyLevel) {
+        this.difficultyLevel = difficultyLevel;
+    }
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
+    }
+
+    public Integer getRecommendedSets() {
+        return recommendedSets;
+    }
+
+    public void setRecommendedSets(Integer recommendedSets) {
+        this.recommendedSets = recommendedSets;
+    }
+
+    public Workout getWorkout() {
+        return workout;
+    }
+
+    public void setWorkout(Workout workout) {
+        this.workout = workout;
+    }
+    
+
+
 }
