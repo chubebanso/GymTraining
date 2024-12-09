@@ -12,6 +12,7 @@ import vn.group16.gymtraining.domain.Workout;
 import vn.group16.gymtraining.repository.ScheduleRepository;
 import vn.group16.gymtraining.repository.WorkoutRepository;
 
+
 @Service
 public class WorkoutService {
     private final WorkoutRepository workoutRepository;
@@ -43,7 +44,6 @@ public class WorkoutService {
         // Save the workout
         return workoutRepository.save(workout);
     }
-
     /**
      * Find workouts by name
      * @param name Workout name
@@ -107,6 +107,7 @@ public class WorkoutService {
      * Get all workouts
      * @return List of all workouts
      */
+
     public List<Workout> getAllWorkouts() {
         return workoutRepository.findAll();
     }
@@ -123,4 +124,23 @@ public class WorkoutService {
     }
 
     
+    // public WorkoutDTO getWorkoutById(long id) {
+    //     Optional<Workout> workoutOptional = workoutRepository.findById(id);
+    //     return workoutOptional.map(this::convertToDTO).orElse(null);
+    // }
+
+    // public Workout handleCreateWorkout(WorkoutDTO workoutDTO) {
+    //     Workout workout = convertToEntity(workoutDTO);
+    //     return workoutRepository.save(workout);
+    // }
+
+    public String handleDeleteWorkout(long id) {
+        if (workoutRepository.findById(id).isPresent()) {
+            workoutRepository.deleteById(id);
+            return "Delete success";
+        } else {
+            return "Workout not found";
+        }
+    }
+
 }

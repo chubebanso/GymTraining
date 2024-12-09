@@ -3,6 +3,10 @@ package vn.group16.gymtraining.domain;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import java.util.Collection;
+import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,7 +15,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+
 import jakarta.persistence.Table;
+
 
 @Entity
 @Table(name = "workout")
@@ -23,8 +29,10 @@ public class Workout {
     private String description;
     private String image;
     private Integer duration;
-    private Integer caloriesBurned;
-    
+    private Integer calories;
+    private String category;
+    private String targetMuscle;
+    private String level;
 
     @ManyToOne
     @JoinColumn(name = "schedule_id")
@@ -33,6 +41,8 @@ public class Workout {
 
     @OneToMany(mappedBy = "workout")
     private List<Exercise> exercise;
+    @JsonManagedReference
+
 
     public long getId() {
         return id;
@@ -75,11 +85,11 @@ public class Workout {
     }
 
     public Integer getCalories() {
-        return caloriesBurned;
+        return calories;
     }
 
-    public void setCalories(Integer caloriesBurned) {
-        this.caloriesBurned = caloriesBurned;
+    public void setCalories(Integer calories) {
+        this.calories = calories;
     }
 
     
@@ -99,4 +109,27 @@ public class Workout {
         this.exercise = exercise;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getTargetMuscle() {
+        return targetMuscle;
+    }
+
+    public void setTargetMuscle(String targetMuscle) {
+        this.targetMuscle = targetMuscle;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
 }
