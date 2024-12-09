@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+
 import vn.group16.gymtraining.domain.User;
 import vn.group16.gymtraining.repository.UserRepository;
 
@@ -14,6 +15,7 @@ public class UserService {
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+
 
     public User handleCreateUser(User user) {
         User userCheck = this.userRepository.findByEmail(user.getEmail());

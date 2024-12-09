@@ -5,9 +5,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import java.util.Collection;
-import java.util.List;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -17,9 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 
 
 @Entity
@@ -33,12 +28,11 @@ public class Workout {
     private String image;
     private Integer duration;
     private Integer calories;
-    private Category category;
-
-    
 
     @Enumerated(EnumType.STRING)
-    @NotNull(message = "Muscle group cannot be null")
+    private Category category;
+
+    @Enumerated(EnumType.STRING)
     private MuscleGroup muscleGroup;
 
     @Enumerated(EnumType.STRING)

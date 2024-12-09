@@ -1,28 +1,28 @@
 package vn.group16.gymtraining.controller;
 
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
-import vn.group16.gymtraining.domain.User;
-import vn.group16.gymtraining.service.UploadService;
-import vn.group16.gymtraining.service.UserService;
-import vn.group16.gymtraining.util.error.IdInvalidException;
-
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.Valid;
+import vn.group16.gymtraining.domain.User;
+import vn.group16.gymtraining.service.UploadService;
+import vn.group16.gymtraining.service.UserService;
+import vn.group16.gymtraining.util.error.IdInvalidException;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -35,6 +35,26 @@ public class UserController {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.uploadService = uploadService;
+    }
+
+    @PostMapping("/users")
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user, BindingResult result) throws IdInvalidException {
+        String hashPassWord = this.passwordEncoder.encode(user.getPassword());
+        user.setPassword(hashPassWord);
+        if (this.userService.getUserByUserName(user.getEmail()) != null) {
+            throw new IdInvalidException("Email already exist");
+        }
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(null);  
+        }
+
+        User createdUser = userService.handleCreateUser(user);
+        if (createdUser == null) {
+            
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser); 
     }
 
     @PostMapping("/users/create")
