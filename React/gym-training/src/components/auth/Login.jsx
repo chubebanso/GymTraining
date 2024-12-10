@@ -5,51 +5,53 @@ import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import { Input, Button, Checkbox, message } from "antd";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios"; // Import axios
+import axios from "axios";
 
 const Login = () => {
-  const navigate = useNavigate(); // React Router's hook for navigation
-  const [username, setUsername] = useState(""); // State for email
-  const [password, setPassword] = useState(""); // State for password
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-  // Handle changes for email input
   const handleUsernameChange = (e) => {
     setUsername(e.target.value);
   };
 
-  // Handle changes for password input
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
 
-  // Handle form submission (login request)
   const handleSubmit = async () => {
-    // Check if the username and password are not empty
     if (!username || !password) {
       message.error("Please enter both email and password.");
       return;
     }
 
-    // Prepare the request body
     const loginData = {
       username,
       password,
     };
 
     try {
-      // Send a POST request using axios
       const response = await axios.post("http://localhost:8080/api/v1/login", loginData, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      if (response.data.statusCode === 200) {
-        localStorage.setItem("accessToken", response.data.data.accessToken);
 
-        localStorage.setItem("user", JSON.stringify(response.data.data.userLogin));
+      if (response.data.statusCode === 200) {
+        const { accessToken, userLogin, role } = response.data.data;
+        
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("user", JSON.stringify(userLogin));
+         localStorage.setItem("role", role.name);
         message.success("Login successful!");
 
-        navigate("/");
+        // Check the role and navigate accordingly
+        if (role.name === "ADMIN") {
+          navigate("/admin/account");  // Admin redirect
+        } else {
+          navigate("/");  // User redirect
+        }
       } else {
         message.error(response.data.message || "Login failed. Please try again.");
       }
@@ -58,6 +60,7 @@ const Login = () => {
       console.error(error);
     }
   };
+
   return (
     <div className="login">
       <div className="login-form">

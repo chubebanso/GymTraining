@@ -1,6 +1,8 @@
 package vn.group16.gymtraining.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -34,14 +36,14 @@ public class Exercise {
     private String videoUrl;
 
     private String recommendedSets;
-
+    private Long sets;
     @ManyToOne
     @JoinColumn(name = "workout_id")
-    @JsonBackReference
+    @JsonIgnore
     private Workout workout;
 
     // Enums for classification
-   
+
     // Getters and setters
 
     public Long getId() {
@@ -91,7 +93,13 @@ public class Exercise {
     public void setWorkout(Workout workout) {
         this.workout = workout;
     }
-    
 
+    public Long getSets() {
+        return sets;
+    }
+
+    public void setSets(Long sets) {
+        this.sets = sets;
+    }
 
 }

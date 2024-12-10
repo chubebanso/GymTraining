@@ -1,6 +1,7 @@
 package vn.group16.gymtraining.dto;
 
 import jakarta.persistence.Enumerated;
+import vn.group16.gymtraining.domain.Role;
 
 public class CreateUserDTO {
     private String name;

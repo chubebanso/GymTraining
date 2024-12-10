@@ -6,58 +6,101 @@ import { useState } from "react";
 import { Form, Input, Button, message, Upload, Select } from "antd";
 import plus_img from "../../../assets/plus.svg";
 import trash from "../../../assets/trash.svg";
+import axios from "axios";
+
+const { Option } = Select;
 
 const AddWorkout = () => {
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [exerciseRows, setExerciseRows] = useState([{ id: 1, name: '', reps: '' }]);
+  const [exerciseRows, setExerciseRows] = useState([{ id: 1, name: "", reps: "" }]);
 
-  const navigate = useNavigate();  // Khởi tạo hook useNavigate để điều hướng
+  const navigate = useNavigate();
 
   const addRowExercise = () => {
-    const newRow = { id: Date.now(), name: '', reps: '' };
+    const newRow = { id: Date.now(), name: "", reps: "" };
     setExerciseRows([...exerciseRows, newRow]);
   };
 
   const handleDeleteRow = (id) => {
-    setExerciseRows(exerciseRows.filter(row => row.id !== id));
+    setExerciseRows(exerciseRows.filter((row) => row.id !== id));
   };
 
-  // Hàm xử lý khi form được submit
-  const onFinish = (values) => {
-    console.log("Form values:", values);  // Log lại giá trị của form để kiểm tra
+  const onFinish = async (values) => {
+    console.log("Form values:", values);
+    setIsSubmitting(true);
+    const accessToken = localStorage.getItem("accessToken");
 
-    setIsSubmitting(true);  // Đặt trạng thái submitting khi gửi form
+    try {
+      // Chuẩn bị dữ liệu bài tập
+      const exercises = exerciseRows.map((row) => ({
+        name: values[`exerciseName_${row.id}`],
+        reps: values[`exerciseReps_${row.id}`],
+      }));
 
-    // Giả lập gửi dữ liệu và thông báo thành công
-    setTimeout(() => {
-      // Hiển thị thông báo thành công sau khi gửi form
+      // Tạo bài tập và lấy ID
+      const exerciseIds = [];
+      for (const exercise of exercises) {
+        const res = await axios.post(
+          "http://localhost:8080/api/v1/exercises",
+          {
+            name: exercise.name,
+            reps: exercise.reps,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        exerciseIds.push(res.data.data.id);
+      }
+
+      // Tạo workout với danh sách exerciseIds
+      const workoutData = {
+        name: values.workoutName,
+        description: values.description,
+        duration: values.duration,
+        calories: values.calories,
+        category: values.category,
+        muscleGroup: values.targetMuscle,
+        difficultyLevel: values.difficultyLevel,
+        image: "", // Nếu cần thêm hình ảnh, xử lý tại đây
+        exercise: exerciseIds.map((id) => ({ id })),
+      };
+
+      await axios.post("http://localhost:8080/api/v1/workouts/create", workoutData, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
       message.success("Tạo buổi tập thành công!");
-
-      form.resetFields();  // Reset form sau khi submit thành công
-      setIsSubmitting(false);  // Dừng trạng thái submitting
-
-      // Quay lại màn hình trước (màn hình workout list)
-      navigate("../");  // Quay về màn hình trước đó
-    }, 1000);  // Thời gian giả lập gửi form (1 giây)
+      form.resetFields();
+      navigate("../");
+    } catch (error) {
+      console.error("Error creating workout:", error);
+      message.error("Đã xảy ra lỗi khi tạo buổi tập. Vui lòng thử lại.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleBack = () => {
-    navigate("../");  // Quay lại màn hình trước
+    navigate("../");
   };
 
   return (
     <div className="content-workout">
-      {/* Header Section */}
       <div className="add-workout-header">
         <LeftCircleOutlined className="back-icon" onClick={handleBack} />
         <h2>Create New Workout</h2>
       </div>
 
-      {/* Main Form Section */}
       <Form form={form} onFinish={onFinish} className="add-workout-form">
         <div className="workout-info">
-          {/* Left Side: General Information */}
           <div className="workout-info-left">
             <h3>General Information</h3>
             <h4>Preview</h4>
@@ -65,7 +108,6 @@ const AddWorkout = () => {
             <Button className="upload-btn">Upload Photo</Button>
           </div>
 
-          {/* Right Side: Workout Details Form */}
           <div className="workout-info-right">
             <div className="standard-text-field">
               <div className="component-name">Name workout</div>
@@ -104,7 +146,7 @@ const AddWorkout = () => {
                   name="duration"
                   rules={[{ required: true, message: "Please enter duration!" }]}
                 >
-                  <Input placeholder="Ex: 15m" />
+                  <Input placeholder="Ex: 15" />
                 </Form.Item>
               </div>
             </div>
@@ -122,7 +164,6 @@ const AddWorkout = () => {
                 <div className="exercise-reps">Sets/Reps</div>
               </div>
 
-              {/* Nút dấu cộng, chỉ hiển thị cho hàng cuối cùng */}
               <img
                 src={plus_img}
                 alt="Add Exercise"
@@ -131,7 +172,6 @@ const AddWorkout = () => {
               />
             </div>
 
-            {/* Render các input fields */}
             {exerciseRows.map((row) => (
               <div className="input-fields" key={row.id}>
                 <Form.Item
@@ -152,14 +192,13 @@ const AddWorkout = () => {
                   className="img-trash"
                   src={trash}
                   alt="Delete"
-                  onClick={() => handleDeleteRow(row.id)} // Xử lý sự kiện khi click vào thùng rác
+                  onClick={() => handleDeleteRow(row.id)}
                 />
               </div>
             ))}
           </div>
         </div>
 
-        {/* Media Section */}
         <div className="workout-media">
           <div className="workout-media-left">
             <h3>Additional Media</h3>
@@ -182,33 +221,31 @@ const AddWorkout = () => {
           </div>
         </div>
 
-        {/* Goal Section */}
         <div className="workout-goal">
           <div className="workout-goal-left">
             <h3>Goal & Characteristics</h3>
           </div>
           <div className="workout-goal-right">
             <div className="category">
-              <h4 style={{ fontWeight: 'bold', marginBottom: '8px' }}>Category</h4>
+              <h4 style={{ fontWeight: "bold", marginBottom: "8px" }}>Category</h4>
               <Form.Item
                 name="category"
                 rules={[{ required: true, message: "Please select a category!" }]}
               >
                 <Select
-                  style={{ width: '100%', height: '40px' }}
+                  style={{ width: "100%", height: "40px" }}
                   placeholder="Ex: Full Body Strength, Yoga"
                   showSearch
                   allowClear
                   filterOption={(input, option) =>
                     option.children.toLowerCase().includes(input.toLowerCase())
                   }
-                  InputProps={{ style: { height: '40px' } }}
                   className="custom-select"
                 >
                   <Option value="Strength">Strength</Option>
                   <Option value="Cardio">Cardio</Option>
                   <Option value="Yoga">Yoga</Option>
-                  <Option value="Full Body">Full Body</Option>
+                  <Option value="Full_Body_Strength">Full Body Strength</Option>
                 </Select>
               </Form.Item>
             </div>
@@ -220,18 +257,19 @@ const AddWorkout = () => {
                 rules={[{ required: true, message: "Please select target muscle group!" }]}
               >
                 <Select
-                  style={{ width: '100%', height: '40px' }}
+                  style={{ width: "100%", height: "40px" }}
                   placeholder="Ex: Leg"
                   showSearch
                   allowClear
                   filterOption={(input, option) =>
                     option.children.toLowerCase().includes(input.toLowerCase())
                   }
-                  InputProps={{ style: { height: '40px' } }}
                   className="custom-select"
                 >
-                  <Option value="Legs">Legs</Option>
-                  <Option value="Chest">Chest</Option>
+                  <Option value="LEGS">Legs</Option>
+                  <Option value="CHEST">Chest</Option>
+                  <Option value="BACK">Back</Option>
+                  <Option value="FULL_BODY">Full Body</Option>
                 </Select>
               </Form.Item>
             </div>
@@ -243,33 +281,34 @@ const AddWorkout = () => {
                 rules={[{ required: true, message: "Please select difficulty level!" }]}
               >
                 <Select
-                  style={{ width: '100%', height: '40px' }}
+                  style={{ width: "100%", height: "40px" }}
                   placeholder="Ex: Novice"
                   showSearch
                   allowClear
                   filterOption={(input, option) =>
                     option.children.toLowerCase().includes(input.toLowerCase())
                   }
-                  InputProps={{ style: { height: '40px' } }}
                   className="custom-select"
                 >
-                  <Option value="Easy">Easy</Option>
-                  <Option value="Medium">Medium</Option>
-                  <Option value="Hard">Hard</Option>
+                  <Option value="BEGINNER">Beginner</Option>
+                  <Option value="INTERMEDIATE">Intermediate</Option>
+                  <Option value="ADVANCED">Advanced</Option>
+                  <Option value="EXPERT">Expert</Option>
                 </Select>
               </Form.Item>
             </div>
           </div>
         </div>
 
-        {/* Footer Section */}
         <div className="done">
-          <Button className="btn-cancel" onClick={handleBack}>Cancel</Button>
+          <Button className="btn-cancel" onClick={handleBack}>
+            Cancel
+          </Button>
           <Button
             className="btn-create"
             type="primary"
             loading={isSubmitting}
-            htmlType="submit"  // Đảm bảo khi click sẽ trigger onFinish
+            htmlType="submit"
           >
             Create workout
           </Button>

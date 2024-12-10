@@ -30,10 +30,9 @@ import vn.group16.gymtraining.service.WorkoutService;
 public class WorkoutController {
     @Autowired
     private WorkoutService workoutService;
-    
+
     @Autowired
     private ExerciseService exerciseService;
-
 
     @GetMapping("/workouts/search")
     public List<Workout> searchWorkouts(@RequestParam String name) {
