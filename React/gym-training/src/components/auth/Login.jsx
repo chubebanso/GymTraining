@@ -2,38 +2,62 @@ import "./Login.css";
 import login_image from "../../assets/login_image.png";
 import { UserOutlined } from "@ant-design/icons";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
-import { Input, Button, Checkbox } from "antd";
+import { Input, Button, Checkbox, message } from "antd";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios"; // Import axios
 
 const Login = () => {
-  //const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const navigate = useNavigate(); // React Router's hook for navigation
+  const [username, setUsername] = useState(""); // State for email
+  const [password, setPassword] = useState(""); // State for password
 
+  // Handle changes for email input
   const handleUsernameChange = (e) => {
     setUsername(e.target.value);
   };
 
-  // Hàm xử lý thay đổi input password
+  // Handle changes for password input
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
 
-  // Hàm xử lý khi người dùng nhấn nút đăng nhập
-  const handleSubmit = () => {
-    // Kiểm tra nếu username và password không trống
+  // Handle form submission (login request)
+  const handleSubmit = async () => {
+    // Check if the username and password are not empty
     if (!username || !password) {
-      alert("Vui lòng điền đầy đủ tài khoản và mật khẩu");
+      message.error("Please enter both email and password.");
       return;
     }
 
-    // Gửi request đăng nhập (dưới đây là ví dụ gửi request giả)
-  };
-  const onChange = (e) => {
-    console.log(`checked = ${e.target.checked}`);
-  };
+    // Prepare the request body
+    const loginData = {
+      username,
+      password,
+    };
 
+    try {
+      // Send a POST request using axios
+      const response = await axios.post("http://localhost:8080/api/v1/login", loginData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.data.statusCode === 200) {
+        localStorage.setItem("accessToken", response.data.data.accessToken);
+
+        localStorage.setItem("user", JSON.stringify(response.data.data.userLogin));
+        message.success("Login successful!");
+
+        navigate("/");
+      } else {
+        message.error(response.data.message || "Login failed. Please try again.");
+      }
+    } catch (error) {
+      message.error("An error occurred. Please try again.");
+      console.error(error);
+    }
+  };
   return (
     <div className="login">
       <div className="login-form">
@@ -57,11 +81,11 @@ const Login = () => {
               visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
             }
             className="input-password"
-            value={password} // Gán giá trị state vào input
-            onChange={handlePasswordChange} // Lắng nghe sự thay đổi
+            value={password}
+            onChange={handlePasswordChange}
           />
           <div className="login-checkbox">
-            <Checkbox onChange={onChange}>Remember me</Checkbox>
+            <Checkbox>Remember me</Checkbox>
             <a href="#">Forgot Password</a>
           </div>
           <Button
@@ -77,7 +101,7 @@ const Login = () => {
           </Button>
         </div>
         <div className="login-to-signup">
-          <span>Dont have an account?</span>
+          <span>Don't have an account?</span>
           <Link to="/register">Register</Link>
         </div>
       </div>
@@ -87,4 +111,5 @@ const Login = () => {
     </div>
   );
 };
+
 export default Login;

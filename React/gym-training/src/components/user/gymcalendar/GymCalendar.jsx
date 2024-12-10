@@ -36,35 +36,42 @@ const GymCalendar = () => {
   useEffect(() => {
     const calendarEl = calendarRef.current;
 
-    // Hàm gọi API sử dụng axios
     const loadEvents = async (callback) => {
+      const accessToken = localStorage.getItem("accessToken");
+
+      if (!accessToken) {
+        console.error("No access token found. Please log in.");
+        return;
+      }
+
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/v1/get-all-event"
+          "http://localhost:8080/api/v1/get-all-event",
+          {
+            headers: {
+              "Authorization": `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
         );
+
         if (response.data.statusCode === 200) {
           const events = response.data.data.map((event) => ({
             title: event.title,
-            start: event.start, // Loại bỏ giây không hợp lệ
+            start: event.start,
             end: event.end,
           }));
-          callback(events); // Trả danh sách sự kiện
+          callback(events); 
+        } else {
+          console.error("Failed to fetch events:", response.data.message);
         }
       } catch (error) {
         console.error("Error fetching events:", error);
       }
     };
 
-    // Khởi tạo lịch FullCalendar
     const calendar = new Calendar(calendarEl, {
       plugins: [googleCalendarPlugin, dayGridPlugin, timeGridPlugin],
-      // googleCalendarApiKey: 'AIzaSyC1zOMS5TDNiSnaVN8kiZ03xNdlzjhisvI', // Thay thế bằng API Key của bạn
-      // eventSources: [
-      //   {
-      //     googleCalendarId: '3ikfa3tlqp6mes51b8erostteo@group.calendar.google.com', // Thay thế bằng ID lịch của bạn
-      //     className: 'gcal-event' // Tùy chọn để thêm class cho sự kiện
-      //   },
-      // ],
       headerToolbar: {
         left: "prev,next today",
         center: "title",
@@ -75,7 +82,6 @@ const GymCalendar = () => {
           text: "+ Calendar",
           click: function () {
             alert("từ từ sẽ có chức năng này");
-            //  thêm hành động hoặc thực hiện thêm sự kiện tại đây
           },
         },
       },
@@ -83,15 +89,15 @@ const GymCalendar = () => {
       width: "150wh",
       initialView: "dayGridMonth",
       dateClick: (info) => {
-        const selectedDate = moment(info.date); // Ensure using moment object
-        form.setFieldsValue({ startDate: selectedDate }); // Set the moment object directly
+        const selectedDate = moment(info.date);
+        form.setFieldsValue({ startDate: selectedDate }); 
         setIsOpen(true);
       },
     });
 
-    // Gọi API để tải dữ liệu sự kiện
+
     loadEvents((events) => {
-      calendar.addEventSource(events); // Thêm sự kiện vào lịch
+      calendar.addEventSource(events); 
       calendar.render();
     });
   }, []);
@@ -100,19 +106,17 @@ const GymCalendar = () => {
     setIsOpen(true);
   };
 
-  // Hide modal
   const handleCancel = () => {
     setIsOpen(false);
   };
 
-  // Handle form submission
   const handleOk = () => {
     form
       .validateFields()
       .then((values) => {
         console.log("Form Values:", values);
         setIsOpen(false);
-        form.resetFields(); // Reset form fields
+        form.resetFields();
       })
       .catch((info) => {
         console.log("Validate Failed:", info);
@@ -123,17 +127,15 @@ const GymCalendar = () => {
     setDrawerVisible(true);
   };
 
-  // Hide Drawer
+
   const onCloseDrawer = () => {
     setDrawerVisible(false);
   };
 
-  // Handle selecting workout from drawer
-  // Handle selecting workouts from drawer (using checkbox)
   const handleWorkoutSelect = (checkedValues) => {
-    setSelectedWorkouts(checkedValues); // Set selected workouts
-    setDrawerVisible(false); // Close drawer after selection
-    form.setFieldsValue({ workout: checkedValues }); // Set selected workouts to form
+    setSelectedWorkouts(checkedValues); 
+    setDrawerVisible(false); 
+    form.setFieldsValue({ workout: checkedValues }); 
   };
 
   return (
@@ -143,7 +145,7 @@ const GymCalendar = () => {
         open={isOpen}
         onCancel={handleCancel}
         onOk={handleOk}
-        destroyOnClose={true} // Destroy modal content on close
+        destroyOnClose={true} 
       >
         <Form form={form} layout="vertical" name="custom_form">
           <Form.Item
@@ -161,47 +163,34 @@ const GymCalendar = () => {
           >
             <DatePicker />
           </Form.Item>
-
-          {/* Trường nhập giờ bắt đầu */}
           <Form.Item
             label="Start Time"
             name="startTime"
-            rules={[{ required: true, message: "Please select a start time!" }]}
-          >
+            rules={[{ required: true, message: "Please select a start time!" }]}>
             <TimePicker format="HH:mm" />
           </Form.Item>
 
-          {/* Trường nhập giờ kết thúc */}
+
           <Form.Item
             label="End Time"
             name="endTime"
-            rules={[{ required: true, message: "Please select an end time!" }]}
-          >
+            rules={[{ required: true, message: "Please select an end time!" }]}>
             <TimePicker format="HH:mm" />
           </Form.Item>
 
-          {/* Workout Select (Checkbox Group) */}
+       
           <Form.Item
             label="Workout"
             name="workout"
-            rules={[
-              {
-                required: true,
-                message: "Please select at least one workout!",
-              },
-            ]}
-          >
+            rules={[{ required: true, message: "Please select at least one workout!" }]}>
             <Input
-              value={
-                selectedWorkouts.length > 0 ? selectedWorkouts.join(", ") : ""
-              }
+              value={selectedWorkouts.length > 0 ? selectedWorkouts.join(", ") : ""}
               onClick={showDrawer}
               readOnly
             />
           </Form.Item>
         </Form>
       </Modal>
-      {/* Drawer (Sidebar) for selecting workout */}
       <Drawer
         title="Select Workout"
         placement="left"
@@ -220,6 +209,7 @@ const GymCalendar = () => {
           ))}
         </Checkbox.Group>
       </Drawer>
+
       <div ref={calendarRef} />
     </>
   );
