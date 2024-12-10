@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Email;
 
 @Entity
 @Table(name = "user")
@@ -22,9 +23,12 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @NotBlank(message = "Ten khong duoc de trong")
+    //@NotBlank(message = "Ten khong duoc de trong")
     private String name;
+
+    @Email
     private String email;
+
     private String password;
     private String gender;
     private long age;
