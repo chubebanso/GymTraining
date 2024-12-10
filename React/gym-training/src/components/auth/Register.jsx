@@ -5,6 +5,7 @@ import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import { Input, Button } from "antd";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import axios from 'axios';
 
 const Register = () => {
   //const navigate = useNavigate();
@@ -26,14 +27,31 @@ const Register = () => {
   };
 
   // Hàm xử lý khi người dùng nhấn nút đăng nhập
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Kiểm tra nếu username và password không trống
-    if (!username || !password) {
+    if (!username || !password || !confirmPassword) {
       alert("Vui lòng điền đầy đủ tài khoản và mật khẩu");
       return;
     }
 
-    // Gửi request đăng nhập (dưới đây là ví dụ gửi request giả)
+    if (password !== confirmPassword) {
+      alert("Mật khẩu xác nhận không khớp");
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:8080/api/v1/users', {
+        email: username,
+        password: password,
+        roleName: "USER"
+      });
+      if (response.status === 201) {
+        alert("Đăng ký thành công");
+        // navigate('/login'); // Uncomment this line if you want to navigate to login page after successful registration
+      }
+    } catch (error) {
+      alert("Đăng ký thất bại: " + error.response.data.message);
+    }
   };
 
   return (
@@ -69,14 +87,14 @@ const Register = () => {
               visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
             }
             className="input-confirmpassword"
-           value={confirmPassword} // Gán giá trị state vào input
-          onChange={handleConfirmPasswordChange} // Lắng nghe sự thay đổi
+            value={confirmPassword} // Gán giá trị state vào input
+            onChange={handleConfirmPasswordChange} // Lắng nghe sự thay đổi
           />
           <Button
             type="primary"
             className="login-btn"
             danger
-            onClick={handleSubmit}  
+            onClick={handleSubmit}
           >
             Sign up
           </Button>
