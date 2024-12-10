@@ -9,9 +9,9 @@ import Schedule from "./pages/user/Schedule";
 import Layout from "./components/user/layout/Layout";
 import Home from "./pages/user/Home";
 import LayoutAdmin from "./components/admin/layout/LayoutAdmin";
-
+import WorkOut from "./pages/admin/Workout";
 function App() {
-  const userRole = "user";
+  const userRole = "admin";
 
   return (
     <WorkoutContextProvide>
@@ -28,6 +28,7 @@ function App() {
           {userRole === "admin" && (
             <Route element={<LayoutAdmin />}>
               <Route path="/admin/account/*" element={<Account />} />
+              <Route path="/admin/workout/*" element={<WorkOut />} />
             </Route>
           )}
           {/* Routes cho trang đăng nhập và đăng ký */}
