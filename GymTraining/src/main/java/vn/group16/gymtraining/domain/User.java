@@ -23,7 +23,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    //@NotBlank(message = "Ten khong duoc de trong")
+    // @NotBlank(message = "Ten khong duoc de trong")
     private String name;
 
     @Email
