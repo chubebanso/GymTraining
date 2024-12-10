@@ -46,15 +46,8 @@ public class UserController {
         if (this.userService.getUserByUserName(user.getEmail()) != null) {
             throw new IdInvalidException("Email already exist");
         }
-        if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body(null);
-        }
 
         User createdUser = userService.handleCreateUser(user);
-        if (createdUser == null) {
-
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }

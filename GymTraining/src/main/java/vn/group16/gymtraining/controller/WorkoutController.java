@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import vn.group16.gymtraining.domain.Exercise;
 import vn.group16.gymtraining.domain.Workout;
 
 import vn.group16.gymtraining.dto.EventDTO;
 import vn.group16.gymtraining.dto.WorkoutDTO;
+import vn.group16.gymtraining.service.ExerciseService;
 import vn.group16.gymtraining.service.ScheduleService;
 
 import vn.group16.gymtraining.service.WorkoutService;
@@ -28,12 +30,17 @@ import vn.group16.gymtraining.service.WorkoutService;
 public class WorkoutController {
     @Autowired
     private WorkoutService workoutService;
+    
+    @Autowired
+    private ExerciseService exerciseService;
+
 
     @GetMapping("/workouts/search")
     public List<Workout> searchWorkouts(@RequestParam String name) {
         return workoutService.findWorkoutsByName(name);
     }
-    @GetMapping("/workouts")
+
+    @GetMapping("/workouts/getAll")
     public List<Workout> getAllWorkouts() {
         return workoutService.getAllWorkouts();
     }
@@ -45,45 +52,48 @@ public class WorkoutController {
 
     @GetMapping("/get-workout-by-day")
     public ResponseEntity<List<Workout>> getWorkoutByDay(@RequestParam("date") LocalDate date) {
-    try {
-        // Fetch workouts for the given day using the service
-        List<Workout> workouts = workoutService.findWorkoutsByDay(date);
+        try {
+            // Fetch workouts for the given day using the service
+            List<Workout> workouts = workoutService.findWorkoutsByDay(date);
 
-        // Return the workouts as a successful response
-        return ResponseEntity.ok(workouts);
-    } catch (Exception e) {
-        // Log the exception for debugging (you could use a logger here)
-        // For simplicity, we're just printing the stack trace.
-        e.printStackTrace();
-        
-        // Return a 500 status code for internal server errors
-        return ResponseEntity.status(500).body(null);
+            // Return the workouts as a successful response
+            return ResponseEntity.ok(workouts);
+        } catch (Exception e) {
+            // Log the exception for debugging (you could use a logger here)
+            // For simplicity, we're just printing the stack trace.
+            e.printStackTrace();
+
+            // Return a 500 status code for internal server errors
+            return ResponseEntity.status(500).body(null);
+        }
     }
-}
 
-    @PostMapping("/workouts")
+    @PostMapping(value = "/workouts")
     public ResponseEntity<Workout> createWorkout(@RequestBody Workout workout) {
         return ResponseEntity.ok(workoutService.createWorkout(workout, 1L));
     }
 
-    // @GetMapping("/workouts/getById/{id}")
-    // public ResponseEntity<WorkoutDTO> getWorkoutById(@PathVariable long id) {
-    //     return ResponseEntity.ok(workoutService.getWorkoutById(id));
-    // }
-
-    // @PostMapping("/workouts/create")
-    // public ResponseEntity<Workout> createWorkout(@RequestBody WorkoutDTO workout) {
-    //     return ResponseEntity.ok(workoutService.handleCreateWorkout(workout));
-    // }
+    @GetMapping("/workouts/getById/{id}")
+    public ResponseEntity<Workout> getWorkoutById(@PathVariable long id) {
+        return ResponseEntity.ok(workoutService.getWorkoutById(id));
+    }
 
     @DeleteMapping("/workouts/delete/{id}")
     public ResponseEntity<String> deleteWorkout(@PathVariable long id) {
-        return ResponseEntity.ok(workoutService.handleDeleteWorkout(id));
+        workoutService.deleteWorkout(id);
+        return ResponseEntity.ok("Workout deleted successfully");
     }
 
-    // @PutMapping("/workouts/update")
-    // public ResponseEntity<WorkoutDTO> updateWorkout(@RequestBody WorkoutDTO workout) {
-    //     return ResponseEntity.ok(workoutService.handleUpdateWorkout(workout));
-    // }
+    @PutMapping(value = "/workouts/update")
+    public ResponseEntity<Workout> updateWorkoutByAdmin(@RequestBody Workout workout) {
+        return ResponseEntity.ok(workoutService.updateWorkoutByAdmin(workout));
+    }
+
+    @PostMapping(value = "/workouts/create")
+    public ResponseEntity<Workout> createWorkoutByAdmin(@RequestBody Workout workout) {
+        // Save the workout first to ensure it has an ID
+        Workout savedWorkout = workoutService.createWorkoutByAdmin(workout);
+        return ResponseEntity.ok(savedWorkout);
+    }
 
 }

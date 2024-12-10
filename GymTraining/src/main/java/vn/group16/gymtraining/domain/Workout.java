@@ -16,7 +16,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
-
 @Entity
 @Table(name = "workout")
 public class Workout {
@@ -57,16 +56,16 @@ public class Workout {
     }
 
     public enum Category {
-        Strength, 
-        Cardio, 
-        Stretching, 
-        Endurance, 
-        Flexibility, 
+        Strength,
+        Cardio,
+        Stretching,
+        Endurance,
+        Flexibility,
         HIIT,
-        Core, 
+        Core,
         Yoga,
         Pilates,
-        Recovery, 
+        Recovery,
         Functional_Movement,
         Plyometrics,
         Full_Body_Strength,
@@ -78,9 +77,8 @@ public class Workout {
     Schedule schedule;
 
     @OneToMany(mappedBy = "workout")
-    private List<Exercise> exercise;
     @JsonManagedReference
-
+    private List<Exercise> exercise;
 
     public long getId() {
         return id;
@@ -130,7 +128,6 @@ public class Workout {
         this.calories = calories;
     }
 
-    
     public Schedule getSchedule() {
         return schedule;
     }
@@ -170,5 +167,5 @@ public class Workout {
     public void setDifficultyLevel(DifficultyLevel difficultyLevel) {
         this.difficultyLevel = difficultyLevel;
     }
-    
+
 }
