@@ -2,13 +2,16 @@ package vn.group16.gymtraining.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import vn.group16.gymtraining.domain.Exercise;
 import vn.group16.gymtraining.domain.Schedule;
 import vn.group16.gymtraining.domain.Workout;
+import vn.group16.gymtraining.repository.ExerciseRepository;
 import vn.group16.gymtraining.repository.ScheduleRepository;
 import vn.group16.gymtraining.repository.WorkoutRepository;
 
@@ -17,13 +20,16 @@ import vn.group16.gymtraining.repository.WorkoutRepository;
 public class WorkoutService {
     private final WorkoutRepository workoutRepository;
     private final ScheduleRepository scheduleRepository;
+    private final ExerciseRepository exerciseRepository;
 
     public WorkoutService(
         WorkoutRepository workoutRepository, 
-        ScheduleRepository scheduleRepository
+        ScheduleRepository scheduleRepository,
+        ExerciseRepository exerciseRepository
     ) {
         this.workoutRepository = workoutRepository;
         this.scheduleRepository = scheduleRepository;
+        this.exerciseRepository = exerciseRepository;
     }
 
     /**
@@ -89,7 +95,10 @@ public class WorkoutService {
     public void deleteWorkout(Long workoutId) {
         Workout workout = workoutRepository.findById(workoutId)
             .orElseThrow(() -> new RuntimeException("Workout not found"));
-        
+        List<Exercise> exercises = workout.getExercise();
+        for(Exercise exercise : exercises) {
+            exerciseRepository.delete(exercise);
+        }
         workoutRepository.delete(workout);
     }
 
@@ -123,24 +132,76 @@ public class WorkoutService {
             .collect(Collectors.toList());
     }
 
-    
-    // public WorkoutDTO getWorkoutById(long id) {
-    //     Optional<Workout> workoutOptional = workoutRepository.findById(id);
-    //     return workoutOptional.map(this::convertToDTO).orElse(null);
-    // }
+    public Workout createWorkoutByAdmin(Workout workout) {
+        Optional<Workout> workoutCheck = workoutRepository.findByName(workout.getName());
+        if (workoutCheck.isEmpty()) {
+            // Save the workout first to ensure it has an ID
+            Workout newWorkout = workoutRepository.save(workout);
 
-    // public Workout handleCreateWorkout(WorkoutDTO workoutDTO) {
-    //     Workout workout = convertToEntity(workoutDTO);
-    //     return workoutRepository.save(workout);
-    // }
-
-    public String handleDeleteWorkout(long id) {
-        if (workoutRepository.findById(id).isPresent()) {
-            workoutRepository.deleteById(id);
-            return "Delete success";
-        } else {
-            return "Workout not found";
+            // Save the associated exercises
+            List<Exercise> exercises = newWorkout.getExercise();
+            for (Exercise exercise : exercises) {
+                exercise.setWorkout(newWorkout);
+                exerciseRepository.save(exercise);
+            }
+            return newWorkout;
         }
+        return null;
     }
 
+    public Workout updateWorkoutByAdmin(Workout workout) {
+        Optional<Workout> workoutCheck = workoutRepository.findById(workout.getId());
+        if (workoutCheck.isPresent()) {
+            Workout existingWorkout = workoutCheck.get();
+            
+            // Update workout fields
+            existingWorkout.setName(workout.getName());
+            existingWorkout.setDescription(workout.getDescription());
+            existingWorkout.setImage(workout.getImage());
+            existingWorkout.setDuration(workout.getDuration());
+            existingWorkout.setCalories(workout.getCalories());
+            existingWorkout.setCategory(workout.getCategory());
+            existingWorkout.setMuscleGroup(workout.getMuscleGroup());
+            existingWorkout.setDifficultyLevel(workout.getDifficultyLevel());
+
+            // Update exercises
+            List<Exercise> existingExercises = existingWorkout.getExercise();
+            List<Exercise> updatedExercises = workout.getExercise();
+            
+            // Remove exercises that are not in the updated list
+            existingExercises.removeIf(existingExercise -> 
+                updatedExercises.stream().noneMatch(updatedExercise -> 
+                    updatedExercise.getId() != null && updatedExercise.getId().equals(existingExercise.getId())
+                )
+            );
+
+            // Add or update exercises
+            for (Exercise updatedExercise : updatedExercises) {
+                boolean exists = existingExercises.stream()
+                    .anyMatch(existingExercise -> 
+                        updatedExercise.getName().equals(existingExercise.getName())
+                    );
+            
+                if (!exists) {
+                    // Đây là bài tập mới
+                    updatedExercise.setWorkout(existingWorkout);
+                    exerciseRepository.save(updatedExercise);
+                } else {
+                    // Cập nhật bài tập cũ
+                    Exercise existingExercise = existingExercises.stream()
+                        .filter(e -> updatedExercise.getName().equals(e.getName()))
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("Exercise not found"));
+            
+                    existingExercise.setDescription(updatedExercise.getDescription());
+                    existingExercise.setVideoUrl(updatedExercise.getVideoUrl());
+                    existingExercise.setRecommendedSets(updatedExercise.getRecommendedSets());
+                    exerciseRepository.save(existingExercise);
+                }
+            }
+
+            return workoutRepository.save(existingWorkout);
+        }
+        return null;
+    }
 }
