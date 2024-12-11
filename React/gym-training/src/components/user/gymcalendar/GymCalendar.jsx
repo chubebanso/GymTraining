@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Calendar } from "@fullcalendar/core";
 import googleCalendarPlugin from "@fullcalendar/google-calendar";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -7,7 +7,6 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import axios from "axios";
 import {
-  Button,
   Modal,
   Input,
   Form,
@@ -21,7 +20,7 @@ import moment from "moment";
 
 const GymCalendar = () => {
   const calendarRef = useRef(null);
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false); // Modal open state
   const [form] = Form.useForm();
   const [drawerVisible, setDrawerVisible] = useState(false); // Drawer visibility
   const [selectedWorkouts, setSelectedWorkouts] = useState([]); // Store selected workout
@@ -61,7 +60,7 @@ const GymCalendar = () => {
             start: event.start,
             end: event.end,
           }));
-          callback(events); 
+          callback(events);
         } else {
           console.error("Failed to fetch events:", response.data.message);
         }
@@ -81,23 +80,22 @@ const GymCalendar = () => {
         addCalendar: {
           text: "+ Calendar",
           click: function () {
-            alert("từ từ sẽ có chức năng này");
+            // Open the modal when the + Calendar button is clicked
+            setIsOpen(true);
           },
         },
       },
       height: "100vh",
-      width: "150wh",
       initialView: "dayGridMonth",
       dateClick: (info) => {
         const selectedDate = moment(info.date);
-        form.setFieldsValue({ startDate: selectedDate }); 
-        setIsOpen(true);
+        form.setFieldsValue({ startDate: selectedDate });
+        setIsOpen(true); // Open the modal when clicking on a date
       },
     });
 
-
     loadEvents((events) => {
-      calendar.addEventSource(events); 
+      calendar.addEventSource(events);
       calendar.render();
     });
   }, []);
@@ -127,15 +125,14 @@ const GymCalendar = () => {
     setDrawerVisible(true);
   };
 
-
   const onCloseDrawer = () => {
     setDrawerVisible(false);
   };
 
   const handleWorkoutSelect = (checkedValues) => {
-    setSelectedWorkouts(checkedValues); 
-    setDrawerVisible(false); 
-    form.setFieldsValue({ workout: checkedValues }); 
+    setSelectedWorkouts(checkedValues);
+    setDrawerVisible(false);
+    form.setFieldsValue({ workout: checkedValues });
   };
 
   return (
@@ -145,7 +142,7 @@ const GymCalendar = () => {
         open={isOpen}
         onCancel={handleCancel}
         onOk={handleOk}
-        destroyOnClose={true} 
+        destroyOnClose={true}
       >
         <Form form={form} layout="vertical" name="custom_form">
           <Form.Item
@@ -166,23 +163,24 @@ const GymCalendar = () => {
           <Form.Item
             label="Start Time"
             name="startTime"
-            rules={[{ required: true, message: "Please select a start time!" }]}>
+            rules={[{ required: true, message: "Please select a start time!" }]}
+          >
             <TimePicker format="HH:mm" />
           </Form.Item>
-
 
           <Form.Item
             label="End Time"
             name="endTime"
-            rules={[{ required: true, message: "Please select an end time!" }]}>
+            rules={[{ required: true, message: "Please select an end time!" }]}
+          >
             <TimePicker format="HH:mm" />
           </Form.Item>
 
-       
           <Form.Item
             label="Workout"
             name="workout"
-            rules={[{ required: true, message: "Please select at least one workout!" }]}>
+            rules={[{ required: true, message: "Please select at least one workout!" }]}
+          >
             <Input
               value={selectedWorkouts.length > 0 ? selectedWorkouts.join(", ") : ""}
               onClick={showDrawer}
@@ -191,6 +189,7 @@ const GymCalendar = () => {
           </Form.Item>
         </Form>
       </Modal>
+
       <Drawer
         title="Select Workout"
         placement="left"
@@ -198,7 +197,7 @@ const GymCalendar = () => {
         open={drawerVisible}
       >
         <Checkbox.Group
-          style={{ width: "100%", top: "inherit" }}
+          style={{ width: "100%" }}
           value={selectedWorkouts}
           onChange={handleWorkoutSelect}
         >

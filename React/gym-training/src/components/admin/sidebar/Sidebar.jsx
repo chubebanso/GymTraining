@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ava_admin from "../../../assets/ava_admin.png";
 import "./Sidebar.css";
 import {
@@ -9,6 +9,14 @@ import {
 } from "@ant-design/icons";
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+
+  // Hàm để xử lý đăng xuất
+  const handleLogout = () => {
+    localStorage.clear(); // Xóa tất cả thông tin trong localStorage
+    navigate("/login"); // Điều hướng về trang đăng nhập
+  };
+
   return (
     <div className="sidebar">
       <div className="admin-info">
@@ -33,7 +41,7 @@ const Sidebar = () => {
         </div>
       </div>
       <div className="nothing"></div>
-      <div className="logout">
+      <div className="logout" onClick={handleLogout}>
         <PoweroffOutlined />
         <span>Logout</span>
       </div>
