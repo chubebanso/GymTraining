@@ -13,8 +13,11 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    localStorage.clear(); // Xóa tất cả thông tin trong localStorage
-    navigate("/login"); // Điều hướng về trang đăng nhập
+    // Xóa tất cả thông tin trong localStorage
+    localStorage.clear();
+    
+    // Điều hướng về trang đăng nhập
+    navigate("/login");
   };
 
   return (
