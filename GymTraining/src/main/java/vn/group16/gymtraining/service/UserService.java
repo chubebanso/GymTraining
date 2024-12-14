@@ -31,6 +31,7 @@ public class UserService {
             currentUser.setPassword(user.getPassword());
             currentUser.setGender(user.getGender());
             currentUser.setRole(role);
+            currentUser.setPhone(user.getPhone());
             return this.userRepository.save(currentUser);
         }
         return null;
@@ -55,6 +56,10 @@ public class UserService {
             currentUser.setEmail(user.getEmail());
             currentUser.setName(user.getName());
             currentUser.setPassword(user.getPassword());
+            currentUser.setAge(user.getAge());
+            currentUser.setGender(user.getGender());
+            currentUser.setRole(user.getRole());
+            currentUser.setPhone(user.getPhone());
             return this.userRepository.save(currentUser);
         }
         return null;

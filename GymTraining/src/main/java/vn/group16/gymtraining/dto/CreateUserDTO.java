@@ -8,6 +8,7 @@ public class CreateUserDTO {
     private String email;
     private String password;
     private String gender;
+    private String phone;
     private String roleName; // Tên của Role
     private long age;
     // Getters và Setters
@@ -60,4 +61,12 @@ public class CreateUserDTO {
         this.age = age;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    
 }
