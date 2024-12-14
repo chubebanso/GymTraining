@@ -3,8 +3,12 @@ package vn.group16.gymtraining.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,4 +45,19 @@ public class ScheduleController {
         List<Schedule> schedules = scheduleService.getScheduleByDate(date);
         return ResponseEntity.ok(schedules);
     }
+
+    @PostMapping("/schedule")
+    public ResponseEntity<Schedule> createSchedule(@RequestBody Schedule schedule) {
+    Schedule createdSchedule = scheduleService.createSchedule(schedule);
+    return ResponseEntity.status(HttpStatus.CREATED).body(createdSchedule);
+
+    }
+
+    @PutMapping("/schedule/{id}")
+    public ResponseEntity<Schedule> updateSchedule(@PathVariable long id, @RequestBody Schedule schedule) {
+    Schedule updatedSchedule = scheduleService.updateSchedule(id, schedule);
+    return ResponseEntity.ok(updatedSchedule);
+
+    
+}
 }
