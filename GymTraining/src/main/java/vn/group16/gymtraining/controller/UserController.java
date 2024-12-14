@@ -20,7 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import vn.group16.gymtraining.domain.User;
+<<<<<<< HEAD
 import vn.group16.gymtraining.dto.CreateUserDTO;
+=======
+>>>>>>> ec0b70b (fix api)
 import vn.group16.gymtraining.service.UploadService;
 import vn.group16.gymtraining.service.UserService;
 import vn.group16.gymtraining.util.error.IdInvalidException;
@@ -39,12 +42,41 @@ public class UserController {
     }
 
     @PostMapping("/users")
+<<<<<<< HEAD
     public ResponseEntity<User> createUser(@Valid @RequestBody CreateUserDTO user)
             throws IdInvalidException {
+=======
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user, BindingResult result) throws IdInvalidException {
+>>>>>>> ec0b70b (fix api)
         String hashPassWord = this.passwordEncoder.encode(user.getPassword());
         user.setPassword(hashPassWord);
         if (this.userService.getUserByUserName(user.getEmail()) != null) {
             throw new IdInvalidException("Email already exist");
+<<<<<<< HEAD
+=======
+        }
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(null);  
+        }
+
+        User createdUser = userService.handleCreateUser(user);
+        if (createdUser == null) {
+            
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser); 
+    }
+
+    @PostMapping("/users/create")
+    public ResponseEntity<User> createUser(@Valid @RequestPart("user") User postmanUser,
+            @RequestParam("imageFile") MultipartFile imageFile) throws IdInvalidException {
+        String avatar = "";
+        if (imageFile != null) {
+            avatar = this.uploadService.handleSaveUploadFile(imageFile, "avatars");
+        } else {
+            throw new IdInvalidException("Chưa chọn ảnh");
+>>>>>>> ec0b70b (fix api)
         }
 
         User createdUser = userService.handleCreateUser(user);
