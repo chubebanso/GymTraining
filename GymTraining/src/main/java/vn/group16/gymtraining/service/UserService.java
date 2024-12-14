@@ -5,10 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-<<<<<<< HEAD
 import vn.group16.gymtraining.domain.Role;
-=======
->>>>>>> ec0b70b (fix api)
 import vn.group16.gymtraining.domain.User;
 import vn.group16.gymtraining.dto.CreateUserDTO;
 import vn.group16.gymtraining.repository.RoleRepository;
@@ -24,7 +21,6 @@ public class UserService {
         this.roleRepository = roleRepository;
     }
 
-
     public User handleCreateUser(CreateUserDTO user) {
         Role role = this.roleRepository.findByName(user.getRoleName());
         if (role != null) {
@@ -36,13 +32,6 @@ public class UserService {
             currentUser.setGender(user.getGender());
             currentUser.setRole(role);
             return this.userRepository.save(currentUser);
-=======
-
-    public User handleCreateUser(User user) {
-        User userCheck = this.userRepository.findByEmail(user.getEmail());
-        if (userCheck == null) {
-            return this.userRepository.save(user);
->>>>>>> ec0b70b (fix api)
         }
         return null;
     }
