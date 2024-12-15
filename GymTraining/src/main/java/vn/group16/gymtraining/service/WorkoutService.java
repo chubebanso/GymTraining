@@ -1,205 +1,86 @@
 package vn.group16.gymtraining.service;
 
-import java.security.Permission;
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import vn.group16.gymtraining.domain.Exercise;
-import vn.group16.gymtraining.domain.Schedule;
 import vn.group16.gymtraining.domain.Workout;
-import vn.group16.gymtraining.repository.ExerciseRepository;
-import vn.group16.gymtraining.repository.ScheduleRepository;
+import vn.group16.gymtraining.dto.WorkoutDTO;
 import vn.group16.gymtraining.repository.WorkoutRepository;
 
 @Service
 public class WorkoutService {
-    private final WorkoutRepository workoutRepository;
-    private final ScheduleRepository scheduleRepository;
-    private final ExerciseRepository exerciseRepository;
+    final private WorkoutRepository workoutRepository;
 
-    public WorkoutService(
-            WorkoutRepository workoutRepository,
-            ScheduleRepository scheduleRepository,
-            ExerciseRepository exerciseRepository) {
+    public WorkoutService(WorkoutRepository workoutRepository) {
         this.workoutRepository = workoutRepository;
-        this.scheduleRepository = scheduleRepository;
-        this.exerciseRepository = exerciseRepository;
     }
 
-    /**
-     * Create a new workout and associate it with a schedule
-     * 
-     * @param workout    Workout to be created
-     * @param scheduleId ID of the schedule to associate with
-     * @return Created workout
-     */
-    @Transactional
-    public Workout createWorkout(Workout workout, Long scheduleId) {
-        // Find the schedule
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new RuntimeException("Schedule not found"));
-
-        // Set the schedule for the workout
-        workout.setSchedule(schedule);
-
-        // Save the workout
-        return workoutRepository.save(workout);
+    public List<Workout> getWorkoutByCategory(String category) {
+        Optional<List<Workout>> workoutsOptional = this.workoutRepository.findWorkoutByCategory(category);
+        if (workoutsOptional.isPresent()) {
+            return workoutsOptional.get();
+        } else
+            return null;
     }
 
-    /**
-     * Find workouts by name
-     * 
-     * @param name Workout name
-     * @return List of workouts matching the name
-     */
-    public List<Workout> findWorkoutsByName(String name) {
-        return workoutRepository.findByNameContainingIgnoreCase(name);
+    public List<Workout> getWorkoutByDifficultyLevel(String difficultyLevel) {
+        Optional<List<Workout>> workoutsOptional = this.workoutRepository.findWorkoutByDifficultyLevel(difficultyLevel);
+        if (workoutsOptional.isPresent()) {
+            return workoutsOptional.get();
+        } else
+            return null;
     }
 
-    /**
-     * Get all workouts for a specific schedule
-     * 
-     * @param scheduleId ID of the schedule
-     * @return List of workouts for the schedule
-     */
-    public List<Workout> getWorkoutsBySchedule(Long scheduleId) {
-        return workoutRepository.findByScheduleId(scheduleId);
-    }
-
-    /**
-     * Update an existing workout
-     * 
-     * @param workoutId      ID of the workout to update
-     * @param updatedWorkout Updated workout details
-     * @return Updated workout
-     */
-    @Transactional
-    public Workout updateWorkout(Long workoutId, Workout updatedWorkout) {
-        Workout existingWorkout = workoutRepository.findById(workoutId)
-                .orElseThrow(() -> new RuntimeException("Workout not found"));
-
-        // Update fields
-        existingWorkout.setName(updatedWorkout.getName());
-        existingWorkout.setDescription(updatedWorkout.getDescription());
-        existingWorkout.setImage(updatedWorkout.getImage());
-
-        return workoutRepository.save(existingWorkout);
-    }
-
-    /**
-     * Delete a workout by its ID
-     * 
-     * @param workoutId ID of the workout to delete
-     */
-    @Transactional
-    public void deleteWorkout(Long workoutId) {
-        Workout workout = workoutRepository.findById(workoutId)
-                .orElseThrow(() -> new RuntimeException("Workout not found"));
-        List<Exercise> exercises = workout.getExercise();
-        for (Exercise exercise : exercises) {
-            exerciseRepository.delete(exercise);
+    public List<WorkoutDTO> getAllWorkoutDetails() {
+        List<Workout> workouts = this.workoutRepository.findAll();
+        List<WorkoutDTO> workoutDetails = new ArrayList<>();
+    
+        for (Workout workout : workouts) {
+            // Tạo một DTO từ dữ liệu trong đối tượng Workout
+            WorkoutDTO dto = new WorkoutDTO(                          
+                workout.getName(),                         
+                workout.getDescription(),                  
+                workout.getImage(),                       
+                workout.getDuration(),
+                workout.getCalories(),                    
+                workout.getCategory(),                    
+                workout.getMuscleGroups(),                 
+                workout.getDifficultyLevel()               
+            );
+            
+            workoutDetails.add(dto);  
         }
-        workoutRepository.delete(workout);
+    
+        return workoutDetails;  
     }
 
-    /**
-     * Get workout by ID
-     * 
-     * @param workoutId ID of the workout
-     * @return Workout if found
-     */
-    public Workout getWorkoutById(Long workoutId) {
-        return workoutRepository.findById(workoutId)
-                .orElseThrow(() -> new RuntimeException("Workout not found"));
-    }
-
-    /**
-     * Get all workouts
-     * 
-     * @return List of all workouts
-     */
-
-    public List<Workout> getAllWorkouts() {
-        return workoutRepository.findAll();
-    }
-
-    public List<Workout> findWorkoutsByDay(LocalDate date) {
-        // Find schedules for the given date
-        List<Schedule> schedules = scheduleRepository.findScheduleByDate(date)
-                .orElse(List.of()); // Return empty list if no schedules found
-
-        // Collect workouts from these schedules
-        return schedules.stream()
-                .flatMap(schedule -> schedule.getWorkout().stream())
-                .collect(Collectors.toList());
-    }
-
-    public Workout createWorkoutByAdmin(Workout workout) {
-        if (workout.getExercise() != null) {
-            List<Long> excersicesID = workout.getExercise().stream()
-                    .map(Exercise::getId)
-                    .collect(Collectors.toList());
-
-            List<Exercise> dbExercises = this.exerciseRepository.findByIdIn(excersicesID);
-            workout.setExercise(dbExercises);
-        }
+    public Workout createWorkout(Workout workout) {
         return this.workoutRepository.save(workout);
     }
 
-    public Workout updateWorkoutByAdmin(Workout workout) {
-        Optional<Workout> workoutCheck = workoutRepository.findById(workout.getId());
-        if (workoutCheck.isPresent()) {
-            Workout existingWorkout = workoutCheck.get();
+    public Workout updateWorkout(Long id, Workout workoutDetails) {
+        Workout existingWorkout = this.workoutRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Workout not found with id: " + id));
+        
+        existingWorkout.setName(workoutDetails.getName());
+        existingWorkout.setDescription(workoutDetails.getDescription());
+        existingWorkout.setImage(workoutDetails.getImage());
+        existingWorkout.setDuration(workoutDetails.getDuration());
+        existingWorkout.setCalories(workoutDetails.getCalories());
+        existingWorkout.setCategory(workoutDetails.getCategory());
+        existingWorkout.setMuscleGroups(workoutDetails.getMuscleGroups());
+        existingWorkout.setDifficultyLevel(workoutDetails.getDifficultyLevel());
 
-            // Update workout fields
-            existingWorkout.setName(workout.getName());
-            existingWorkout.setDescription(workout.getDescription());
-            existingWorkout.setImage(workout.getImage());
-            existingWorkout.setDuration(workout.getDuration());
-            existingWorkout.setCalories(workout.getCalories());
-            existingWorkout.setCategory(workout.getCategory());
-            existingWorkout.setMuscleGroup(workout.getMuscleGroup());
-            existingWorkout.setDifficultyLevel(workout.getDifficultyLevel());
+        return this.workoutRepository.save(existingWorkout);
+    }
 
-            // Update exercises
-            List<Exercise> existingExercises = existingWorkout.getExercise();
-            List<Exercise> updatedExercises = workout.getExercise();
-
-            // Remove exercises that are not in the updated list
-            existingExercises.removeIf(existingExercise -> updatedExercises.stream()
-                    .noneMatch(updatedExercise -> updatedExercise.getId() != null
-                            && updatedExercise.getId().equals(existingExercise.getId())));
-
-            // Add or update exercises
-            for (Exercise updatedExercise : updatedExercises) {
-                boolean exists = existingExercises.stream()
-                        .anyMatch(existingExercise -> updatedExercise.getName().equals(existingExercise.getName()));
-
-                if (!exists) {
-                    // Đây là bài tập mới
-                    updatedExercise.setWorkout(existingWorkout);
-                    exerciseRepository.save(updatedExercise);
-                } else {
-                    // Cập nhật bài tập cũ
-                    Exercise existingExercise = existingExercises.stream()
-                            .filter(e -> updatedExercise.getName().equals(e.getName()))
-                            .findFirst()
-                            .orElseThrow(() -> new RuntimeException("Exercise not found"));
-
-                    existingExercise.setDescription(updatedExercise.getDescription());
-                    existingExercise.setVideoUrl(updatedExercise.getVideoUrl());
-                    existingExercise.setRecommendedSets(updatedExercise.getRecommendedSets());
-                    exerciseRepository.save(existingExercise);
-                }
-            }
-
-            return workoutRepository.save(existingWorkout);
-        }
-        return null;
+    public void deleteWorkout(Long id) {
+        Workout workout = this.workoutRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Workout not found with id: " + id));
+        
+        this.workoutRepository.delete(workout);
     }
 }

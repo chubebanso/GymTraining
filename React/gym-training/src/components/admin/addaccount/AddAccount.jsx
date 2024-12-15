@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { LeftCircleOutlined } from "@ant-design/icons";
 import ava_account from "../../../assets/ava_account.png";
 import { useState } from "react";
+import axios from "axios";
 import { Form, Input, Button, Select, message } from "antd";
 const { Option } = Select;
 
@@ -11,17 +12,38 @@ const AddAccount = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Hàm xử lý khi form được submit
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     console.log("Form values:", values);
     // Giả lập gửi form (có thể gửi lên server ở đây)
     setIsSubmitting(true);
 
-    // Giả lập gửi dữ liệu và thông báo thành công
-    setTimeout(() => {
-      message.success("Tạo tài khoản thành công!");
-      form.resetFields(); // Reset form sau khi submit thành công
+    try {
+      await axios.post(`http://localhost:8080/api/v1/users`, {
+        name: values.username,
+        email: values.email,
+        phone: values.phone,
+        password: values.password,
+        roleName: values.role,
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+        }
+      });
+      message.success("Account updated successfully!");
+      navigate("../");
+    } catch (error) {
+      console.error("There was an error updating the account!", error);
+      message.error("Failed to update account!");
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
+
+    // Giả lập gửi dữ liệu và thông báo thành công
+    // setTimeout(() => {
+    //   message.success("Tạo tài khoản thành công!");
+    //   form.resetFields(); // Reset form sau khi submit thành công
+    //   setIsSubmitting(false);
+    // }, 1000);
   };
   const navigate = useNavigate();
   const handleBack = () => {
@@ -96,9 +118,9 @@ const AddAccount = () => {
               name="role"
               label="Role"
               rules={[{ required: true, message: "Vui lòng chọn vai trò!" }]}
-              
+
             >
-              <Select placeholder="Chọn vai trò" disabled>
+              <Select placeholder="Chọn vai trò" enabled>
                 <Option value="User">User</Option>
                 <Option value="Admin">Admin</Option>
               </Select>

@@ -10,12 +10,6 @@ import vn.group16.gymtraining.domain.Workout;
 
 @Repository
 public interface WorkoutRepository extends JpaRepository<Workout, Long> {
-    // Find workouts by name (case-insensitive)
-    List<Workout> findByNameContainingIgnoreCase(String name);
-    
-    // Find workouts by schedule ID
-    List<Workout> findByScheduleId(Long scheduleId);
-
-    // Find workouts by name
-    Optional<Workout> findByName(String name);
+    Optional<List<Workout>> findWorkoutByCategory(String category);
+    Optional<List<Workout>> findWorkoutByDifficultyLevel(String difficultyLevel);
 }

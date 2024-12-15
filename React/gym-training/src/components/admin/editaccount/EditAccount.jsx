@@ -4,6 +4,7 @@ import { LeftCircleOutlined } from "@ant-design/icons";
 import ava_account from "../../../assets/ava_account.png";
 import { useState, useEffect } from "react";
 import { Form, Input, Button, Select, message } from "antd";
+import axios from "axios";
 import PropTypes from "prop-types";
 
 const { Option } = Select;
@@ -11,42 +12,77 @@ const { Option } = Select;
 const EditAccount = () => {
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [account, setAccount] = useState(null);
 
   const location = useLocation();
   const navigate = useNavigate();
-  const account = location.state?.account;
-  useEffect(() => {
-    if (account) {
-      form.setFieldsValue({
-        name: account.name,
-        email: account.email,
-        phone: account.phone,
-        role: account.role,
-      });
-    }
-  }, [account, form]);
-  // Hàm xử lý khi form được submit
-  const onFinish = (values) => {
-    console.log("Form values:", values);
-    // Giả lập gửi form (có thể gửi lên server ở đây)
-    setIsSubmitting(true);
+  const accountId = location.state?.account.id;
 
-    // Giả lập gửi dữ liệu và thông báo thành công
-    setTimeout(() => {
-      message.success("Tạo tài khoản thành công!");
-      form.resetFields(); // Reset form sau khi submit thành công
+
+  useEffect(() => {
+    const fetchAccount = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/api/v1/users/getById/${accountId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+          }
+        });
+        //console.log("Account details:", response.data);
+        setAccount(response.data.data);
+        form.setFieldsValue({
+          name: response.data.data.name,
+          email: response.data.data.email,
+          phone: response.data.data.phone,
+          role: response.data.data.role.name,
+        });
+      } catch (error) {
+        console.error("There was an error fetching the account details!", error);
+      }
+    };
+
+    if (accountId) {
+      fetchAccount();
+    }
+  }, [accountId, form]);
+
+  const onFinish = async (values) => {
+    setIsSubmitting(true);
+    console.log("Form values:", values);
+    const roleId = values.role === "Admin" ? 1 : 2;
+    try {
+      await axios.put(`http://localhost:8080/api/v1/users/update`, {
+        id: accountId,
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        password: account.password, // Keep the existing password
+        role: {
+          id: roleId,
+        },
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+        }
+      });
+      message.success("Account updated successfully!");
+      navigate("../");
+    } catch (error) {
+      console.error("There was an error updating the account!", error);
+      message.error("Failed to update account!");
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
   const handleBack = () => {
     navigate("../");
   };
+
   return (
     <div className="content-account">
       <div className="add-account-header">
         <LeftCircleOutlined className="back-icon" onClick={handleBack} />
-        <h2>Create Account</h2>
+        <h2>Edit Account</h2>
       </div>
       <div className="add-account-form">
         <div className="add-account-ava">
@@ -59,66 +95,50 @@ const EditAccount = () => {
             layout="vertical"
             onFinish={onFinish}
             initialValues={{
-              role: "User", // Mặc định chọn "User" cho role
+              role: "User",
             }}
           >
-            {/* Username */}
             <Form.Item
-              name="username"
-              label="Username"
-              rules={[
-                { required: true, message: "Vui lòng nhập tên người dùng!" },
-              ]}
+              name="name"
+              label="Name"
+              rules={[{ required: true, message: "Please enter the name!" }]}
             >
-              <Input placeholder="Nhập tên người dùng" />
+              <Input placeholder="Enter name" />
             </Form.Item>
 
-            {/* Password */}
-            <Form.Item
-              name="password"
-              label="Password"
-              rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
-            >
-              <Input.Password placeholder="Nhập mật khẩu" />
-            </Form.Item>
-
-            {/* Email */}
             <Form.Item
               name="email"
               label="Email"
               rules={[
-                { required: true, message: "Vui lòng nhập email!" },
-                { type: "email", message: "Email không hợp lệ!" },
+                { required: true, message: "Please enter the email!" },
+                { type: "email", message: "Invalid email!" },
               ]}
             >
-              <Input placeholder="Nhập email" />
+              <Input placeholder="Enter email" />
             </Form.Item>
 
-            {/* Phone */}
             <Form.Item
               name="phone"
               label="Phone"
               rules={[
-                { required: true, message: "Vui lòng nhập số điện thoại!" },
-                { pattern: /^[0-9]+$/, message: "Số điện thoại không hợp lệ!" },
+                { required: true, message: "Please enter the phone number!" },
+                { pattern: /^[0-9]+$/, message: "Invalid phone number!" },
               ]}
             >
-              <Input placeholder="Nhập số điện thoại" />
+              <Input placeholder="Enter phone number" />
             </Form.Item>
 
-            {/* Role */}
             <Form.Item
               name="role"
               label="Role"
-              rules={[{ required: true, message: "Vui lòng chọn vai trò!" }]}
+              rules={[{ required: true, message: "Please select a role!" }]}
             >
-              <Select placeholder="Chọn vai trò" disabled>
+              <Select placeholder="Select role">
                 <Option value="User">User</Option>
                 <Option value="Admin">Admin</Option>
               </Select>
             </Form.Item>
 
-            {/* Submit Button */}
             <Form.Item>
               <Button type="default" onClick={handleBack}>
                 Cancel
@@ -139,7 +159,8 @@ const EditAccount = () => {
   );
 };
 
-EditAccount.PropTypes = {
+EditAccount.propTypes = {
   account: PropTypes.object,
 };
+
 export default EditAccount;

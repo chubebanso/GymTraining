@@ -32,6 +32,8 @@ public class User {
     private String password;
     private String gender;
     private long age;
+    private String phone;
+   
     private String refreshToken;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
@@ -103,5 +105,14 @@ public class User {
     public void setRole(Role role) {
         this.role = role;
     }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
 
 }

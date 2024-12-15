@@ -1,91 +1,66 @@
 package vn.group16.gymtraining.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
 
 @Entity
 @Table(name = "workout")
 public class Workout {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(length = 500)
     private String description;
+
     private String image;
+
+    @Column(nullable = false)
     private Integer duration;
+
+    @Column(nullable = false)
     private Integer calories;
 
-    @Enumerated(EnumType.STRING)
-    private Category category;
+    @Column(nullable = false)
+    private String category;
 
-    @Enumerated(EnumType.STRING)
-    private MuscleGroup muscleGroup;
+    @ElementCollection // To store a list of strings (muscle groups)
+    @CollectionTable(name = "workout_muscle_groups", joinColumns = @JoinColumn(name = "workout_id"))
+    @Column(name = "muscle_group")
+    private List<String> muscleGroups = new ArrayList<>();
 
-    @Enumerated(EnumType.STRING)
-    private DifficultyLevel difficultyLevel;
+    @Column(nullable = false)
+    private String difficultyLevel;
 
-    public enum MuscleGroup {
-        CHEST,
-        BACK,
-        SHOULDERS,
-        BICEPS,
-        TRICEPS,
-        LEGS,
-        CORE,
-        FULL_BODY
-    }
-
-    public enum DifficultyLevel {
-        BEGINNER,
-        INTERMEDIATE,
-        ADVANCED,
-        EXPERT
-    }
-
-    public enum Category {
-        Strength,
-        Cardio,
-        Stretching,
-        Endurance,
-        Flexibility,
-        HIIT,
-        Core,
-        Yoga,
-        Pilates,
-        Recovery,
-        Functional_Movement,
-        Plyometrics,
-        Full_Body_Strength,
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "schedule_id")
-    @JsonBackReference
-    Schedule schedule;
+    // Many-to-Many relationship with Schedule
+    @ManyToMany(mappedBy = "workouts", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Schedule> schedules = new ArrayList<>();
 
     @OneToMany(mappedBy = "workout")
-    @JsonIgnoreProperties(value = { "workout" })
-    private List<Exercise> exercise;
+    private List<Exercise> exercises = new ArrayList<>();
 
-    public long getId() {
+    // Getters and Setters
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -129,44 +104,67 @@ public class Workout {
         this.calories = calories;
     }
 
-    public Schedule getSchedule() {
-        return schedule;
-    }
-
-    public void setSchedule(Schedule schedule) {
-        this.schedule = schedule;
-    }
-
-    public List<Exercise> getExercise() {
-        return exercise;
-    }
-
-    public void setExercise(List<Exercise> exercise) {
-        this.exercise = exercise;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public Category getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public MuscleGroup getMuscleGroup() {
-        return muscleGroup;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
-    public DifficultyLevel getDifficultyLevel() {
+    public List<String> getMuscleGroups() {
+        return muscleGroups;
+    }
+
+    public void setMuscleGroups(List<String> muscleGroups) {
+        this.muscleGroups = muscleGroups;
+    }
+
+    public String getDifficultyLevel() {
         return difficultyLevel;
     }
 
-    public void setMuscleGroup(MuscleGroup muscleGroup) {
-        this.muscleGroup = muscleGroup;
-    }
-
-    public void setDifficultyLevel(DifficultyLevel difficultyLevel) {
+    public void setDifficultyLevel(String difficultyLevel) {
         this.difficultyLevel = difficultyLevel;
     }
 
+    public List<Schedule> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(List<Schedule> schedules) {
+        this.schedules = schedules;
+    }
+
+    public List<Exercise> getExercises() {
+        return exercises;
+    }
+
+    public void setExercises(List<Exercise> exercises) {
+        this.exercises = exercises;
+    }
+
+    // Convenience method to add a schedule
+    public void addSchedule(Schedule schedule) {
+        if (schedule != null && !this.schedules.contains(schedule)) {
+            this.schedules.add(schedule);
+            schedule.addWorkout(this);
+        }
+    }
+
+    // Convenience method to remove a schedule
+    public void removeSchedule(Schedule schedule) {
+        if (schedule != null) {
+            this.schedules.remove(schedule);
+            schedule.removeWorkout(this);
+        }
+    }
+
+    // Convenience method to add an exercise
+    public void addExercise(Exercise exercise) {
+        if (exercise != null) {
+            this.exercises.add(exercise);
+            exercise.setWorkout(this);
+        }
+    }
 }

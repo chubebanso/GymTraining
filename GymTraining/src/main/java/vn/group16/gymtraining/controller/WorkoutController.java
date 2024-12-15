@@ -1,9 +1,8 @@
 package vn.group16.gymtraining.controller;
 
-import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,87 +11,66 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import vn.group16.gymtraining.domain.Exercise;
 import vn.group16.gymtraining.domain.Workout;
-
-import vn.group16.gymtraining.dto.EventDTO;
 import vn.group16.gymtraining.dto.WorkoutDTO;
-import vn.group16.gymtraining.service.ExerciseService;
-import vn.group16.gymtraining.service.ScheduleService;
-
 import vn.group16.gymtraining.service.WorkoutService;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/workouts")
 public class WorkoutController {
-    @Autowired
-    private WorkoutService workoutService;
+    
+    final private WorkoutService workoutService;
 
-    @Autowired
-    private ExerciseService exerciseService;
-
-    @GetMapping("/workouts/search")
-    public List<Workout> searchWorkouts(@RequestParam String name) {
-        return workoutService.findWorkoutsByName(name);
+    public WorkoutController(WorkoutService workoutService) {
+        this.workoutService = workoutService;
     }
 
-    @GetMapping("/workouts/getAll")
-    public List<Workout> getAllWorkouts() {
-        return workoutService.getAllWorkouts();
-    }
-
-    @GetMapping("/workouts/{scheduleId}")
-    public List<Workout> getWorkoutsBySchedule(@PathVariable Long scheduleId) {
-        return workoutService.getWorkoutsBySchedule(scheduleId);
-    }
-
-    @GetMapping("/get-workout-by-day")
-    public ResponseEntity<List<Workout>> getWorkoutByDay(@RequestParam("date") LocalDate date) {
-        try {
-            // Fetch workouts for the given day using the service
-            List<Workout> workouts = workoutService.findWorkoutsByDay(date);
-
-            // Return the workouts as a successful response
+    @GetMapping("/category/{category}")
+    public ResponseEntity<List<Workout>> getWorkoutByCategory(@PathVariable String category) {
+        List<Workout> workouts = workoutService.getWorkoutByCategory(category);
+        if (workouts != null && !workouts.isEmpty()) {
             return ResponseEntity.ok(workouts);
-        } catch (Exception e) {
-            // Log the exception for debugging (you could use a logger here)
-            // For simplicity, we're just printing the stack trace.
-            e.printStackTrace();
-
-            // Return a 500 status code for internal server errors
-            return ResponseEntity.status(500).body(null);
         }
+        return ResponseEntity.noContent().build();
     }
 
-    @PostMapping(value = "/workouts")
+    
+
+    @GetMapping("/difficulty/{difficultyLevel}")
+    public ResponseEntity<List<Workout>> getWorkoutByDifficultyLevel(@PathVariable String difficultyLevel) {
+        List<Workout> workouts = workoutService.getWorkoutByDifficultyLevel(difficultyLevel);
+        if (workouts != null && !workouts.isEmpty()) {
+            return ResponseEntity.ok(workouts);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<WorkoutDTO>> getAllWorkoutDetails() {
+        List<WorkoutDTO> workouts = workoutService.getAllWorkoutDetails();
+        if (!workouts.isEmpty()) {
+            return ResponseEntity.ok(workouts);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping
     public ResponseEntity<Workout> createWorkout(@RequestBody Workout workout) {
-        return ResponseEntity.ok(workoutService.createWorkout(workout, 1L));
+        Workout createdWorkout = workoutService.createWorkout(workout);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdWorkout);
     }
 
-    @GetMapping("/workouts/getById/{id}")
-    public ResponseEntity<Workout> getWorkoutById(@PathVariable long id) {
-        return ResponseEntity.ok(workoutService.getWorkoutById(id));
+    @PutMapping("/{id}")
+    public ResponseEntity<Workout> updateWorkout(@PathVariable Long id, @RequestBody Workout workoutDetails) {
+        Workout updatedWorkout = workoutService.updateWorkout(id, workoutDetails);
+        return ResponseEntity.ok(updatedWorkout);
     }
 
-    @DeleteMapping("/workouts/delete/{id}")
-    public ResponseEntity<String> deleteWorkout(@PathVariable long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteWorkout(@PathVariable Long id) {
         workoutService.deleteWorkout(id);
-        return ResponseEntity.ok("Workout deleted successfully");
+        return ResponseEntity.noContent().build();
     }
-
-    @PutMapping(value = "/workouts/update")
-    public ResponseEntity<Workout> updateWorkoutByAdmin(@RequestBody Workout workout) {
-        return ResponseEntity.ok(workoutService.updateWorkoutByAdmin(workout));
-    }
-
-    @PostMapping(value = "/workouts/create")
-    public ResponseEntity<Workout> createWorkoutByAdmin(@RequestBody Workout workout) {
-        // Save the workout first to ensure it has an ID
-        Workout savedWorkout = workoutService.createWorkoutByAdmin(workout);
-        return ResponseEntity.ok(savedWorkout);
-    }
-
 }

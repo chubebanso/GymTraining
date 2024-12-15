@@ -14,10 +14,10 @@ const TableWorkout = () => {
   // Hàm gọi API để lấy dữ liệu
   const fetchWorkoutList = async () => {
     try {
-      const accessToken = localStorage.getItem("accessToken"); // Lấy accessToken từ localStorage
-      const response = await axios.get("http://localhost:8080/api/v1/workouts/getAll", {
+      const accessToken = localStorage.getItem("accessToken"); 
+      const response = await axios.get("http://localhost:8080/api/v1/workouts", {
         headers: {
-          Authorization: `Bearer ${accessToken}`, // Thêm accessToken vào header
+          Authorization: `Bearer ${accessToken}`, 
         },
       });
 
