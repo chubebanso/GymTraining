@@ -10,83 +10,114 @@ import axios from "axios";
 
 const { Option } = Select;
 
+const exerciseOptions = [
+  { value: 'Push-up', label: 'Push-up' },
+  { value: 'Squat', label: 'Squat' },
+  { value: 'Deadlift', label: 'Deadlift' },
+  { value: 'Lunges', label: 'Lunges' },
+  { value: 'Bench Press', label: 'Bench Press' },
+  { value: 'Pull-up', label: 'Pull-up' },
+  { value: 'Plank', label: 'Plank' },
+  { value: 'Band Pull Apart', label: 'Band Pull Apart' },
+  // Add other exercises as needed
+];
+
+const muscleGroupsOptions = [
+  { value: 'LEGS', label: 'Legs' },
+  { value: 'CHEST', label: 'Chest' },
+  { value: 'BACK', label: 'Back' },
+  { value: 'FULL_BODY', label: 'Full Body' },
+  { value: 'ARMS', label: 'Arms' },
+  { value: 'SHOULDERS', label: 'Shoulders' },
+];
+
 const AddWorkout = () => {
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [exerciseRows, setExerciseRows] = useState([{ id: 1, name: "", reps: "" }]);
-
+  const [exerciseRows, setExerciseRows] = useState([{ id: 1 }]);
+  const [imageFileName, setImageFileName] = useState("");
   const navigate = useNavigate();
 
   const addRowExercise = () => {
-    const newRow = { id: Date.now(), name: "", reps: "" };
+    const newRow = { id: Date.now() };
     setExerciseRows([...exerciseRows, newRow]);
   };
 
   const handleDeleteRow = (id) => {
     setExerciseRows(exerciseRows.filter((row) => row.id !== id));
   };
+ const handleFileUpload = async (file) => {
+   const accessToken = localStorage.getItem("accessToken");
 
-  const onFinish = async (values) => {
-    console.log("Form values:", values);
-    setIsSubmitting(true);
-    const accessToken = localStorage.getItem("accessToken");
+    const formData = new FormData();
+    formData.append("imageFile", file);
 
     try {
-      // Chuẩn bị dữ liệu bài tập
-      const exercises = exerciseRows.map((row) => ({
-        name: values[`exerciseName_${row.id}`],
-        reps: values[`exerciseReps_${row.id}`],
-      }));
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/users/upload?imageFile",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" ,  Authorization: `Bearer ${accessToken}`},
+        }
+      );
 
-      // Tạo bài tập và lấy ID
-      const exerciseIds = [];
-      for (const exercise of exercises) {
-        const res = await axios.post(
-          "http://localhost:8080/api/v1/exercises",
-          {
-            name: exercise.name,
-            reps: exercise.reps,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        exerciseIds.push(res.data.data.id);
-      }
-
-      // Tạo workout với danh sách exerciseIds
-      const workoutData = {
-        name: values.workoutName,
-        description: values.description,
-        duration: values.duration,
-        calories: values.calories,
-        category: values.category,
-        muscleGroup: values.targetMuscle,
-        difficultyLevel: values.difficultyLevel,
-        image: "", // Nếu cần thêm hình ảnh, xử lý tại đây
-        exercise: exerciseIds.map((id) => ({ id })),
-      };
-
-      await axios.post("http://localhost:8080/api/v1/workouts", workoutData, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      message.success("Tạo buổi tập thành công!");
-      form.resetFields();
-      navigate("../");
+      const fileName = response.data; // Lấy tên file từ response
+      setImageFileName(fileName);
+      message.success("Upload ảnh thành công!");
     } catch (error) {
-      console.error("Error creating workout:", error);
-      message.error("Đã xảy ra lỗi khi tạo buổi tập. Vui lòng thử lại.");
-    } finally {
-      setIsSubmitting(false);
+      console.error("Error uploading image:", error);
+      message.error("Upload ảnh thất bại!");
     }
   };
+ const onFinish = async (values) => {
+  console.log("Form values:", values);
+  setIsSubmitting(true);
+  const accessToken = localStorage.getItem("accessToken");
+
+  try {
+    // Chuyển đổi targetMuscle thành mảng các đối tượng với key "name"
+    const muscleGroups = values.targetMuscle.map((muscle) => ({
+      name: muscle, // API yêu cầu { "name": "value" }
+    }));
+
+    // Chuẩn bị dữ liệu exercises
+    const exercises = exerciseRows.map((row) => ({
+      name: values[`exerciseName_${row.id}`],
+      sets: values[`exerciseReps_${row.id}`],
+    }));
+
+    // Chuẩn bị workoutData gửi lên API
+    const workoutData = {
+      name: values.workoutName,
+      description: values.description,
+      duration: values.duration,
+      calories: values.calories,
+      category: values.category,
+      muscleGroups: muscleGroups, // Dùng "muscleGroups" thay vì "muscleGroup"
+      difficultyLevel: values.difficultyLevel,
+      image: imageFileName, // Tên file ảnh đã upload
+      exercises: exercises, // Danh sách bài tập
+      videoUrl: values.videoUrl
+    };
+
+    // Gọi API
+    await axios.post("http://localhost:8080/api/v1/workouts", workoutData, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    message.success("Tạo buổi tập thành công!");
+    form.resetFields();
+    navigate("../");
+  } catch (error) {
+    console.error("Error creating workout:", error);
+    message.error("Đã xảy ra lỗi khi tạo buổi tập. Vui lòng thử lại.");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const handleBack = () => {
     navigate("../");
@@ -101,11 +132,20 @@ const AddWorkout = () => {
 
       <Form form={form} onFinish={onFinish} className="add-workout-form">
         <div className="workout-info">
-          <div className="workout-info-left">
+        <div className="workout-info-left">
             <h3>General Information</h3>
             <h4>Preview</h4>
-            <img src={ava_account} alt="Profile" />
-            <Button className="upload-btn">Upload Photo</Button>
+            <img
+              src={imageFileName ? `/avatars//${imageFileName}` : ava_account}
+              alt="Uploaded"
+            />
+            <Upload
+              beforeUpload={handleFileUpload}
+              showUploadList={false}
+              accept="image/*"
+            >
+              <Button className="upload-btn">Upload Photo</Button>
+            </Upload>
           </div>
 
           <div className="workout-info-right">
@@ -113,8 +153,7 @@ const AddWorkout = () => {
               <div className="component-name">Name workout</div>
               <Form.Item
                 name="workoutName"
-                rules={[{ required: true, message: "Please enter the workout name!" }]}
-              >
+                rules={[{ required: true, message: "Please enter the workout name!" }]}>
                 <Input placeholder="Ex: Leg" />
               </Form.Item>
             </div>
@@ -123,8 +162,7 @@ const AddWorkout = () => {
               <div className="component-name">Description</div>
               <Form.Item
                 name="description"
-                rules={[{ required: true, message: "Please enter a description!" }]}
-              >
+                rules={[{ required: true, message: "Please enter a description!" }]}>
                 <Input.TextArea placeholder="Enter description" />
               </Form.Item>
             </div>
@@ -134,8 +172,7 @@ const AddWorkout = () => {
                 <div className="component-name">Calories Burned</div>
                 <Form.Item
                   name="calories"
-                  rules={[{ required: true, message: "Please enter calories burned!" }]}
-                >
+                  rules={[{ required: true, message: "Please enter calories burned!" }]}>
                   <Input placeholder="Ex: 400" />
                 </Form.Item>
               </div>
@@ -144,8 +181,7 @@ const AddWorkout = () => {
                 <div className="component-name">Duration</div>
                 <Form.Item
                   name="duration"
-                  rules={[{ required: true, message: "Please enter duration!" }]}
-                >
+                  rules={[{ required: true, message: "Please enter duration!" }]}>
                   <Input placeholder="Ex: 15" />
                 </Form.Item>
               </div>
@@ -177,15 +213,16 @@ const AddWorkout = () => {
                 <Form.Item
                   className="exercise-name"
                   name={`exerciseName_${row.id}`}
-                  rules={[{ required: true, message: "Please enter exercise name!" }]}
-                >
-                  <Input.TextArea placeholder="Ex: Band Pull Apart" />
+                  rules={[{ required: true, message: "Please select an exercise!" }]}>
+                  <Select
+                    placeholder="Select Exercise"
+                    options={exerciseOptions}
+                  />
                 </Form.Item>
                 <Form.Item
                   className="exercise-reps"
                   name={`exerciseReps_${row.id}`}
-                  rules={[{ required: true, message: "Please enter sets/reps!" }]}
-                >
+                  rules={[{ required: true, message: "Please enter sets/reps!" }]}>
                   <Input.TextArea placeholder="Ex: 3x12 Reps" />
                 </Form.Item>
                 <img
@@ -199,27 +236,28 @@ const AddWorkout = () => {
           </div>
         </div>
 
-        <div className="workout-media">
-          <div className="workout-media-left">
-            <h3>Additional Media</h3>
-          </div>
-          <div className="workout-media-right">
-            <h3>Video</h3>
-            <div className="workout-video">
-              <Upload.Dragger
-                name="files"
-                multiple={false}
-                showUploadList={false}
-                action="/upload.do"
-              >
-                <div className="upload-section">
-                  <img className="img" alt="Frame" src={ava_account} />
-                  <p className="p">Click or drag file to this area to upload</p>
-                </div>
-              </Upload.Dragger>
-            </div>
-          </div>
-        </div>
+    <div className="workout-media">
+  <div className="workout-media-left">
+    <h3>Additional Media</h3>
+  </div>
+  <div className="workout-media-right">
+    <h3>Video URL</h3>
+    <div className="workout-video">
+      <Form.Item
+        name="videoUrl"
+        rules={[
+          {
+            required: true,
+            message: "Please enter a valid video URL!",
+            type: "url",
+          },
+        ]}
+      >
+        <Input placeholder="Ex: https://www.youtube.com/watch?v=example" />
+      </Form.Item>
+    </div>
+  </div>
+</div>
 
         <div className="workout-goal">
           <div className="workout-goal-left">
@@ -230,8 +268,7 @@ const AddWorkout = () => {
               <h4 style={{ fontWeight: "bold", marginBottom: "8px" }}>Category</h4>
               <Form.Item
                 name="category"
-                rules={[{ required: true, message: "Please select a category!" }]}
-              >
+                rules={[{ required: true, message: "Please select a category!" }]}>
                 <Select
                   style={{ width: "100%", height: "40px" }}
                   placeholder="Ex: Full Body Strength, Yoga"
@@ -240,8 +277,7 @@ const AddWorkout = () => {
                   filterOption={(input, option) =>
                     option.children.toLowerCase().includes(input.toLowerCase())
                   }
-                  className="custom-select"
-                >
+                  className="custom-select">
                   <Option value="Strength">Strength</Option>
                   <Option value="Cardio">Cardio</Option>
                   <Option value="Yoga">Yoga</Option>
@@ -254,9 +290,9 @@ const AddWorkout = () => {
               <h4>Target Muscle Groups</h4>
               <Form.Item
                 name="targetMuscle"
-                rules={[{ required: true, message: "Please select target muscle group!" }]}
-              >
+                rules={[{ required: true, message: "Please select target muscle group!" }]}>
                 <Select
+                  mode="multiple"
                   style={{ width: "100%", height: "40px" }}
                   placeholder="Ex: Leg"
                   showSearch
@@ -264,12 +300,12 @@ const AddWorkout = () => {
                   filterOption={(input, option) =>
                     option.children.toLowerCase().includes(input.toLowerCase())
                   }
-                  className="custom-select"
-                >
-                  <Option value="LEGS">Legs</Option>
-                  <Option value="CHEST">Chest</Option>
-                  <Option value="BACK">Back</Option>
-                  <Option value="FULL_BODY">Full Body</Option>
+                  className="custom-select">
+                  {muscleGroupsOptions.map((group) => (
+                    <Option key={group.value} value={group.value}>
+                      {group.label}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
             </div>
@@ -278,8 +314,7 @@ const AddWorkout = () => {
               <h4>Difficulty Level</h4>
               <Form.Item
                 name="difficultyLevel"
-                rules={[{ required: true, message: "Please select difficulty level!" }]}
-              >
+                rules={[{ required: true, message: "Please select difficulty level!" }]}>
                 <Select
                   style={{ width: "100%", height: "40px" }}
                   placeholder="Ex: Novice"
@@ -288,8 +323,7 @@ const AddWorkout = () => {
                   filterOption={(input, option) =>
                     option.children.toLowerCase().includes(input.toLowerCase())
                   }
-                  className="custom-select"
-                >
+                  className="custom-select">
                   <Option value="BEGINNER">Beginner</Option>
                   <Option value="INTERMEDIATE">Intermediate</Option>
                   <Option value="ADVANCED">Advanced</Option>
@@ -308,8 +342,7 @@ const AddWorkout = () => {
             className="btn-create"
             type="primary"
             loading={isSubmitting}
-            htmlType="submit"
-          >
+            htmlType="submit">
             Create workout
           </Button>
         </div>

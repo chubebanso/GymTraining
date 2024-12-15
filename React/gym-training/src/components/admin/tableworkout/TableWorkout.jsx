@@ -22,7 +22,12 @@ const TableWorkout = () => {
       });
 
       if (response.data.statusCode === 200) {
-        setWorkoutList(response.data.data); // Lưu dữ liệu từ API vào state
+        // Chuyển muscleGroups thành chuỗi tên
+        const updatedData = response.data.data.map((workout) => ({
+          ...workout,
+          muscles: workout.muscleGroups.map((group) => group.name).join(", "),
+        }));
+        setWorkoutList(updatedData); // Lưu dữ liệu từ API vào state
       } else {
         console.error("Failed to fetch workouts:", response.data.message);
       }
@@ -68,11 +73,13 @@ const TableWorkout = () => {
           <WorkoutItem
             key={workout.id}
             workout={{
+              image:workout.image,
               name: workout.name,
               category: workout.category,
               duration: `${workout.duration}m`,
-              muscles: workout.muscleGroup, // Sử dụng muscleGroup từ API
+              muscles: workout.muscles || "N/A", // Truyền chuỗi muscleGroups
               description: workout.description, // Nếu cần sử dụng mô tả
+              workoutID: workout.id,
             }}
           />
         ))}
