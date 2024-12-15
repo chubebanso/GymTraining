@@ -1,7 +1,9 @@
 package vn.group16.gymtraining.dto;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
+import vn.group16.gymtraining.domain.MuscleGroup;
 public class WorkoutDTO {
 
     private String name;
@@ -10,12 +12,11 @@ public class WorkoutDTO {
     private int duration;
     private int calories;
     private String category;
-    private List<String> muscleGroups;  // Danh sách nhóm cơ
+    private Set<MuscleGroup> muscleGroups = new HashSet<>();
     private String difficultyLevel;
 
-    // Constructor
-    public WorkoutDTO(String name, String description, String image, int duration, int calories, 
-                      String category, List<String> muscleGroups, String difficultyLevel) {
+    //constructor
+    public WorkoutDTO(String name, String description, String image, int duration, int calories, String category, Set<MuscleGroup> muscleGroups, String difficultyLevel) {
         this.name = name;
         this.description = description;
         this.image = image;
@@ -25,6 +26,7 @@ public class WorkoutDTO {
         this.muscleGroups = muscleGroups;
         this.difficultyLevel = difficultyLevel;
     }
+    
 
     // Getters and Setters
     public String getName() {
@@ -75,13 +77,20 @@ public class WorkoutDTO {
         this.category = category;
     }
 
-    public List<String> getMuscleGroups() {
+    public Set<MuscleGroup> getMuscleGroups() {
         return muscleGroups;
     }
 
-    public void setMuscleGroups(List<String> muscleGroups) {
+    public void setMuscleGroups(Set<MuscleGroup> muscleGroups) {
         this.muscleGroups = muscleGroups;
     }
+    // public List<Long> getMuscleGroups() {
+    //     return muscleGroups;
+    // }
+
+    // public void setMuscleGroups(List<Long> muscleGroups) {
+    //     this.muscleGroups = muscleGroups;
+    // }
 
     public String getDifficultyLevel() {
         return difficultyLevel;
