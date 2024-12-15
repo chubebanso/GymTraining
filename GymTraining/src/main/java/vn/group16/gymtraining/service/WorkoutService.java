@@ -6,8 +6,10 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import vn.group16.gymtraining.domain.Exercise;
 import vn.group16.gymtraining.domain.Workout;
 import vn.group16.gymtraining.dto.WorkoutDTO;
+import vn.group16.gymtraining.repository.ExerciseRepository;
 import vn.group16.gymtraining.repository.WorkoutRepository;
 import vn.group16.gymtraining.util.error.WorkoutException;
 
@@ -15,10 +17,13 @@ import vn.group16.gymtraining.util.error.WorkoutException;
 public class WorkoutService {
     final private WorkoutRepository workoutRepository;
     private final UploadService uploadService;
+    private final ExerciseRepository exerciseRepository;
 
-    public WorkoutService(WorkoutRepository workoutRepository, UploadService uploadService) {
+    public WorkoutService(WorkoutRepository workoutRepository, UploadService uploadService,
+            ExerciseRepository exerciseRepository) {
         this.workoutRepository = workoutRepository;
         this.uploadService = uploadService;
+        this.exerciseRepository = exerciseRepository;
     }
 
     public List<Workout> getWorkoutByCategory(String category) {
@@ -40,24 +45,26 @@ public class WorkoutService {
     public List<WorkoutDTO> getAllWorkoutDetails() {
         List<Workout> workouts = this.workoutRepository.findAll();
         List<WorkoutDTO> workoutDetails = new ArrayList<>();
-    
+
         for (Workout workout : workouts) {
             // Tạo một DTO từ dữ liệu trong đối tượng Workout
-            WorkoutDTO dto = new WorkoutDTO(                          
-                workout.getName(),                         
-                workout.getDescription(),                  
-                workout.getImage(),                       
-                workout.getDuration(),
-                workout.getCalories(),                    
-                workout.getCategory(), 
-                workout.getMuscleGroups(),                             
-                workout.getDifficultyLevel()               
+            WorkoutDTO dto = new WorkoutDTO(
+                    workout.getName(),
+                    workout.getDescription(),
+                    workout.getImage(),
+                    workout.getVideoUrl(),
+                    workout.getDuration(),
+                    workout.getCalories(),
+                    workout.getCategory(),
+                    workout.getMuscleGroups(),
+                    workout.getDifficultyLevel(),
+                    workout.getExercises()
+
             );
-            
-            workoutDetails.add(dto);  
+            workoutDetails.add(dto);
         }
-    
-        return workoutDetails;  
+
+        return workoutDetails;
     }
 
     public Workout createWorkout(WorkoutDTO workoutDTO) {
@@ -70,12 +77,15 @@ public class WorkoutService {
         workout.setCategory(workoutDTO.getCategory());
         workout.setMuscleGroups(workoutDTO.getMuscleGroups());
         workout.setDifficultyLevel(workoutDTO.getDifficultyLevel());
-        
+        workout.setVideoUrl(workoutDTO.getVideoUrl());
+        if (workoutDTO.getExercises() != null && !workoutDTO.getExercises().isEmpty()) {
+            workoutDTO.getExercises().forEach(exercise -> {
+                exercise.setWorkout(workout); // Liên kết workout cho exercise
+            });
+            workout.setExercises(workoutDTO.getExercises());
+        }
 
-        
-
-        Workout savedWorkout = this.workoutRepository.save(workout);
-        return savedWorkout;
+        return workoutRepository.save(workout);
     }
 
     public Workout updateWorkout(Long id, Workout workoutDetails) throws WorkoutException {
@@ -91,9 +101,6 @@ public class WorkoutService {
             existingWorkout.setMuscleGroups(workoutDetails.getMuscleGroups());
             existingWorkout.setDifficultyLevel(workoutDetails.getDifficultyLevel());
 
-
-            
-
             return workoutRepository.save(existingWorkout);
         }
         return null;
@@ -101,14 +108,14 @@ public class WorkoutService {
 
     public void deleteWorkout(Long id) throws WorkoutException {
         Workout workout = findByWorkoutID(id);
-        
+
         workout.getMuscleGroups().clear();
         this.workoutRepository.delete(workout);
     }
 
     public Workout findByWorkoutID(Long id) throws WorkoutException {
         Optional<Workout> workoutOptional = this.workoutRepository.findById(id);
-        if (workoutOptional.isPresent()){
+        if (workoutOptional.isPresent()) {
             return workoutOptional.get();
         }
         throw new WorkoutException("Không tìm thấy bài tập");

@@ -24,14 +24,10 @@ public class Schedule {
     private String endTime;
     private LocalDate date;
     private String title;
-    
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-        name = "schedule_workout",
-        joinColumns = @JoinColumn(name = "schedule_id"),
-        inverseJoinColumns = @JoinColumn(name = "workout_id")
-    )
-    private List<Workout> workouts = new ArrayList<>();
+
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "schedule_workout", joinColumns = @JoinColumn(name = "schedule_id"), inverseJoinColumns = @JoinColumn(name = "workout_id"))
+    private List<Workout> workouts;
 
     public long getId() {
         return id;

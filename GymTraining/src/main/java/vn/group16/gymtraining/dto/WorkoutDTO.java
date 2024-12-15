@@ -1,9 +1,12 @@
 package vn.group16.gymtraining.dto;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import vn.group16.gymtraining.domain.Exercise;
 import vn.group16.gymtraining.domain.MuscleGroup;
+
 public class WorkoutDTO {
 
     private String name;
@@ -14,19 +17,28 @@ public class WorkoutDTO {
     private String category;
     private Set<MuscleGroup> muscleGroups = new HashSet<>();
     private String difficultyLevel;
+    private List<Exercise> exercises;
+    private String videoUrl;
 
-    //constructor
-    public WorkoutDTO(String name, String description, String image, int duration, int calories, String category, Set<MuscleGroup> muscleGroups, String difficultyLevel) {
+    // constructor
+    public WorkoutDTO(String name, String description, String image, String videoUrl, int duration, int calories,
+            String category,
+            Set<MuscleGroup> muscleGroups, String difficultyLevel, List<Exercise> exercises) {
         this.name = name;
         this.description = description;
         this.image = image;
         this.duration = duration;
+        this.videoUrl = videoUrl;
         this.calories = calories;
         this.category = category;
         this.muscleGroups = muscleGroups;
         this.difficultyLevel = difficultyLevel;
+        this.exercises = exercises;
     }
-    
+
+    public WorkoutDTO() {
+        // Default constructor
+    }
 
     // Getters and Setters
     public String getName() {
@@ -85,11 +97,11 @@ public class WorkoutDTO {
         this.muscleGroups = muscleGroups;
     }
     // public List<Long> getMuscleGroups() {
-    //     return muscleGroups;
+    // return muscleGroups;
     // }
 
     // public void setMuscleGroups(List<Long> muscleGroups) {
-    //     this.muscleGroups = muscleGroups;
+    // this.muscleGroups = muscleGroups;
     // }
 
     public String getDifficultyLevel() {
@@ -98,5 +110,21 @@ public class WorkoutDTO {
 
     public void setDifficultyLevel(String difficultyLevel) {
         this.difficultyLevel = difficultyLevel;
+    }
+
+    public List<Exercise> getExercises() {
+        return exercises;
+    }
+
+    public void setExercises(List<Exercise> exercise) {
+        this.exercises = exercise;
+    }
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
     }
 }

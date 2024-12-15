@@ -13,6 +13,4 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
     List<Exercise> findByNameContainingIgnoreCase(String name);
 
     Exercise findByName(String name);
-
-    List<Exercise> findByIdIn(List<Long> id);
 }

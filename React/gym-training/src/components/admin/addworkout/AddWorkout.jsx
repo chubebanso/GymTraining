@@ -90,8 +90,8 @@ const AddWorkout = () => {
     const workoutData = {
       name: values.workoutName,
       description: values.description,
-      duration: parseInt(values.duration),
-      calories:  parseInt(values.calories),
+      duration: values.duration,
+      calories: values.calories,
       category: values.category,
       muscleGroups: muscleGroups, // Dùng "muscleGroups" thay vì "muscleGroup"
       difficultyLevel: values.difficultyLevel,

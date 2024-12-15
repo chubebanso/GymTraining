@@ -45,6 +45,6 @@ public class UploadService {
             // TODO: handle exception
             e.printStackTrace();
         }
-        return finalName + rootPath;
+        return finalName;
     }
 }
