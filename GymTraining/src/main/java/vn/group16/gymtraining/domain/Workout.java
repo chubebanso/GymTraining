@@ -1,17 +1,18 @@
 package vn.group16.gymtraining.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -31,6 +32,9 @@ public class Workout {
 
     private String image;
 
+    @Column(name="video_url")
+    private String videoUrl;
+
     @Column(nullable = false)
     private Integer duration;
 
@@ -40,19 +44,21 @@ public class Workout {
     @Column(nullable = false)
     private String category;
 
-    @ElementCollection // To store a list of strings (muscle groups)
-    @CollectionTable(name = "workout_muscle_groups", joinColumns = @JoinColumn(name = "workout_id"))
-    @Column(name = "muscle_group")
-    private List<String> muscleGroups = new ArrayList<>();
+    @Embedded
+    @ElementCollection
+    @Column(name = "muscle_groups")
+    private Set<MuscleGroup> muscleGroups = new HashSet<>();
 
-    @Column(nullable = false)
+
+
+    @Column(nullable = true)
     private String difficultyLevel;
 
     // Many-to-Many relationship with Schedule
-    @ManyToMany(mappedBy = "workouts", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(mappedBy = "workouts", cascade = CascadeType.ALL)
     private List<Schedule> schedules = new ArrayList<>();
 
-    @OneToMany(mappedBy = "workout")
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true) 
     private List<Exercise> exercises = new ArrayList<>();
 
     // Getters and Setters
@@ -88,6 +94,14 @@ public class Workout {
         this.image = image;
     }
 
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
+    }
+
     public Integer getDuration() {
         return duration;
     }
@@ -112,11 +126,11 @@ public class Workout {
         this.category = category;
     }
 
-    public List<String> getMuscleGroups() {
+    public Set<MuscleGroup> getMuscleGroups() {
         return muscleGroups;
     }
 
-    public void setMuscleGroups(List<String> muscleGroups) {
+    public void setMuscleGroups(Set<MuscleGroup> muscleGroups) {
         this.muscleGroups = muscleGroups;
     }
 

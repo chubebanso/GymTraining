@@ -70,7 +70,7 @@ const AddWorkout = () => {
         exercise: exerciseIds.map((id) => ({ id })),
       };
 
-      await axios.post("http://localhost:8080/api/v1/workouts/create", workoutData, {
+      await axios.post("http://localhost:8080/api/v1/workouts", workoutData, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",

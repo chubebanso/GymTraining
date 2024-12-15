@@ -1,8 +1,8 @@
 package vn.group16.gymtraining.controller;
 
+
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import vn.group16.gymtraining.domain.Workout;
 import vn.group16.gymtraining.dto.WorkoutDTO;
 import vn.group16.gymtraining.service.WorkoutService;
+import vn.group16.gymtraining.util.error.WorkoutException;
 
 @RestController
-@RequestMapping("/api/v1/workouts")
+@RequestMapping("/api/v1")
 public class WorkoutController {
     
     final private WorkoutService workoutService;
@@ -27,7 +28,7 @@ public class WorkoutController {
         this.workoutService = workoutService;
     }
 
-    @GetMapping("/category/{category}")
+    @GetMapping("/workouts/category/{category}")
     public ResponseEntity<List<Workout>> getWorkoutByCategory(@PathVariable String category) {
         List<Workout> workouts = workoutService.getWorkoutByCategory(category);
         if (workouts != null && !workouts.isEmpty()) {
@@ -38,7 +39,7 @@ public class WorkoutController {
 
     
 
-    @GetMapping("/difficulty/{difficultyLevel}")
+    @GetMapping("/workouts/difficulty/{difficultyLevel}")
     public ResponseEntity<List<Workout>> getWorkoutByDifficultyLevel(@PathVariable String difficultyLevel) {
         List<Workout> workouts = workoutService.getWorkoutByDifficultyLevel(difficultyLevel);
         if (workouts != null && !workouts.isEmpty()) {
@@ -47,7 +48,7 @@ public class WorkoutController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping
+    @GetMapping("/workouts")
     public ResponseEntity<List<WorkoutDTO>> getAllWorkoutDetails() {
         List<WorkoutDTO> workouts = workoutService.getAllWorkoutDetails();
         if (!workouts.isEmpty()) {
@@ -56,20 +57,29 @@ public class WorkoutController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping
-    public ResponseEntity<Workout> createWorkout(@RequestBody Workout workout) {
+    @PostMapping("/workouts")
+    public ResponseEntity<Workout> createWorkout(
+            @RequestBody WorkoutDTO workout) { 
         Workout createdWorkout = workoutService.createWorkout(workout);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdWorkout);
+        return ResponseEntity.ok(createdWorkout);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Workout> updateWorkout(@PathVariable Long id, @RequestBody Workout workoutDetails) {
+    @PutMapping("/workouts/{id}")
+    public ResponseEntity<Workout> updateWorkout(
+            @PathVariable("id") Long id, 
+            @RequestBody Workout workoutDetails
+            ) { 
+            
+         try {
         Workout updatedWorkout = workoutService.updateWorkout(id, workoutDetails);
         return ResponseEntity.ok(updatedWorkout);
+    } catch (WorkoutException e) {
+        return ResponseEntity.badRequest().build();
+    }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteWorkout(@PathVariable Long id) {
+    @DeleteMapping("/workouts/{id}")
+    public ResponseEntity<Void> deleteWorkout(@PathVariable Long id) throws WorkoutException {
         workoutService.deleteWorkout(id);
         return ResponseEntity.noContent().build();
     }
