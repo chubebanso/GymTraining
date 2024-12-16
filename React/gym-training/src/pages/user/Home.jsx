@@ -1,8 +1,10 @@
-
+import Dashboard from "../../components/user/dashboard/Dashboard";
 
 const Home = () => {
   return (
-    <div className="home">Home</div>
+    <div>
+      <Dashboard />
+    </div>
   );
 };
 export default Home;

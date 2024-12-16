@@ -11,6 +11,7 @@ const AddAccount = () => {
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const navigate = useNavigate();
   // Hàm xử lý khi form được submit
   const onFinish = async (values) => {
     console.log("Form values:", values);
@@ -45,7 +46,7 @@ const AddAccount = () => {
     //   setIsSubmitting(false);
     // }, 1000);
   };
-  const navigate = useNavigate();
+
   const handleBack = () => {
     navigate("../");
   };

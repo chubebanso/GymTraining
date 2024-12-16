@@ -1,8 +1,8 @@
 import "./EditAccount.css";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { LeftCircleOutlined } from "@ant-design/icons";
 import ava_account from "../../../assets/ava_account.png";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Form, Input, Button, Select, message } from "antd";
 import axios from "axios";
 import PropTypes from "prop-types";
@@ -10,11 +10,13 @@ import PropTypes from "prop-types";
 const { Option } = Select;
 
 const EditAccount = () => {
+  const { users } = useContext(WorkoutContext);
+  const id = parseInt(useParams().id);
+  console.log(id);
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [account, setAccount] = useState(null);
 
-  const location = useLocation();
   const navigate = useNavigate();
   const accountId = location.state?.account.id;
 
@@ -82,6 +84,7 @@ const EditAccount = () => {
     <div className="content-account">
       <div className="add-account-header">
         <LeftCircleOutlined className="back-icon" onClick={handleBack} />
+        <h2>Edit Account</h2>
         <h2>Edit Account</h2>
       </div>
       <div className="add-account-form">

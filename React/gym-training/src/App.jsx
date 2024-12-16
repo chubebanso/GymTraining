@@ -1,5 +1,5 @@
 import "./App.css";
-import WorkoutContextProvide from "./context/WorkoutContextProvider";
+import WorkoutContextProvide from "./context/WorkoutContext";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
@@ -11,6 +11,7 @@ import Home from "./pages/user/Home";
 import LayoutAdmin from "./components/admin/layout/LayoutAdmin";
 import WorkOut from "./pages/admin/Workout";
 import { useEffect } from "react";
+import UserInfo from "./pages/user/UserInfo";
 
 const AppRoutes = () => {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ const AppRoutes = () => {
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/schedule" element={<Schedule />} />
+          <Route path="/userinfo/*" element={<UserInfo />} />
         </Route>
       )}
       {userRole === "ADMIN" && (
