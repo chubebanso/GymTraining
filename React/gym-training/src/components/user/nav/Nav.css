@@ -2,7 +2,7 @@
     display:flex;
     width: 16rem;
     flex-direction: column;
-    height: calc(100vh - 6rem);
+    height: calc(100vh - 5rem);
     padding: 1rem;
     justify-content: space-between;
     box-sizing: border-box;
