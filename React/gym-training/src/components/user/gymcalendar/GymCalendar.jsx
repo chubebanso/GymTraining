@@ -22,9 +22,17 @@ const GymCalendar = () => {
 
   // Fetch workout data from the API
   useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
     const fetchWorkouts = async () => {
+      
       try {
-        const response = await axios.get('http://localhost:8080/api/v1/workouts/getAll');
+        const response = await axios.get('http://localhost:8080/api/v1/workouts', {
+            headers: {
+              "Authorization": `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          });
+        
         
         if (response.data.statusCode === 200) {
           // Set the workouts from API data
@@ -83,23 +91,71 @@ const GymCalendar = () => {
     form.resetFields(); // Reset form when closing the popup
   };
 
-  const handleOk = () => {
-    form
-      .validateFields()
-      .then((values) => {
-        console.log("Form Values:", values);
-        setShowEventPopup(false);
-        form.resetFields(); // Reset form after saving the event
-      })
-      .catch((info) => {
-        console.log("Validate Failed:", info);
-      });
-  };
+ const handleOk = () => {
+  form
+    .validateFields()
+    .then(async (values) => {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+        console.error("Access token not found. Please log in.");
+        return;
+      }
+
+      // Tạo requestData với định dạng chính xác
+      const requestData = {
+        title: values.title,
+        date: values.startDate.format("YYYY-MM-DD"), // Ngày bắt đầu
+        startTime: values.startTime.format("HH:mm"), // Thời gian bắt đầu
+        endTime: values.endTime.format("HH:mm"),     // Thời gian kết thúc
+        workouts: selectedWorkouts.map((id) => ({ id })), // Định dạng [{ "id": 10 }, ...]
+      };
+
+      try {
+        const response = await axios.post(
+          "http://localhost:8080/api/v1/schedule", // Endpoint để lưu sự kiện
+          requestData,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.data.statusCode === 200) {
+          console.log("Event saved successfully:", response.data.message);
+
+          // Cập nhật state events để hiển thị trên calendar
+          const newEvent = {
+            title: response.data.data.title,
+            start: `${response.data.data.date}T${response.data.data.startTime}`,
+            end: `${response.data.data.date}T${response.data.data.endTime}`,
+            id: response.data.data.id,
+          };
+          setEvents([...events, newEvent]);
+
+          setShowEventPopup(false);
+          form.resetFields();
+          setSelectedWorkouts([]); // Reset selected workouts
+        } else {
+          console.error("Failed to save event:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error saving event:", error);
+      }
+    })
+    .catch((info) => {
+      console.log("Validate Failed:", info);
+    });
+};
+
+
 
   const handleWorkoutSelect = (checkedValues) => {
-    setSelectedWorkouts(checkedValues);
-    form.setFieldsValue({ workout: checkedValues });
-  };
+  console.log("Checked values:", checkedValues); // Kiểm tra các giá trị
+  setSelectedWorkouts(checkedValues); // Cập nhật danh sách workout IDs được chọn
+};
+
 
   // Handle event click to show details
   const handleEventClick = (info) => {
@@ -203,21 +259,24 @@ const GymCalendar = () => {
             <div className="workout-selection">
               <h2>Select Workouts</h2>
               <div className="workout-list">
-                <Checkbox.Group
-                  style={{ width: "100%" }}
-                  value={selectedWorkouts}
-                  onChange={handleWorkoutSelect}
-                >
-                  {workouts.map((option) => (
-                    <div className="workout-item" key={option.id}>
-                      <Checkbox value={option.name}>
-                        <div className="workout-content">
-                          <span className="workout-name">{option.name}</span>
-                        </div>
-                      </Checkbox>
-                    </div>
-                  ))}
-                </Checkbox.Group>
+        <Checkbox.Group
+  style={{ width: "100%" }}
+  value={selectedWorkouts}
+  onChange={handleWorkoutSelect}
+>
+  {workouts.map((workout) => (
+    <div className="workout-item" key={workout.id}>
+      <Checkbox value={workout.id}>
+        <div className="workout-content">
+          <span className="workout-name">{workout.name}</span>
+        </div>
+      </Checkbox>
+    </div>
+  ))}
+</Checkbox.Group>
+
+
+
               </div>
               <div className="action-buttons">
                 <Button type="primary" onClick={handleOk}>

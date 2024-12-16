@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import vn.group16.gymtraining.domain.Schedule;
 import vn.group16.gymtraining.domain.Workout;
 import vn.group16.gymtraining.dto.EventDTO;
@@ -26,24 +27,24 @@ public class ScheduleService {
         this.workoutRepository = workoutRepository;
     }
 
+    @Transactional
     public Schedule createSchedule(Schedule schedule) {
         // Tìm kiếm các workout theo danh sách tên
 
         List<Long> workoutId = schedule.getWorkouts().stream().map(Workout::getId).collect(Collectors.toList());
         List<Workout> workouts = this.workoutRepository.findByIdIn(workoutId);
+        System.out.println("Workouts found: " + workouts.size());
         Schedule currentSchedule = new Schedule();
-        currentSchedule.setTitle(schedule.getTitle()); // Lỗi ở đây vì 'title' không được khai báo
-        currentSchedule.setDate(schedule.getDate()); // Lỗi ở đây vì 'date' không được khai báo
-        currentSchedule.setStartTime(schedule.getStartTime()); // Lỗi ở đây
-        currentSchedule.setEndTime(schedule.getEndTime()); // Lỗi ở đây
+        currentSchedule.setTitle(schedule.getTitle());
+        currentSchedule.setDate(schedule.getDate());
+        currentSchedule.setStartTime(schedule.getStartTime());
+        currentSchedule.setEndTime(schedule.getEndTime());
 
         if (workouts.isEmpty()) {
             throw new IllegalArgumentException("Không tìm thấy bài tập nào từ danh sách tên cung cấp.");
         }
-
-        // Thêm các workout vào Schedule
         currentSchedule.setWorkouts(workouts);
-        return this.scheduleRepository.save(schedule);
+        return this.scheduleRepository.save(currentSchedule);
     }
 
     public Schedule updateSchedule(long id, Schedule schedule) {

@@ -14,5 +14,6 @@ public interface WorkoutRepository extends JpaRepository<Workout, Long> {
 
     Optional<List<Workout>> findWorkoutByDifficultyLevel(String difficultyLevel);
 
-    List<Workout> findByIdIn(List<Long> id);
+    List<Workout> findByIdIn(List<Long> workoutIds);
+
 }
