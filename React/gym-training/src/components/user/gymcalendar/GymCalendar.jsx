@@ -4,40 +4,42 @@ import { Calendar } from "@fullcalendar/core";
 import googleCalendarPlugin from "@fullcalendar/google-calendar";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import axios from "axios";
-import {
-  Modal,
-  Input,
-  Form,
-  Checkbox,
-  DatePicker,
-  TimePicker,
-  Drawer,
-} from "antd";
+import interactionPlugin from "@fullcalendar/interaction"; // Import interaction plugin
+import axios from "axios"; // Axios for API requests
+import { Modal, Input, Form, Checkbox, DatePicker, TimePicker, Button } from "antd";
 import "./GymCalendar.css";
 import moment from "moment";
 
 const GymCalendar = () => {
   const calendarRef = useRef(null);
-  const [isOpen, setIsOpen] = useState(false); // Modal open state
-  const [form] = Form.useForm();
-  const [drawerVisible, setDrawerVisible] = useState(false); // Drawer visibility
+  const [showEventPopup, setShowEventPopup] = useState(false); // For "Add Event" popup
+  const [showEventDetailsPopup, setShowEventDetailsPopup] = useState(false); // For event details popup
+  const [form] = Form.useForm(); // Create form instance using Ant Design's useForm
   const [selectedWorkouts, setSelectedWorkouts] = useState([]); // Store selected workout
+  const [workouts, setWorkouts] = useState([]); // Store workouts fetched from the API
+  const [events, setEvents] = useState([]); // Store events from the API
+  const [eventDetails, setEventDetails] = useState(null); // Store clicked event details
 
-  const workouts = [
-    { id: 1, name: "pushup", description: "Push-up" },
-    { id: 2, name: "squat", description: "Squat" },
-    { id: 3, name: "running", description: "Running" },
-    { id: 4, name: "cycling", description: "Cycling" },
-  ];
-
+  // Fetch workout data from the API
   useEffect(() => {
-    const calendarEl = calendarRef.current;
+    const fetchWorkouts = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/v1/workouts/getAll');
+        
+        if (response.data.statusCode === 200) {
+          // Set the workouts from API data
+          setWorkouts(response.data.data);
+        } else {
+          console.error("Error fetching workouts:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching workouts:", error);
+      }
+    };
 
-    const loadEvents = async (callback) => {
+    // Fetch events (schedule data) from the API
+    const fetchEvents = async () => {
       const accessToken = localStorage.getItem("accessToken");
-
       if (!accessToken) {
         console.error("No access token found. Please log in.");
         return;
@@ -59,8 +61,9 @@ const GymCalendar = () => {
             title: event.title,
             start: event.start,
             end: event.end,
+            id: event.id, // You can use event ID for more details if necessary
           }));
-          callback(events);
+          setEvents(events); // Set the events
         } else {
           console.error("Failed to fetch events:", response.data.message);
         }
@@ -69,43 +72,15 @@ const GymCalendar = () => {
       }
     };
 
-    const calendar = new Calendar(calendarEl, {
-      plugins: [googleCalendarPlugin, dayGridPlugin, timeGridPlugin],
-      headerToolbar: {
-        left: "prev,next today",
-        center: "title",
-        right: "addCalendar,dayGridMonth,timeGridWeek,timeGridDay",
-      },
-      customButtons: {
-        addCalendar: {
-          text: "+ Calendar",
-          click: function () {
-            // Open the modal when the + Calendar button is clicked
-            setIsOpen(true);
-          },
-        },
-      },
-      height: "100vh",
-      initialView: "dayGridMonth",
-      dateClick: (info) => {
-        const selectedDate = moment(info.date);
-        form.setFieldsValue({ startDate: selectedDate });
-        setIsOpen(true); // Open the modal when clicking on a date
-      },
-    });
+    fetchWorkouts(); // Fetch workouts
+    fetchEvents(); // Fetch events
 
-    loadEvents((events) => {
-      calendar.addEventSource(events);
-      calendar.render();
-    });
   }, []);
 
-  const showModal = () => {
-    setIsOpen(true);
-  };
-
   const handleCancel = () => {
-    setIsOpen(false);
+    setShowEventPopup(false);
+    setShowEventDetailsPopup(false); // Close event details popup
+    form.resetFields(); // Reset form when closing the popup
   };
 
   const handleOk = () => {
@@ -113,103 +88,163 @@ const GymCalendar = () => {
       .validateFields()
       .then((values) => {
         console.log("Form Values:", values);
-        setIsOpen(false);
-        form.resetFields();
+        setShowEventPopup(false);
+        form.resetFields(); // Reset form after saving the event
       })
       .catch((info) => {
         console.log("Validate Failed:", info);
       });
   };
 
-  const showDrawer = () => {
-    setDrawerVisible(true);
-  };
-
-  const onCloseDrawer = () => {
-    setDrawerVisible(false);
-  };
-
   const handleWorkoutSelect = (checkedValues) => {
     setSelectedWorkouts(checkedValues);
-    setDrawerVisible(false);
     form.setFieldsValue({ workout: checkedValues });
   };
 
+  // Handle event click to show details
+  const handleEventClick = (info) => {
+    const clickedEvent = info.event;
+    console.log("Event Clicked:", clickedEvent);
+
+    // Set the details of the clicked event
+    setEventDetails({
+      title: clickedEvent.title,
+      start: moment(clickedEvent.start).format("YYYY-MM-DD HH:mm"),
+      end: moment(clickedEvent.end).format("YYYY-MM-DD HH:mm"),
+    });
+
+    setShowEventDetailsPopup(true); // Show the popup with event details
+  };
+
+  // FullCalendar setup
+  useEffect(() => {
+    const calendarEl = calendarRef.current;
+
+    const calendar = new Calendar(calendarEl, {
+      plugins: [googleCalendarPlugin, dayGridPlugin, timeGridPlugin, interactionPlugin],
+      headerToolbar: {
+        left: "prev,next today",
+        center: "title",
+        right: "addCalendar,dayGridMonth,timeGridWeek,timeGridDay",
+      },
+      customButtons: {
+        addCalendar: {
+          text: "Add Event",
+          click: function () {
+            setShowEventPopup(true); // Open the "Add Event" popup when the button is clicked
+          },
+        },
+      },
+      height: "100vh",
+      initialView: "dayGridMonth",
+      dateClick: function(info) {
+        console.log("Clicked on: " + info.dateStr);
+        console.log("Coordinates: " + info.jsEvent.pageX + "," + info.jsEvent.pageY);
+        console.log("Current view: " + info.view.type);
+
+        // Change the day's background color
+        info.dayEl.style.backgroundColor = '#f0f0f0'; // Example of changing the clicked date's background
+
+        const selectedDate = moment(info.date); // Convert the clicked date to moment.js format
+        form.setFieldsValue({ startDate: selectedDate });
+        setShowEventPopup(true); // Open the "Add Event" popup when clicking on a date
+      },
+      events: events, // Add events from the API to the calendar
+      eventClick: handleEventClick, // Handle event click to show details
+    });
+
+    // Render calendar with the events
+    calendar.render();
+  }, [events, form]);
+
   return (
     <>
-      <Modal
-        title="Workout"
-        open={isOpen}
-        onCancel={handleCancel}
-        onOk={handleOk}
-        destroyOnClose={true}
-      >
-        <Form form={form} layout="vertical" name="custom_form">
-          <Form.Item
-            label="Title"
-            name="title"
-            rules={[{ required: true, message: "Please input your name!" }]}
-          >
-            <Input />
-          </Form.Item>
+      <div className="calendar-wrapper">
+        {/* Add Event Popup */}
+        {showEventPopup && (
+          <div className="add-event-container">
+            <div className="event-form">
+              <h2>{eventDetails ? "Event Details" : "Add New Event"}</h2>
+              <Form form={form} layout="vertical" name="custom_form">
+                <Form.Item
+                  label="Title"
+                  name="title"
+                  rules={[{ required: true, message: "Please input your title!" }]}
+                >
+                  <Input disabled={showEventDetailsPopup} />
+                </Form.Item>
 
-          <Form.Item
-            label="Start Date"
-            name="startDate"
-            rules={[{ required: true, message: "Please select a start date!" }]}
-          >
-            <DatePicker />
-          </Form.Item>
-          <Form.Item
-            label="Start Time"
-            name="startTime"
-            rules={[{ required: true, message: "Please select a start time!" }]}
-          >
-            <TimePicker format="HH:mm" />
-          </Form.Item>
+                <Form.Item
+                  label="Start Date"
+                  name="startDate"
+                  rules={[{ required: true, message: "Please select a start date!" }]}
+                >
+                  <DatePicker disabled={showEventDetailsPopup} />
+                </Form.Item>
 
-          <Form.Item
-            label="End Time"
-            name="endTime"
-            rules={[{ required: true, message: "Please select an end time!" }]}
+                <Form.Item
+                  label="Start Time"
+                  name="startTime"
+                  rules={[{ required: true, message: "Please select a start time!" }]}
+                >
+                  <TimePicker format="HH:mm" disabled={showEventDetailsPopup} />
+                </Form.Item>
+
+                <Form.Item
+                  label="End Time"
+                  name="endTime"
+                  rules={[{ required: true, message: "Please select an end time!" }]}
+                >
+                  <TimePicker format="HH:mm" disabled={showEventDetailsPopup} />
+                </Form.Item>
+              </Form>
+            </div>
+
+            <div className="workout-selection">
+              <h2>Select Workouts</h2>
+              <div className="workout-list">
+                <Checkbox.Group
+                  style={{ width: "100%" }}
+                  value={selectedWorkouts}
+                  onChange={handleWorkoutSelect}
+                >
+                  {workouts.map((option) => (
+                    <div className="workout-item" key={option.id}>
+                      <Checkbox value={option.name}>
+                        <div className="workout-content">
+                          <span className="workout-name">{option.name}</span>
+                        </div>
+                      </Checkbox>
+                    </div>
+                  ))}
+                </Checkbox.Group>
+              </div>
+              <div className="action-buttons">
+                <Button type="primary" onClick={handleOk}>
+                  Save Event
+                </Button>
+                <Button onClick={handleCancel}>Cancel</Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Event Details Popup */}
+        {showEventDetailsPopup && (
+          <Modal
+            title="Event Details"
+            visible={showEventDetailsPopup}
+            onCancel={handleCancel}
+            footer={null}
           >
-            <TimePicker format="HH:mm" />
-          </Form.Item>
+            <p><strong>Title:</strong> {eventDetails?.title}</p>
+            <p><strong>Start:</strong> {eventDetails?.start}</p>
+            <p><strong>End:</strong> {eventDetails?.end}</p>
+          </Modal>
+        )}
 
-          <Form.Item
-            label="Workout"
-            name="workout"
-            rules={[{ required: true, message: "Please select at least one workout!" }]}
-          >
-            <Input
-              value={selectedWorkouts.length > 0 ? selectedWorkouts.join(", ") : ""}
-              onClick={showDrawer}
-              readOnly
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      <Drawer
-        title="Select Workout"
-        placement="left"
-        onClose={onCloseDrawer}
-        open={drawerVisible}
-      >
-        <Checkbox.Group
-          style={{ width: "100%" }}
-          value={selectedWorkouts}
-          onChange={handleWorkoutSelect}
-        >
-          {workouts.map((option) => (
-            <Checkbox key={option.id} value={option.name}>
-              {option.description}
-            </Checkbox>
-          ))}
-        </Checkbox.Group>
-      </Drawer>
-
-      <div ref={calendarRef} />
+        <div ref={calendarRef} />
+      </div>
     </>
   );
 };
