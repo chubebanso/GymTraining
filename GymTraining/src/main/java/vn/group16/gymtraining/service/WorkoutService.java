@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import vn.group16.gymtraining.domain.Exercise;
 import vn.group16.gymtraining.domain.Workout;
 import vn.group16.gymtraining.dto.WorkoutDTO;
 import vn.group16.gymtraining.repository.ExerciseRepository;
@@ -95,11 +94,13 @@ public class WorkoutService {
             existingWorkout.setName(workoutDetails.getName());
             existingWorkout.setDescription(workoutDetails.getDescription());
             existingWorkout.setImage(workoutDetails.getImage());
+            existingWorkout.setVideoUrl(workoutDetails.getVideoUrl());
             existingWorkout.setDuration(workoutDetails.getDuration());
             existingWorkout.setCalories(workoutDetails.getCalories());
             existingWorkout.setCategory(workoutDetails.getCategory());
             existingWorkout.setMuscleGroups(workoutDetails.getMuscleGroups());
             existingWorkout.setDifficultyLevel(workoutDetails.getDifficultyLevel());
+            existingWorkout.setExercises(workoutDetails.getExercises());
 
             return workoutRepository.save(existingWorkout);
         }

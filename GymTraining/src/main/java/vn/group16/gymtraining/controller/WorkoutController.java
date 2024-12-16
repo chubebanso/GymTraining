@@ -37,7 +37,16 @@ public class WorkoutController {
         return ResponseEntity.noContent().build();
     }
 
-    
+    // Get workouts by id
+    @GetMapping("/workouts/{id}")
+    public ResponseEntity<Workout> getWorkoutById(@PathVariable Long id) {
+        try {
+            Workout workout = workoutService.findByWorkoutID(id);
+            return ResponseEntity.ok(workout);
+        } catch (WorkoutException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     @GetMapping("/workouts/difficulty/{difficultyLevel}")
     public ResponseEntity<List<Workout>> getWorkoutByDifficultyLevel(@PathVariable String difficultyLevel) {
