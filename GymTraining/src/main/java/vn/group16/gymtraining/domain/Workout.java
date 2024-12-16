@@ -32,7 +32,7 @@ public class Workout {
 
     private String image;
 
-    @Column(name="video_url")
+    @Column(name = "video_url")
     private String videoUrl;
 
     @Column(nullable = false)
@@ -49,17 +49,15 @@ public class Workout {
     @Column(name = "muscle_groups")
     private Set<MuscleGroup> muscleGroups = new HashSet<>();
 
-
-
     @Column(nullable = true)
     private String difficultyLevel;
 
     // Many-to-Many relationship with Schedule
     @ManyToMany(mappedBy = "workouts", cascade = CascadeType.ALL)
-    private List<Schedule> schedules = new ArrayList<>();
+    private List<Schedule> schedules;
 
-    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true) 
-    private List<Exercise> exercises = new ArrayList<>();
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Exercise> exercises;
 
     // Getters and Setters
     public Long getId() {

@@ -5,6 +5,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -25,7 +27,23 @@ public class ScheduleService {
     }
 
     public Schedule createSchedule(Schedule schedule) {
-        return scheduleRepository.save(schedule);
+        // Tìm kiếm các workout theo danh sách tên
+
+        List<Long> workoutId = schedule.getWorkouts().stream().map(Workout::getId).collect(Collectors.toList());
+        List<Workout> workouts = this.workoutRepository.findByIdIn(workoutId);
+        Schedule currentSchedule = new Schedule();
+        currentSchedule.setTitle(schedule.getTitle()); // Lỗi ở đây vì 'title' không được khai báo
+        currentSchedule.setDate(schedule.getDate()); // Lỗi ở đây vì 'date' không được khai báo
+        currentSchedule.setStartTime(schedule.getStartTime()); // Lỗi ở đây
+        currentSchedule.setEndTime(schedule.getEndTime()); // Lỗi ở đây
+
+        if (workouts.isEmpty()) {
+            throw new IllegalArgumentException("Không tìm thấy bài tập nào từ danh sách tên cung cấp.");
+        }
+
+        // Thêm các workout vào Schedule
+        currentSchedule.setWorkouts(workouts);
+        return this.scheduleRepository.save(schedule);
     }
 
     public Schedule updateSchedule(long id, Schedule schedule) {
@@ -47,6 +65,7 @@ public class ScheduleService {
         }
         scheduleRepository.deleteById(id);
     }
+
     public List<Schedule> getScheduleByTime(String startTime, String endTime, LocalDate date) {
         Optional<List<Schedule>> scheduleOptional = this.scheduleRepository
                 .findScheduleByStartTimeAndEndTimeAndDate(startTime, endTime, date);
@@ -82,26 +101,26 @@ public class ScheduleService {
     }
 
     public Schedule addWorkoutToSchedule(long scheduleId, long workoutId) {
-    Schedule schedule = scheduleRepository.findById(scheduleId)
-            .orElseThrow(() -> new RuntimeException("Schedule not found with id: " + scheduleId));
-    
-    Workout workout = workoutRepository.findById(workoutId)
-            .orElseThrow(() -> new RuntimeException("Workout not found with id: " + workoutId));
-    
-    schedule.getWorkouts().add(workout);
-    
-    return scheduleRepository.save(schedule);
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new RuntimeException("Schedule not found with id: " + scheduleId));
+
+        Workout workout = workoutRepository.findById(workoutId)
+                .orElseThrow(() -> new RuntimeException("Workout not found with id: " + workoutId));
+
+        schedule.getWorkouts().add(workout);
+
+        return scheduleRepository.save(schedule);
     }
 
     public Schedule removeWorkoutFromSchedule(long scheduleId, long workoutId) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new RuntimeException("Schedule not found with id: " + scheduleId));
-        
+
         Workout workout = workoutRepository.findById(workoutId)
                 .orElseThrow(() -> new RuntimeException("Workout not found with id: " + workoutId));
-        
+
         schedule.getWorkouts().remove(workout);
-        
+
         return scheduleRepository.save(schedule);
     }
 }

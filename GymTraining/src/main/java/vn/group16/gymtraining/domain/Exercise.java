@@ -18,14 +18,7 @@ public class Exercise {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    
     private String name;
-
-    private String description;
-
-    private String videoUrl;
-
-    private String recommendedSets;
     private Long sets;
     @ManyToOne
     @JoinColumn(name = "workout_id")
@@ -50,30 +43,6 @@ public class Exercise {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getVideoUrl() {
-        return videoUrl;
-    }
-
-    public void setVideoUrl(String videoUrl) {
-        this.videoUrl = videoUrl;
-    }
-
-    public String getRecommendedSets() {
-        return recommendedSets;
-    }
-
-    public void setRecommendedSets(String recommendedSets) {
-        this.recommendedSets = recommendedSets;
     }
 
     public Workout getWorkout() {

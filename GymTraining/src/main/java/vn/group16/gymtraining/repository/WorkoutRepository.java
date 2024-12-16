@@ -11,5 +11,8 @@ import vn.group16.gymtraining.domain.Workout;
 @Repository
 public interface WorkoutRepository extends JpaRepository<Workout, Long> {
     Optional<List<Workout>> findWorkoutByCategory(String category);
+
     Optional<List<Workout>> findWorkoutByDifficultyLevel(String difficultyLevel);
+
+    List<Workout> findByIdIn(List<Long> id);
 }
