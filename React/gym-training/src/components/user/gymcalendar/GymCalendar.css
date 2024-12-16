@@ -1,87 +1,219 @@
-/* styles.css */
-.fc {
-  font-size: 14px;
-  color: black;
+
+.calendar-wrapper {
   background-color: white;
+  /* Set background to white */
+  border-radius: 10px;
+  /* Bo góc 4 cạnh */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Thêm bóng đổ nhẹ để làm nổi bật */
+  /* Đảm bảo các phần tử không tràn ra ngoài */
+  padding: 20px;
+  /* Thêm khoảng cách giữa viền và nội dung */
+  margin: 20px;
+  /* Đặt khoảng cách xung quanh thẻ calendar */
 }
 
-.fc-daygrid-event {
-  border-radius: 5px;
-  /* Thay đổi góc của sự kiện */
-}
-
-.fc-daygrid-event:hover {
-  background-color: #f0f0f0;
-  /* Màu nền khi hover */
-}
-
-.fc-toolbar {
-  background-color: #23B8FC;
-  /* Màu nền của thanh công cụ */
-}
-
-.fc-toolbar-chunk {
-  color: black;
-}
-
-.fc-daygrid-day {
-  background-color: white;
-  /* Màu nền của các ngày */
-}
-
-.fc th {
-  background-color: #23B8FC;
-  color: black;
-}
-
-a {
-  color: black;
-}
-
-.fc-daygrid-day-frame fc-scrollgrid-sync-inner {
-  background-color: blueviolet;
-  color: blue;
-}
-
-.fc-day fc-day-mon fc-day-today fc-daygrid-day {
-  background-color: blueviolet;
-  color: blue;
-}
-
-.fc-button-group {
-  color: black;
-  background-color: white;
-}
-
-:root {
-  --fc-button-bg-color: #23B8FC;
-  --fc-button-border-color: white;
-  --fc-button-active-bg-color: rgba(255, 99, 71, 0.585);
-  --fc-button-hover-bg-color: #23B8FC;
-  --fc-button-hover-border-color: white;
-  --fc-button-active-border-color: #23B8FC;
-}
-
-:root {
-  --gym-calendar-width: 100%;
-  --gym-calendar-height: 100vh;
-}
-
-.gym-calendar {
-  width: var(--gym-calendar-width);
-  height: var(--gym-calendar-height);
-}
-
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
-  background-color: #f0f0f0;
-  display: inline;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+.fc-scroller-harness.fc-scroller-harness-liquid {
+  height: 100% !important;
+  /* Ghi đè style inline nếu có */
+  max-height: 100%;
   width: 100%;
+}
+
+/* Đảm bảo phần tử cha cũng có chiều cao xác định */
+.calendar-wrapper {
+  height: 100%;
+  /* hoặc một giá trị cụ thể như 600px */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Nếu cần thiết, thêm cho các phần tử container khác */
+.fc {
+  height: 100%;
+}
+
+.fc-view-harness {
+  height: 100% !important;
+}
+
+
+/* Bo tròn và tạo khoảng cách cho các nút */
+.fc .fc-button {
+  border-radius: 20px !important;
+  /* Bo tròn các góc */
+  margin: 0 4px !important;
+  /* Tạo khoảng cách giữa các nút */
+  padding: 6px 12px !important;
+  /* Thêm padding để nút đẹp hơn */
+}
+
+/* Tùy chỉnh màu nền khi hover */
+.fc .fc-button:hover {
+  background-color: #1a73e8 !important;
+  opacity: 0.9;
+  border-color: #1a73e8 !important;
+}
+
+/* Tùy chỉnh màu nền khi nút được active */
+.fc .fc-button-active {
+  background-color: #1a73e8 !important;
+  border-color: #1a73e8 !important;
+}
+
+/* Tùy chỉnh cho nút Today */
+.fc .fc-today-button {
+  background-color: #1a73e8 !important;
+  border-color: #1a73e8 !important;
+}
+
+/* Đặt kích thước cố định cho các nút week, day, month */
+.fc .fc-button-group .fc-button {
+  min-width: 80px;
+  /* hoặc giá trị phù hợp với thiết kế của bạn */
+  text-align: center;
+}
+
+/* Tạo khoảng cách giữa nút Add Calendar và các nút khác */
+.fc .fc-addCalendar-button {
+  margin-right: 30px !important;
+  /* Tăng khoảng cách bên trái */
+  background-color: #1a73e8 !important;
+  border-color: #1a73e8 !important;
+}
+
+/* Đảm bảo các nút trong button group không bị ảnh hưởng bởi margin-left */
+.fc .fc-button-group {
+  margin-right: 0;
+}
+
+.workout-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+}
+
+.workout-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: #f5f5f5;
+  transition: all 0.3s ease;
+}
+
+.workout-item:hover {
+  background-color: #e8e8e8;
+  transform: translateX(5px);
+  cursor: pointer;
+}
+
+.workout-name {
+  font-weight: 600;
+  color: #333;
+  margin-right: 10px;
+}
+
+.workout-description {
+  color: #666;
+  font-size: 14px;
+}
+
+/* CSS cho checkbox trong Drawer */
+.ant-checkbox-wrapper {
+  margin: 8px 0;
+  padding: 10px;
+  width: 120%;
+  border-radius: 6px;
+  transition: background-color 0.3s;
+}
+
+.ant-checkbox-wrapper:hover {
+  background-color: #f0f0f0;
+}
+
+.ant-checkbox-checked+span {
+  color: #1890ff;
+}
+.add-event-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  width: 800px;
+  padding: 20px;
+}
+
+.event-form {
+  flex: 1;
+  padding: 20px;
+  border-right: 1px solid #f0f0f0;
+}
+
+.workout-selection {
+  flex: 1;
+  padding: 20px;
+}
+
+.workout-list {
+  max-height: 400px;
+  overflow-y: auto;
+  margin: 20px 0;
+}
+
+.workout-item {
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+}
+
+.workout-item:hover {
+  background-color: #f5f5f5;
+}
+
+.workout-content {
+  margin-left: 8px;
+}
+
+.workout-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+h2 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 18px;
+}
+
+/* Tùy chỉnh thanh cuộn */
+.workout-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.workout-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.workout-list::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.workout-list::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
