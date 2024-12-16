@@ -29,7 +29,7 @@ const Sidebar = () => {
       <div className="navbar-admin">
         <div className="navbar-account">
           <HomeOutlined />
-          <Link to="/admin/home">Home</Link>
+          <Link to="/admin/">Home</Link>
         </div>
         <div className="navbar-account">
           <UserOutlined />

@@ -14,12 +14,15 @@ const TableWorkout = () => {
   // Hàm gọi API để lấy dữ liệu
   const fetchWorkoutList = async () => {
     try {
-      const accessToken = localStorage.getItem("accessToken"); 
-      const response = await axios.get("http://localhost:8080/api/v1/workouts", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`, 
-        },
-      });
+      const accessToken = localStorage.getItem("accessToken");
+      const response = await axios.get(
+        "http://localhost:8080/api/v1/workouts",
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
 
       if (response.data.statusCode === 200) {
         // Chuyển muscleGroups thành chuỗi tên
@@ -50,39 +53,48 @@ const TableWorkout = () => {
   };
 
   // Cắt dữ liệu theo trang
-  const pagesData = workoutList.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const pagesData = workoutList.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   return (
     <div className="content-workout">
-      <div className="table-workout-filter">
-        <button className="btn-search" onClick={handleAddBtn}>Search by goal</button>
-        <input type="search" placeholder="Filter by name" />
-        <button className="btn-add" onClick={handleAddBtn}>Add new workout</button>
-      </div>
-      <div className="table-workout-header">
-        <span>Preview</span>
-        <span>Name</span>
-        <span>Category</span>
-        <span>Duration</span>
-        <span>Muscles</span>
-        <span>Edit</span>
-        <span>Delete</span>
-      </div>
-      <div className="table-workout-list">
-        {pagesData.map((workout) => (
-          <WorkoutItem
-            key={workout.id}
-            workout={{
-              image:workout.image,
-              name: workout.name,
-              category: workout.category,
-              duration: `${workout.duration}m`,
-              muscles: workout.muscles || "N/A", // Truyền chuỗi muscleGroups
-              description: workout.description, // Nếu cần sử dụng mô tả
-              workoutID: workout.id,
-            }}
-          />
-        ))}
+      <div className="content-workout-main">
+        <div className="table-workout-filter">
+          <button className="btn-search" onClick={handleAddBtn}>
+            Search by goal
+          </button>
+          <input type="search" placeholder="Filter by name" />
+          <button className="btn-add" onClick={handleAddBtn}>
+            Add new workout
+          </button>
+        </div>
+        <div className="table-workout-header">
+          <span>Preview</span>
+          <span>Name</span>
+          <span>Category</span>
+          <span>Duration</span>
+          <span>Muscles</span>
+          <span>Edit</span>
+          <span>Delete</span>
+        </div>
+        <div className="table-workout-list">
+          {pagesData.map((workout) => (
+            <WorkoutItem
+              key={workout.id}
+              workout={{
+                image: workout.image,
+                name: workout.name,
+                category: workout.category,
+                duration: `${workout.duration}m`,
+                muscles: workout.muscles || "N/A", // Truyền chuỗi muscleGroups
+                description: workout.description, // Nếu cần sử dụng mô tả
+                workoutID: workout.id,
+              }}
+            />
+          ))}
+        </div>
       </div>
       <div className="table-workout-pagination">
         <Pagination

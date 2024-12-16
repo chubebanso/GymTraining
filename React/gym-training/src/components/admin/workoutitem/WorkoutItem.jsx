@@ -34,7 +34,7 @@ const WorkoutItem = ({ workout }) => {
   };
 
   return (
-    <div className="workout-item">
+    <div className="workout-items">
       <img className="item-img"  src={workout.image ? `/avatars//${workout.image}` : ava_account} alt="" />
       <span>{workout.name}</span>
       <span>{workout.category}</span>

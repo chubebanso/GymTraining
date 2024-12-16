@@ -2,7 +2,7 @@ import "./EditAccount.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { LeftCircleOutlined } from "@ant-design/icons";
 import ava_account from "../../../assets/ava_account.png";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { Form, Input, Button, Select, message } from "antd";
 import axios from "axios";
 import PropTypes from "prop-types";
@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 const { Option } = Select;
 
 const EditAccount = () => {
-  const { users } = useContext(WorkoutContext);
+ // const { } = useContext(WorkoutContext);
   const id = parseInt(useParams().id);
   console.log(id);
   const [form] = Form.useForm();
@@ -18,13 +18,12 @@ const EditAccount = () => {
   const [account, setAccount] = useState(null);
 
   const navigate = useNavigate();
-  const accountId = location.state?.account.id;
 
 
   useEffect(() => {
     const fetchAccount = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/v1/users/getById/${accountId}`, {
+        const response = await axios.get(`http://localhost:8080/api/v1/users/getById/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`
           }
@@ -42,10 +41,10 @@ const EditAccount = () => {
       }
     };
 
-    if (accountId) {
+    if (id) {
       fetchAccount();
     }
-  }, [accountId, form]);
+  }, [id, form]);
 
   const onFinish = async (values) => {
     setIsSubmitting(true);
@@ -53,7 +52,7 @@ const EditAccount = () => {
     const roleId = values.role === "Admin" ? 1 : 2;
     try {
       await axios.put(`http://localhost:8080/api/v1/users/update`, {
-        id: accountId,
+        id: id,
         name: values.name,
         email: values.email,
         phone: values.phone,
@@ -84,8 +83,7 @@ const EditAccount = () => {
     <div className="content-account">
       <div className="add-account-header">
         <LeftCircleOutlined className="back-icon" onClick={handleBack} />
-        <h2>Edit Account</h2>
-        <h2>Edit Account</h2>
+        <div>Edit Account</div>
       </div>
       <div className="add-account-form">
         <div className="add-account-ava">

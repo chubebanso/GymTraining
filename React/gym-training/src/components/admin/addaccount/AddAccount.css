@@ -2,6 +2,10 @@
     display: flex;
     gap: 1rem;
 }
+.add-account-header div{
+    font-size: 1.5rem;
+    font-weight: 600;
+}
 .back-icon{
     scale: 1.5;
 }
@@ -16,9 +20,9 @@
 .add-account-form{
     display: flex;
     justify-content: flex-start;
+    gap: 1rem;
 }
 .add-account-input{
-
     width: 50%;
 }
 .form-btn{

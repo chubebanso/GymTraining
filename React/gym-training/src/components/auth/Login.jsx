@@ -48,7 +48,7 @@ const Login = () => {
 
         // Check the role and navigate accordingly
         if (role.name === "ADMIN") {
-          navigate("/admin/account");  // Admin redirect
+          navigate("/admin/home");  // Admin redirect
         } else {
           navigate("/");  // User redirect
         }

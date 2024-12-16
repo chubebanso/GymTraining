@@ -2,49 +2,54 @@ import "./AddAccount.css";
 import { useNavigate } from "react-router-dom";
 import { LeftCircleOutlined } from "@ant-design/icons";
 import ava_account from "../../../assets/ava_account.png";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { Form, Input, Button, Select, message, Upload } from "antd";
 import axios from "axios";
-import { Form, Input, Button, Select, message } from "antd";
+import { WorkoutContext } from "../../../context/WorkoutContext";
 const { Option } = Select;
 
 const AddAccount = () => {
+  const { createUser } = useContext(WorkoutContext);
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [imageFileName, setImageFileName] = useState("");
   const navigate = useNavigate();
+
+  const handleFileUpload = async (file) => {
+    const accessToken = localStorage.getItem("accessToken");
+
+    const formData = new FormData();
+    formData.append("imageFile", file);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/users/upload?imageFile",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      const fileName = response.data; // Lấy tên file từ response
+      setImageFileName(fileName);
+      message.success("Upload ảnh thành công!");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      message.error("Upload ảnh thất bại!");
+    }
+  };
+
   // Hàm xử lý khi form được submit
   const onFinish = async (values) => {
     console.log("Form values:", values);
     // Giả lập gửi form (có thể gửi lên server ở đây)
     setIsSubmitting(true);
-
-    try {
-      await axios.post(`http://localhost:8080/api/v1/users`, {
-        name: values.username,
-        email: values.email,
-        phone: values.phone,
-        password: values.password,
-        roleName: values.role,
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-        }
-      });
-      message.success("Account updated successfully!");
-      navigate("../");
-    } catch (error) {
-      console.error("There was an error updating the account!", error);
-      message.error("Failed to update account!");
-    } finally {
-      setIsSubmitting(false);
-    }
-
-    // Giả lập gửi dữ liệu và thông báo thành công
-    // setTimeout(() => {
-    //   message.success("Tạo tài khoản thành công!");
-    //   form.resetFields(); // Reset form sau khi submit thành công
-    //   setIsSubmitting(false);
-    // }, 1000);
+    await createUser(values);
+    setIsSubmitting(false);
+    navigate("../");
   };
 
   const handleBack = () => {
@@ -54,12 +59,22 @@ const AddAccount = () => {
     <div className="content-account">
       <div className="add-account-header">
         <LeftCircleOutlined className="back-icon" onClick={handleBack} />
-        <h2>Create Account</h2>
+        <div>Create Account</div>
       </div>
       <div className="add-account-form">
         <div className="add-account-ava">
           <span>Avatar</span>
-          <img src={ava_account} alt="avatar" />
+          <img
+            src={imageFileName ? `/avatars//${imageFileName}` : ava_account}
+            alt="Uploaded"
+          />
+          <Upload
+            beforeUpload={handleFileUpload}
+            showUploadList={false}
+            accept="image/*"
+          >
+            <Button className="upload-btn">Upload Photo</Button>
+          </Upload>
         </div>
         <div className="add-account-input">
           <Form
@@ -119,7 +134,6 @@ const AddAccount = () => {
               name="role"
               label="Role"
               rules={[{ required: true, message: "Vui lòng chọn vai trò!" }]}
-
             >
               <Select placeholder="Chọn vai trò" enabled>
                 <Option value="User">User</Option>
@@ -129,10 +143,15 @@ const AddAccount = () => {
 
             {/* Submit Button */}
             <Form.Item>
-              <Button type="default" onClick={handleBack} >
+              <Button type="default" onClick={handleBack}>
                 Cancel
               </Button>
-              <Button type="primary" htmlType="submit" loading={isSubmitting} className="form-btn">
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={isSubmitting}
+                className="form-btn"
+              >
                 Save
               </Button>
             </Form.Item>

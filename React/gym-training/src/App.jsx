@@ -7,6 +7,7 @@ import Error from "./pages/error/Error";
 import Account from "./pages/admin/Account";
 import Schedule from "./pages/user/Schedule";
 import Layout from "./components/user/layout/Layout";
+import HomeAdmin from "./pages/admin/HomeAdmin";
 import Home from "./pages/user/Home";
 import LayoutAdmin from "./components/admin/layout/LayoutAdmin";
 import WorkOut from "./pages/admin/Workout";
@@ -34,6 +35,7 @@ const AppRoutes = () => {
       )}
       {userRole === "ADMIN" && (
         <Route element={<LayoutAdmin />}>
+          <Route path="/admin/home" element={<HomeAdmin />} />
           <Route path="/admin/account/*" element={<Account />} />
           <Route path="/admin/workout/*" element={<WorkOut />} />
         </Route>

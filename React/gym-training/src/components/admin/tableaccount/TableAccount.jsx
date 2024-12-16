@@ -54,6 +54,7 @@ const TableAccount = () => {
   };
   return (
     <div className="content-account">
+      <div className="content-account-main">
       <div className="table-account-filter">
         <div className="equal-addbtn"></div>
         <input type="search" placeholder="Filter by name" />
@@ -65,9 +66,9 @@ const TableAccount = () => {
         <span>Avatar</span>
         <span>Name</span>
         <span>Email</span>
-        <span>G.Connected</span>
+        <span>Google?</span>
         <span>Phone</span>
-        <span>AccountID</span>
+        <span>ID</span>
         <span>Role</span>
         <span>Edit</span>
         <span>Delete</span>
@@ -81,6 +82,7 @@ const TableAccount = () => {
             onDelete={handleDelete}
           />
         ))}
+      </div>
       </div>
       <div className="table-account-pagination">
         <Pagination
