@@ -66,14 +66,6 @@ public class WorkoutController {
         return ResponseEntity.noContent().build();
     }
 
-    // get workout by id
-    @GetMapping("/workouts/{id}")
-    public ResponseEntity<Workout> findByWorkoutId(@PathVariable("id") Long id) throws WorkoutException {
-        Workout workout = workoutService.findByWorkoutID(id);
-        return ResponseEntity.ok(workout);
-        
-    }
-
     @PostMapping("/workouts")
     public ResponseEntity<Workout> createWorkout(
             @RequestBody WorkoutDTO workout) { 
