@@ -1,4 +1,7 @@
-.main{
-    position: relative;
-    top: 4rem;
+.main {
+  position: relative;
+  top: 4rem;
+  margin: 1rem;
+  border: 1px solid rgba(0, 209, 52, 1);
+  border-radius: 18px;
 }

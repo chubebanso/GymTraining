@@ -1,0 +1,34 @@
+.home{
+    display: flex;
+    flex-direction: row;
+    height: calc(100vh - 6rem);
+}
+.home-chart{
+    flex: 1;
+    display: flex;
+    border-right: 1px solid rgba(227, 227, 227, 1);
+    flex-direction: column;
+}
+.home-list{
+    width: 25%;
+}
+.home-list-workout{
+    height: 50%;
+    border-bottom:1px solid rgba(227, 227, 227, 1);
+    padding: 1rem;
+}
+.home-chart-overview{
+    display: flex;
+    flex-direction: row;
+}
+.home-chart-overview-kcal{
+    flex: 1;
+    display: flex;
+    border-right: 1px solid rgba(227, 227, 227, 1);
+    padding: 1rem;
+    width: 60%;
+}
+.hom-chart-overview-worout{
+    flex: 1;
+    padding: 1rem;
+}
