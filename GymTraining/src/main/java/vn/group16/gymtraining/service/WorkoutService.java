@@ -79,7 +79,7 @@ public class WorkoutService {
         workout.setVideoUrl(workoutDTO.getVideoUrl());
         if (workoutDTO.getExercises() != null && !workoutDTO.getExercises().isEmpty()) {
             workoutDTO.getExercises().forEach(exercise -> {
-                exercise.setWorkout(workout); // Liên kết workout cho exercise
+                exercise.setWorkout(workout); 
             });
             workout.setExercises(workoutDTO.getExercises());
         }
@@ -100,8 +100,14 @@ public class WorkoutService {
             existingWorkout.setCategory(workoutDetails.getCategory());
             existingWorkout.setMuscleGroups(workoutDetails.getMuscleGroups());
             existingWorkout.setDifficultyLevel(workoutDetails.getDifficultyLevel());
-            existingWorkout.setExercises(workoutDetails.getExercises());
+            existingWorkout.setVideoUrl(workoutDetails.getVideoUrl());
 
+            if (workoutDetails.getExercises() != null && !workoutDetails.getExercises().isEmpty()) {
+                workoutDetails.getExercises().forEach(exercise -> {
+                    exercise.setWorkout(existingWorkout); 
+                });
+                existingWorkout.setExercises(workoutDetails.getExercises());
+            }
             return workoutRepository.save(existingWorkout);
         }
         return null;
