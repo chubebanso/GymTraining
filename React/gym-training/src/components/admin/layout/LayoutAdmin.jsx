@@ -6,7 +6,7 @@ import "./LayoutAdmin.css";
 const Layout = () => {
   return (
     <>
-    <HeaderAdmin />
+      <HeaderAdmin />
       <Sidebar />
       <main className="main-admin">
         <Outlet />
