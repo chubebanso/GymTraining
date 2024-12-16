@@ -8,7 +8,7 @@ import vn.group16.gymtraining.domain.Exercise;
 import vn.group16.gymtraining.domain.MuscleGroup;
 
 public class WorkoutDTO {
-
+    private Long id; // Thêm trường ID
     private String name;
     private String description;
     private String image;
@@ -20,10 +20,11 @@ public class WorkoutDTO {
     private List<Exercise> exercises;
     private String videoUrl;
 
-    // constructor
-    public WorkoutDTO(String name, String description, String image, String videoUrl, int duration, int calories,
-            String category,
-            Set<MuscleGroup> muscleGroups, String difficultyLevel, List<Exercise> exercises) {
+    // Constructor bao gồm ID
+    public WorkoutDTO(Long id, String name, String description, String image, String videoUrl, int duration,
+            int calories, String category, Set<MuscleGroup> muscleGroups,
+            String difficultyLevel, List<Exercise> exercises) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.image = image;
@@ -40,7 +41,15 @@ public class WorkoutDTO {
         // Default constructor
     }
 
-    // Getters and Setters
+    // Getters và Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -96,13 +105,6 @@ public class WorkoutDTO {
     public void setMuscleGroups(Set<MuscleGroup> muscleGroups) {
         this.muscleGroups = muscleGroups;
     }
-    // public List<Long> getMuscleGroups() {
-    // return muscleGroups;
-    // }
-
-    // public void setMuscleGroups(List<Long> muscleGroups) {
-    // this.muscleGroups = muscleGroups;
-    // }
 
     public String getDifficultyLevel() {
         return difficultyLevel;

@@ -49,6 +49,7 @@ public class WorkoutService {
         for (Workout workout : workouts) {
             // Tạo một DTO từ dữ liệu trong đối tượng Workout
             WorkoutDTO dto = new WorkoutDTO(
+                    workout.getId(),
                     workout.getName(),
                     workout.getDescription(),
                     workout.getImage(),
