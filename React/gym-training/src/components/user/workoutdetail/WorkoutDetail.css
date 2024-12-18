@@ -1,0 +1,195 @@
+/* Tổng thể */
+.workout-detail-container {
+  width: 97%;
+  height: 100%;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(190, 49, 49, 0.1);
+  margin: 0;
+  border: 2px solid #28a745; /* Thêm màu xanh lá cho đường viền */
+}
+
+.workout-detail-header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 2px solid #e0e0e0;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.back-icon {
+  font-size: 24px;
+  cursor: pointer;
+  margin-right: 15px;
+  color: #333;
+}
+
+.workout-detail-title {
+  color: #333;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.workout-detail-main {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px;
+}
+
+.workout-detail-main-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20px;
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+  background-color: #fff;
+  padding: 20px;
+}
+.workout-detail-main-left,
+.workout-detail-main-right {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+.workout-detail-img {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border: 2px solid #d9d9d9;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.btn-start {
+  margin: 100px;
+  padding: 15px 40px;
+  border: none;
+  outline: none;
+  color: #FFF;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 12px;
+}
+.btn-start::after {
+  content: "";
+  z-index: -1;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #333;
+  left: 0;
+  top: 0;
+  border-radius: 10px;
+}
+/* glow */
+.btn-start::before {
+  content: "";
+  background: linear-gradient(
+    45deg,
+    #FF0000, #FF7300, #FFFB00, #48FF00,
+    #00FFD5, #002BFF, #FF00C8, #FF0000
+  );
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 600%;
+  z-index: -1;
+  width: calc(100% + 10px);
+  height:  calc(100% + 10px);
+  filter: blur(20px);
+  animation: glowing 20s linear infinite;
+  transition: opacity .3s ease-in-out;
+  border-radius: 10px;
+  opacity: 0;
+}
+
+@keyframes glowing {
+  0% {background-position: 0 0;}
+  50% {background-position: 400% 0;}
+  100% {background-position: 0 0;}
+}
+
+/* hover */
+.btn-start:hover::before {
+  opacity: 1;
+}
+
+.btn-start:active:after {
+  background: transparent;
+}
+
+.btn-start:active {
+  color: #000;
+  font-weight: bold;
+}
+
+.workout-start:hover {
+  background-color: #218838;
+}
+
+.workout-detail-main-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+  background-color: #fff;
+  padding: 20px;
+}
+
+.workout-calo-duration {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  border: 1px solid #d9d9d9;
+}
+
+.workout-calo,
+.workout-duration {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.workout-exercise {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+  background-color: #f8f8f8;
+  padding: 15px;
+}
+
+.exercise-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid #28a745;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+.exercise-item div {
+  font-size: 16px;
+  color: #333;
+}
+.workout-detail-img {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border: 2px solid #d9d9d9;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}

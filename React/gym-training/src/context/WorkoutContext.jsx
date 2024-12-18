@@ -8,7 +8,7 @@ export const WorkoutContext = createContext();
 const WorkoutContextProvider = ({ children }) => {
   const [workouts, setWorkouts] = useState([]);
   const [users, setUsers] = useState([]);
-
+  const [selectedWorkout, setSelectedWorkout] = useState(null);
   const getUsers = async () => {
     try {
       const response = await axios.get(
@@ -111,7 +111,9 @@ const WorkoutContextProvider = ({ children }) => {
       console.error("Fetch error:", error);
     }
   };
-
+  const setWorkoutAsSelected = (workout) => {
+    setSelectedWorkout(workout);
+  };
   useEffect(() => {
     getUsers();
     console.log("2");
@@ -124,6 +126,8 @@ const WorkoutContextProvider = ({ children }) => {
         deleteUser,
         workouts,
         getWorkouts,
+         selectedWorkout,
+        setWorkoutAsSelected,
       }}
     >
       {children}

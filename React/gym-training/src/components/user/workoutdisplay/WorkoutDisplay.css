@@ -1,0 +1,266 @@
+/* General Layout */
+.workoutdisplay {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #f4f4f9;
+  border-radius: 10px;
+  /* Bo góc */
+  border: 2px solid #4CAF50;
+  /* Viền xanh lá */
+  box-shadow: 0 4px 8px rgba(0, 128, 0, 0.2);
+  /* Hiệu ứng nổi */
+  transition: all 0.3s ease;
+  /* Hiệu ứng mượt */
+}
+
+.workoutdisplay:hover {
+  box-shadow: 0 6px 12px rgba(0, 128, 0, 0.3);
+  /* Hiệu ứng khi hover */
+}
+
+/* Header */
+.workout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.workout-header button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin: 0 10px;
+  transition: background-color 0.3s ease;
+}
+
+.workout-header button:hover {
+  background-color: #45a049;
+  /* Màu xanh đậm hơn khi hover */
+}
+
+.my-goal {
+  background-color: #FF6079 !important;
+  /* Màu nền riêng cho "My Goals" */
+}
+
+.workout-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.workout-search input {
+  padding: 10px 40px 10px 10px;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #000;
+}
+
+.search-icon {
+  position: absolute;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+  /* Ngăn icon tương tác */
+}
+
+/* Filters */
+.workout-filter {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+.workout-filter button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin: 0 10px;
+  font-size: 15px;
+  transition: background-color 0.3s ease;
+}
+
+.workout-filter button:hover {
+  background-color: #45a049;
+}
+
+/* Workout List */
+.workout-list {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  gap: 20px;
+  width: 100%;
+}
+
+.workout-list-left {
+  flex: 1;
+  width: 70%;
+}
+
+.workout-list-right {
+  flex: 1;
+  /* Chiếm toàn bộ không gian còn lại */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Căn giữa nội dung theo chiều dọc */
+  align-items: center;
+  /* Căn giữa nội dung theo chiều ngang */
+  width: 100%;
+  /* Chiếm toàn bộ chiều ngang container cha */
+  height: 100%;
+  /* Đảm bảo chiều cao chiếm hết container cha */
+  background-color: #ffffff;
+  /* Màu nền */
+  padding: 20px;
+  border-radius: 10px;
+  /* Xóa bo góc nếu cần */
+  box-shadow: 0 0 10px rgba(190, 49, 49, 0.1);
+  box-sizing: border-box;
+  /* Bao gồm padding trong kích thước */
+  margin: 0;
+  /* Xóa khoảng cách mặc định */
+}
+
+.workout-list-right h5 {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  /* Căn giữa tiêu đề */
+}
+
+.workout-list-right ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  /* Xóa margin mặc định */
+  text-align: center;
+  /* Căn giữa nội dung danh sách */
+}
+
+.workout-list-right li {
+  font-size: 14px;
+  color: #666;
+  margin: 10px 0;
+  /* Tạo khoảng cách giữa các mục */
+}
+
+.workout-list-title {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: left;
+  margin: 20px 10px -20px 10px;
+}
+
+/* Workout Items */
+.workout-list-left .workout-list-item {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 10px;
+  width: 100%;
+  margin: 0 auto;
+  /* Để căn giữa nếu cần */
+}
+
+.workout-list-left .workout-list-item .next-icon {
+  font-size: 25px;
+  color: #4CAF50;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.workout-list-left .workout-list-item .next-icon:hover {
+  color: #45a049;
+}
+
+.todayplan-workouts {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+}
+.workout-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+}
+.workout-list-item img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Quick Workout */
+.workout-function-item {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  gap: 20px;
+  width: 100%;
+}
+
+.workout-current,
+.workout-quick {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.workout-current {
+  background-color: #fff;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  font-size: 16px;
+  margin-right: -10px;
+}
+
+.workout-quick {
+  background-color: #fff;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Hover Effects */
+.workout-list-left .workout-list-item div {
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.workout-img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
