@@ -25,7 +25,7 @@ const WorkoutContextProvider = ({ children }) => {
       if (result.statusCode === 200) {
         setUsers(result.data);
       } else {
-        console.error("Error fetching data:", result.message);
+        console.error("Error fetching data:", result ? result.message : "No result data");
       }
     } catch (error) {
       console.error("Fetch error:", error);
