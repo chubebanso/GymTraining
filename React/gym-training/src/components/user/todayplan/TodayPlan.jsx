@@ -1,50 +1,59 @@
-//import React from 'react'
-import "./TodayPlan.css";
-// import axios from "axios";
-// import { useEffect, useContext } from "react";
-import Workout from "../workout/Workout";
-import { LeftCircleOutlined } from "@ant-design/icons";
-import { RightCircleOutlined } from "@ant-design/icons";
-// import { WorkoutContext } from "../../context/WorkoutContext";
-import workout1 from "../../../assets/workout1.png";
-import workout2 from "../../../assets/workout2.png";
-import workout3 from "../../../assets/workout3.png";
-
+import React, { useEffect, useState } from 'react';
+import './TodayPlan.css';
+import { LeftCircleOutlined } from '@ant-design/icons';
+import { RightCircleOutlined } from '@ant-design/icons';
+import axios from 'axios';
 
 const TodayPlan = () => {
-  // const { workouts, getWorkouts } = useContext(WorkoutContext);
-  // console.log("Workouts: ", workouts);
+  const [workouts, setWorkouts] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  // useEffect(() => {
-  //   getWorkouts();
-  // }, []);
+  // Hàm lấy ngày theo giờ Việt Nam
+  const getVietnamDate = () => {
+    const vietnamOffset = 7 * 60; // GMT+7 in phút
+    const localTimeOffset = new Date().getTimezoneOffset();
+    const vietnamTime = new Date(new Date().getTime() + (vietnamOffset - localTimeOffset) * 60000);
+    return vietnamTime.toISOString().split('T')[0];
+  };
 
-  const workouts = [
-    {
-      id: 1,
-      name: "Workout 1",
-      description: "Description of Workout 1",
-      image: workout1,
-      duration: 30,
-      calories: 200,
-    },
-    {
-      id: 2,
-      name: "Workout 2",
-      description: "Description of Workout 2",
-      image: workout2,
-      duration: 45,
-      calories: 250,
-    },
-    {
-      id: 3,
-      name: "Workout 3",
-      description: "Description of Workout 3",
-      image: workout3,
-      duration: 60,
-      calories: 300,
-    }
-  ];
+  useEffect(() => {
+    const fetchWorkouts = async () => {
+      const today = getVietnamDate(); // Lấy ngày hôm nay theo giờ Việt Nam
+      const accessToken = localStorage.getItem('accessToken'); // Lấy accessToken từ local storage
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/v1/get-schedule-by-date?date=${today}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`, // Gửi token trong header
+            },
+          }
+        );
+        const apiData = response.data;
+
+        if (apiData.statusCode === 200 && apiData.data.length > 0) {
+          const fetchedWorkouts = apiData.data.flatMap((schedule) => schedule.workouts);
+          setWorkouts(fetchedWorkouts);
+        }
+      } catch (error) {
+        console.error('Error fetching workouts: ', error);
+      }
+    };
+
+    fetchWorkouts();
+  }, []);
+
+  const handlePrev = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 3 < 0 ? 0 : prevIndex - 3));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex + 3 >= workouts.length ? prevIndex : prevIndex + 3
+    );
+  };
+
+  const currentWorkouts = workouts.slice(currentIndex, currentIndex + 3);
 
   return (
     <div className="todayplan">
@@ -52,20 +61,30 @@ const TodayPlan = () => {
         <h3>Today Plan</h3>
       </div>
       <div className="todayplan-main">
-        <LeftCircleOutlined className="today-icon"/>
+        <LeftCircleOutlined className="today-icon" onClick={handlePrev} />
         <div className="todayplan-workouts">
-          {workouts.map((workout) =>
-            <Workout
-              key={workout.id}
-              name={workout.name}
-              description={workout.description}
-              image={workout.image}
-              duration={workout.duration}
-              calories={workout.calories}
-            />
-          )}
+          {currentWorkouts.map((workout) => (
+            <div className="workout-item" key={workout.id}>
+              <img
+            src={`/avatars//${workout.image}`}
+                alt={workout.name}
+                className="workout-image"
+              />
+              <div className="workout-details">
+                <h4 className="workout-title">{workout.name}</h4>
+                <p className="workout-description">{workout.description}</p>
+                <div className="progress-bar">
+                  <div
+                    className="progress-bar-fill"
+                    style={{ width: `${workout.progress || 0}%` }}
+                  ></div>
+                </div>
+                <p className="workout-progress">{workout.progress || 0}%</p>
+              </div>
+            </div>
+          ))}
         </div>
-        <RightCircleOutlined className="today-icon"/>
+        <RightCircleOutlined className="today-icon" onClick={handleNext} />
       </div>
       <hr />
     </div>

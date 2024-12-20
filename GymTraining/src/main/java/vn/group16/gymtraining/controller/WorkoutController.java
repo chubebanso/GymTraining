@@ -1,6 +1,5 @@
 package vn.group16.gymtraining.controller;
 
-
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,7 @@ import vn.group16.gymtraining.util.error.WorkoutException;
 @RestController
 @RequestMapping("/api/v1")
 public class WorkoutController {
-    
+
     final private WorkoutService workoutService;
 
     public WorkoutController(WorkoutService workoutService) {
@@ -36,8 +35,6 @@ public class WorkoutController {
         }
         return ResponseEntity.noContent().build();
     }
-
-    
 
     @GetMapping("/workouts/difficulty/{difficultyLevel}")
     public ResponseEntity<List<Workout>> getWorkoutByDifficultyLevel(@PathVariable String difficultyLevel) {
@@ -59,23 +56,22 @@ public class WorkoutController {
 
     @PostMapping("/workouts")
     public ResponseEntity<Workout> createWorkout(
-            @RequestBody WorkoutDTO workout) { 
+            @RequestBody WorkoutDTO workout) {
         Workout createdWorkout = workoutService.createWorkout(workout);
         return ResponseEntity.ok(createdWorkout);
     }
 
     @PutMapping("/workouts/{id}")
     public ResponseEntity<Workout> updateWorkout(
-            @PathVariable("id") Long id, 
-            @RequestBody Workout workoutDetails
-            ) { 
-            
-         try {
-        Workout updatedWorkout = workoutService.updateWorkout(id, workoutDetails);
-        return ResponseEntity.ok(updatedWorkout);
-    } catch (WorkoutException e) {
-        return ResponseEntity.badRequest().build();
-    }
+            @PathVariable("id") Long id,
+            @RequestBody Workout workoutDetails) {
+
+        try {
+            Workout updatedWorkout = workoutService.updateWorkout(id, workoutDetails);
+            return ResponseEntity.ok(updatedWorkout);
+        } catch (WorkoutException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @DeleteMapping("/workouts/{id}")
