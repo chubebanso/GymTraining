@@ -92,4 +92,8 @@ public class UserController {
         return ResponseEntity.ok(this.userService.getAllUsers());
     }
 
+    @PutMapping("/users/edit-infor")
+    public ResponseEntity<User> editInfor(@Valid @RequestBody User user) {
+        return ResponseEntity.ok(this.userService.handleEditInforUser(user));
+    }
 }

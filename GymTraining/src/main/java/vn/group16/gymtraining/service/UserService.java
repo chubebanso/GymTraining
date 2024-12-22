@@ -1,5 +1,6 @@
 package vn.group16.gymtraining.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,6 +83,39 @@ public class UserService {
     }
 
     public List<User> getAllUsers() {
-        return this.userRepository.findAll();
+        List<User> users = this.userRepository.findAll();
+        List<User> result = new ArrayList<>();
+        for (User user : users) {
+            User userl = new User(
+                    user.getId(),
+                    user.getName(),
+                    user.getEmail(),
+                    user.getPassword(),
+                    user.getPhone(),
+                    user.getAge(),
+                    user.getGender(),
+                    user.getImage(),
+                    user.getRole()
+                    );
+            result.add(userl);
+        }
+        return result;
+    }
+
+    public User handleEditInforUser(User user) {
+        Optional<User> userUpdate = this.userRepository.findById(user.getId());
+        if (userUpdate.isPresent()) {
+            User currentUser = userUpdate.get();
+            currentUser.setEmail(user.getEmail());
+            currentUser.setName(user.getName());
+            currentUser.setAge(user.getAge());
+            currentUser.setGender(user.getGender());
+            currentUser.setPhone(user.getPhone());
+            currentUser.setHeight(user.getHeight());
+            currentUser.setWeight(user.getWeight());
+            currentUser.setImage(user.getImage());
+            return this.userRepository.save(currentUser);
+        }
+        return null;
     }
 }
