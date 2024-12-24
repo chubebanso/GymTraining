@@ -36,10 +36,6 @@ public class Schedule {
     @JsonProperty("workouts")
     private List<Workout> workouts;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
     public long getId() {
         return id;
     }
@@ -100,13 +96,4 @@ public class Schedule {
             this.workouts.remove(workout);
         }
     }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
 }

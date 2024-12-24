@@ -83,23 +83,8 @@ public class UserService {
     }
 
     public List<User> getAllUsers() {
-        List<User> users = this.userRepository.findAll();
-        List<User> result = new ArrayList<>();
-        for (User user : users) {
-            User userl = new User(
-                    user.getId(),
-                    user.getName(),
-                    user.getEmail(),
-                    user.getPassword(),
-                    user.getPhone(),
-                    user.getAge(),
-                    user.getGender(),
-                    user.getImage(),
-                    user.getRole()
-                    );
-            result.add(userl);
-        }
-        return result;
+        return this.userRepository.findAll();
+        
     }
 
     public User handleEditInforUser(User user) {
