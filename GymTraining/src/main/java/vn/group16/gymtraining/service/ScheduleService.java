@@ -162,5 +162,10 @@ public class ScheduleService {
         schedule.getCompletedWorkouts().add(workout);
 
         return scheduleRepository.save(schedule);
+
+    }
+
+    public List<Schedule> getAllSchedule() {
+        return this.scheduleRepository.findAll();
     }
 }
