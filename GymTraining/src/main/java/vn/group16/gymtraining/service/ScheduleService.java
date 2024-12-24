@@ -124,4 +124,43 @@ public class ScheduleService {
 
         return scheduleRepository.save(schedule);
     }
+
+    public Integer computeCaloriesInDay(LocalDate date) {
+        Optional<List<Schedule>> listSchedule = this.scheduleRepository.findScheduleByDate(date);
+        Integer totalCalories = 0;
+        if (listSchedule.isPresent()) {
+            List<Schedule> schedules = listSchedule.get();
+            for (Schedule schedule : schedules) {
+                for (Workout workout : schedule.getCompletedWorkouts()) {
+                    totalCalories += workout.getCalories();
+                }
+            }
+            return totalCalories;
+        } else
+            return totalCalories;
+    }
+
+    public Schedule addCompletedWorkoutToSchedule(long scheduleId, long workoutId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new RuntimeException("Schedule not found with id: " + scheduleId));
+
+        Workout workout = workoutRepository.findById(workoutId)
+                .orElseThrow(() -> new RuntimeException("Workout not found with id: " + workoutId));
+
+        // Check if workout exists in schedule's workouts
+        boolean workoutExists = schedule.getWorkouts().stream()
+                .anyMatch(existingWorkout -> existingWorkout.getId().equals(workout.getId()));
+
+        if (!workoutExists) {
+            throw new RuntimeException("Workout not in this schedule");
+        }
+        // Check if workout already exists in completedWorkouts
+        if (schedule.getCompletedWorkouts().stream()
+                .anyMatch(completedWorkout -> completedWorkout.getId().equals(workout.getId()))) {
+            throw new RuntimeException("Workout already completed for this schedule");
+        }
+        schedule.getCompletedWorkouts().add(workout);
+
+        return scheduleRepository.save(schedule);
+    }
 }

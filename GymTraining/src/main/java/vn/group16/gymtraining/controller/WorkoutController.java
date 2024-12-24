@@ -1,5 +1,6 @@
 package vn.group16.gymtraining.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import vn.group16.gymtraining.domain.Workout;
@@ -77,6 +79,25 @@ public class WorkoutController {
     @DeleteMapping("/workouts/{id}")
     public ResponseEntity<Void> deleteWorkout(@PathVariable Long id) throws WorkoutException {
         workoutService.deleteWorkout(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    //api get recent workout
+    @GetMapping("/workouts/recent-workout")
+    public ResponseEntity<List<WorkoutDTO>> getRecentWorkout(@RequestParam("date") LocalDate date) {
+        List<WorkoutDTO> workouts = workoutService.getRecentWorkout(date);
+        if (workouts != null && !workouts.isEmpty()) {
+            return ResponseEntity.ok(workouts);
+        }
+        return ResponseEntity.noContent().build();
+    }    
+
+    @GetMapping("/workouts/history-workout-by-date")
+    public ResponseEntity<List<WorkoutDTO>> getHistoryWorkoutByDate(@RequestParam("date") LocalDate date) {
+        List<WorkoutDTO> workouts = workoutService.getHistoryWorkoutByDate(date);
+        if (workouts != null && !workouts.isEmpty()) {
+            return ResponseEntity.ok(workouts);
+        }
         return ResponseEntity.noContent().build();
     }
 }
