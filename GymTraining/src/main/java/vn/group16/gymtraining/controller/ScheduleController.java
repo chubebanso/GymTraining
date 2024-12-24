@@ -58,4 +58,20 @@ public class ScheduleController {
         return ResponseEntity.ok(updatedSchedule);
 
     }
+    //api compute calories in day, in week
+    @GetMapping("/schedule/calories/day")
+    public ResponseEntity<Integer> computeCaloriesInDay(@RequestParam("date") LocalDate date) {
+        Integer calories = scheduleService.computeCaloriesInDay(date);
+        if (calories != null) {
+            return ResponseEntity.ok(calories);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/schedule/save-completed-workout")
+    public ResponseEntity<Schedule> saveCompletedWorkout(@RequestParam("scheduleId") long scheduleId,
+            @RequestParam("workoutId") long workoutId) {
+        Schedule schedule = scheduleService.addCompletedWorkoutToSchedule(scheduleId, workoutId);
+        return ResponseEntity.ok(schedule);
+    }
 }

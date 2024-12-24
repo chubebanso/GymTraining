@@ -36,6 +36,12 @@ public class Schedule {
     @JsonProperty("workouts")
     private List<Workout> workouts;
 
+
+    @ManyToMany
+    @JoinTable(name = "schedule_completed_workout", joinColumns = @JoinColumn(name = "schedule_id"), inverseJoinColumns = @JoinColumn(name = "workout_id"))
+    @JsonProperty("workouts")
+    private List<Workout> completed_workouts;
+
     public long getId() {
         return id;
     }
@@ -97,4 +103,12 @@ public class Schedule {
         }
     }
 
+ 
+    public List<Workout> getCompletedWorkouts() {
+        return completed_workouts;
+    }
+
+    public void setCompletedWorkouts(List<Workout> completed_workouts) {
+        this.completed_workouts = completed_workouts;
+    }
 }
