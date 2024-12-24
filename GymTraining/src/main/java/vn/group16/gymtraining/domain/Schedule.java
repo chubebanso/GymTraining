@@ -4,12 +4,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,7 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -26,6 +22,7 @@ public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     private String startTime;
     private String endTime;
     private LocalDate date;
@@ -33,15 +30,15 @@ public class Schedule {
 
     @ManyToMany
     @JoinTable(name = "schedule_workout", joinColumns = @JoinColumn(name = "schedule_id"), inverseJoinColumns = @JoinColumn(name = "workout_id"))
-    @JsonProperty("workouts")
-    private List<Workout> workouts;
-
+    @JsonManagedReference // Prevent infinite recursion in workouts relationship
+    private List<Workout> workouts = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "schedule_completed_workout", joinColumns = @JoinColumn(name = "schedule_id"), inverseJoinColumns = @JoinColumn(name = "workout_id"))
-    @JsonProperty("workouts")
-    private List<Workout> completed_workouts;
+    @JsonManagedReference // Prevent infinite recursion in completed workouts relationship
+    private List<Workout> completedWorkouts = new ArrayList<>();
 
+    // Getters and Setters
     public long getId() {
         return id;
     }
@@ -74,14 +71,6 @@ public class Schedule {
         this.date = date;
     }
 
-    public List<Workout> getWorkouts() {
-        return workouts;
-    }
-
-    public void setWorkouts(List<Workout> workouts) {
-        this.workouts = workouts;
-    }
-
     public String getTitle() {
         return title;
     }
@@ -90,25 +79,48 @@ public class Schedule {
         this.title = title;
     }
 
+    public List<Workout> getWorkouts() {
+        return workouts;
+    }
+
+    public void setWorkouts(List<Workout> workouts) {
+        this.workouts = workouts;
+    }
+
+    public List<Workout> getCompletedWorkouts() {
+        return completedWorkouts;
+    }
+
+    public void setCompletedWorkouts(List<Workout> completedWorkouts) {
+        this.completedWorkouts = completedWorkouts;
+    }
+
+    // Convenience methods
     public void addWorkout(Workout workout) {
         if (workout != null && !this.workouts.contains(workout)) {
             this.workouts.add(workout);
+            workout.getSchedules().add(this);
         }
     }
 
-    // Convenience method to remove a workout
     public void removeWorkout(Workout workout) {
         if (workout != null) {
             this.workouts.remove(workout);
+            workout.getSchedules().remove(this);
         }
     }
 
- 
-    public List<Workout> getCompletedWorkouts() {
-        return completed_workouts;
+    public void addCompletedWorkout(Workout workout) {
+        if (workout != null && !this.completedWorkouts.contains(workout)) {
+            this.completedWorkouts.add(workout);
+            workout.getSchedules().add(this);
+        }
     }
 
-    public void setCompletedWorkouts(List<Workout> completed_workouts) {
-        this.completed_workouts = completed_workouts;
+    public void removeCompletedWorkout(Workout workout) {
+        if (workout != null) {
+            this.completedWorkouts.remove(workout);
+            workout.getSchedules().remove(this);
+        }
     }
 }

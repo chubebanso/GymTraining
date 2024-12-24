@@ -58,7 +58,12 @@ public class ScheduleController {
         return ResponseEntity.ok(updatedSchedule);
 
     }
-    //api compute calories in day, in week
+
+    @GetMapping("/get-all-schedule")
+    public ResponseEntity<List<Schedule>> getAllSchedule() {
+        return ResponseEntity.ok(this.scheduleService.getAllSchedule());
+    }
+
     @GetMapping("/schedule/calories/day")
     public ResponseEntity<Integer> computeCaloriesInDay(@RequestParam("date") LocalDate date) {
         Integer calories = scheduleService.computeCaloriesInDay(date);

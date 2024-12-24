@@ -1,0 +1,84 @@
+.kcal-burn-overview {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.kcal-burn-overview h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.kcal-burn-overview-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* Left Section: Progress Circle */
+.kcal-progress {
+    width: 40%;
+}
+
+.kcal-circle {
+    width: 120px;
+    height: 120px;
+    border: 10px solid #f8b400;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    background: #fff;
+}
+
+.kcal-progress-info {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.kcal-progress-info .kcal-stat {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.kcal-progress-info .kcal-stat svg {
+    margin-right: 8px;
+    color: #f8b400;
+}
+
+/* Right Section: Workout List */
+.workout-list {
+    width: 50%;
+}
+
+.workout-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.workout-icon {
+    font-size: 2rem;
+    margin-right: 10px;
+    color: #f8b400;
+}
+
+.workout-details strong {
+    font-size: 1rem;
+    color: #000;
+}
+
+.workout-details p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #666;
+}

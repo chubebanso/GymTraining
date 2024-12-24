@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -57,13 +55,13 @@ public class Workout {
     @Column(nullable = true)
     private String difficultyLevel;
 
-    // Many-to-Many relationship with Schedule
     @ManyToMany(mappedBy = "workouts", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("workouts")
-    private List<Schedule> schedules;
+    @JsonBackReference // Prevent infinite recursion
+    private List<Schedule> schedules = new ArrayList<>();
 
     @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Exercise> exercises;
+    @JsonIgnoreProperties("workout") // Prevent recursion for exercises
+    private List<Exercise> exercises = new ArrayList<>();
 
     // Getters and Setters
     public Long getId() {
@@ -162,27 +160,32 @@ public class Workout {
         this.exercises = exercises;
     }
 
-    // Convenience method to add a schedule
+    // Convenience methods
     public void addSchedule(Schedule schedule) {
         if (schedule != null && !this.schedules.contains(schedule)) {
             this.schedules.add(schedule);
-            schedule.addWorkout(this);
+            schedule.getWorkouts().add(this);
         }
     }
 
-    // Convenience method to remove a schedule
     public void removeSchedule(Schedule schedule) {
         if (schedule != null) {
             this.schedules.remove(schedule);
-            schedule.removeWorkout(this);
+            schedule.getWorkouts().remove(this);
         }
     }
 
-    // Convenience method to add an exercise
     public void addExercise(Exercise exercise) {
-        if (exercise != null) {
+        if (exercise != null && !this.exercises.contains(exercise)) {
             this.exercises.add(exercise);
             exercise.setWorkout(this);
+        }
+    }
+
+    public void removeExercise(Exercise exercise) {
+        if (exercise != null) {
+            this.exercises.remove(exercise);
+            exercise.setWorkout(null);
         }
     }
 }
