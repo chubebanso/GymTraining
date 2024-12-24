@@ -258,20 +258,19 @@ const AddWorkout = () => {
             <div className="workout-info-right">
               <div className="component-name">Video</div>
             </div>
-            <div className="workout-info-right">
-              <Upload.Dragger
-                name="files"
-                multiple={false}
-                showUploadList={false}
-                action="/upload.do"
-                className="upload-section"
-              >
-                <div className="upload-section">
-                  <img className="upload-section-img" alt="Frame" src="" />
-                  <p className="p">Click or drag file to this area to upload</p>
-                </div>
-              </Upload.Dragger>
-            </div>
+           <div className="workout-info-right">
+  <div className="component-name">YouTube Video Link</div>
+  <Form.Item
+    name="videoUrl"
+    rules={[
+      { required: true, message: "Please enter a YouTube video link!" },
+      { type: "url", message: "Please enter a valid URL!" },
+    ]}
+  >
+    <Input placeholder="Enter YouTube video link (e.g., https://www.youtube.com/watch?v=abc123)" />
+  </Form.Item>
+</div>
+
           </div>
         </div>
         <div className="workout-info">

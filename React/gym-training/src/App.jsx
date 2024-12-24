@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import UserInfo from "./pages/user/UserInfo";
 import UserWorkout from "./pages/user/UserWorkout";
 import UserWorkoutDetail from "./pages/user/UserWorkoutDetail";
+import VideoPlayer from "./components/user/workoutdetail/VideoPlayer.jsx";
 
 const AppRoutes = () => {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ const AppRoutes = () => {
           <Route path="/userinfo/*" element={<UserInfo />} />
           <Route path="/userworkout" element={<UserWorkout />} />
           <Route path="/userworkoutdetail/:id" element={<UserWorkoutDetail />} />
+           <Route path="/workout/video/:id" element={<VideoPlayer />} />
         </Route>
       )}
       {userRole === "ADMIN" && (

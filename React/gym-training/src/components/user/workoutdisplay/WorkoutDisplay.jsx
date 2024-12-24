@@ -94,7 +94,7 @@ const WorkoutDisplay = () => {
                   style={{ cursor: "pointer" }}
                 >
                   <img
-                    src={`/avatars/${quickWorkout.image}`}
+                    src={`/avatars//${quickWorkout.image}`}
                     alt={workout.name}
                     className="workout-img"
                   />
@@ -114,7 +114,7 @@ const WorkoutDisplay = () => {
                   onClick={() => handleWorkoutClick(quickWorkout)}
                   style={{ cursor: 'pointer' }}
                 >
-                  <img src={`/avatars/${quickWorkout.image}`} alt={quickWorkout.name} className="workout-img" />
+                  <img src={`/avatars//${quickWorkout.image}`} alt={quickWorkout.name} className="workout-img" />
                   <p>{quickWorkout.name}</p>
                 </div>
               ) : (
