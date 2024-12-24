@@ -8,8 +8,16 @@ const WorkoutDetail = () => {
   const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate(-1); // Quay lại trang trước
+    navigate(-1); 
   };
+const handleStart = () => {
+  if (selectedWorkout) {
+    console.log("Navigating to video page with workout: ", selectedWorkout);
+    navigate(`/workout/video/${selectedWorkout.id}`, { state: selectedWorkout });
+  } else {
+    console.error("No workout selected or invalid ID!");
+  }
+};
 
   useEffect(() => {
     if (!selectedWorkout) {
@@ -34,7 +42,7 @@ const WorkoutDetail = () => {
             alt={selectedWorkout.name}
             className="workout-detail-img"
           />
-          <button className="btn-start">START</button>
+          <button className="btn-start" onClick={handleStart}>START</button>
         </div>
         <div className="workout-detail-main-right">
           <div className="workout-calo-duration">
