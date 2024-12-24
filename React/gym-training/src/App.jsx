@@ -13,6 +13,8 @@ import LayoutAdmin from "./components/admin/layout/LayoutAdmin";
 import WorkOut from "./pages/admin/Workout";
 import { useEffect } from "react";
 import UserInfo from "./pages/user/UserInfo";
+import UserWorkout from "./pages/user/UserWorkout";
+import UserWorkoutDetail from "./pages/user/UserWorkoutDetail";
 
 const AppRoutes = () => {
   const navigate = useNavigate();
@@ -31,6 +33,8 @@ const AppRoutes = () => {
           <Route path="/" element={<Home />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/userinfo/*" element={<UserInfo />} />
+          <Route path="/userworkout" element={<UserWorkout />} />
+          <Route path="/userworkoutdetail/:id" element={<UserWorkoutDetail />} />
         </Route>
       )}
       {userRole === "ADMIN" && (
