@@ -1,34 +1,89 @@
-.home{
+.home {
     display: flex;
     flex-direction: row;
     height: calc(100vh - 6rem);
 }
-.home-chart{
+
+.home-chart {
     flex: 1;
     display: flex;
     border-right: 1px solid rgba(227, 227, 227, 1);
     flex-direction: column;
 }
-.home-list{
+
+.home-list {
     width: 25%;
 }
-.home-list-workout{
+
+.home-list-workout,
+.home-list-achievement {
     height: 50%;
-    border-bottom:1px solid rgba(227, 227, 227, 1);
+    border-bottom: 1px solid rgba(227, 227, 227, 1);
     padding: 1rem;
 }
-.home-chart-overview{
+
+.home-chart-overview {
     display: flex;
     flex-direction: row;
 }
-.home-chart-overview-kcal{
+
+.home-chart-overview-kcal {
     flex: 1;
     display: flex;
     border-right: 1px solid rgba(227, 227, 227, 1);
     padding: 1rem;
     width: 60%;
 }
-.hom-chart-overview-worout{
+
+.hom-chart-overview-worout {
     flex: 1;
     padding: 1rem;
+}
+.workout-card {
+    border: 1px solid #00b300;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    text-align: left;
+    padding: 5px;
+}
+
+.workout-card .workout-time {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.workout-card p {
+    font-size: 12px;
+    margin: 4px 0;
+}
+
+.achievement-card {
+    border: 1px solid #ff6666;
+    border-radius: 8px;
+    margin: 5px;
+    text-align: left;
+    padding: 5px;
+}
+
+.achievement-title {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.achievement-description {
+    font-size: 12px;
+    margin: 0;
+}
+
+.view-all {
+    text-align: right;
+    margin-top: 0px;
+}
+
+.view-all a {
+    color: red;
+    text-decoration: none;
+    font-size: 14px;
 }
