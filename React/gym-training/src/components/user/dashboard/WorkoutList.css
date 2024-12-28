@@ -1,0 +1,29 @@
+.workout-card {
+    border: 1px solid #00b300;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    text-align: left;
+    padding: 5px;
+}
+
+.workout-card .workout-time {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.workout-card p {
+    font-size: 12px;
+    margin: 4px 0;
+}
+
+.view-all {
+    text-align: right;
+    margin-top: 0px;
+}
+
+.view-all a {
+    color: red;
+    text-decoration: none;
+    font-size: 14px;
+}
