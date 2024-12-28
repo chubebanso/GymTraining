@@ -30,12 +30,12 @@ public class Schedule {
 
     @ManyToMany
     @JoinTable(name = "schedule_workout", joinColumns = @JoinColumn(name = "schedule_id"), inverseJoinColumns = @JoinColumn(name = "workout_id"))
-    @JsonManagedReference // Prevent infinite recursion in workouts relationship
+    //@JsonManagedReference // Prevent infinite recursion in workouts relationship
     private List<Workout> workouts = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "schedule_completed_workout", joinColumns = @JoinColumn(name = "schedule_id"), inverseJoinColumns = @JoinColumn(name = "workout_id"))
-    @JsonManagedReference // Prevent infinite recursion in completed workouts relationship
+    //@JsonManagedReference // Prevent infinite recursion in completed workouts relationship
     private List<Workout> completedWorkouts = new ArrayList<>();
 
     // Getters and Setters
