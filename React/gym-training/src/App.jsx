@@ -22,7 +22,7 @@ const AppRoutes = () => {
   const userRole = localStorage.getItem("role");
 
   useEffect(() => {
-    if (!userRole) {
+    if (!userRole && window.location.pathname !== "/login" && window.location.pathname !== "/register") {
       navigate("/login");
     }
   }, [userRole, navigate]);
@@ -35,7 +35,7 @@ const AppRoutes = () => {
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/userinfo/*" element={<UserInfo />} />
           <Route path="/userworkout" element={<UserWorkout />} />
-          <Route path="/userworkoutdetail/:id" element={<UserWorkoutDetail />} />
+    <Route path="/userworkoutdetail/:schedule_id/:workout_id" element={<UserWorkoutDetail />} />
            <Route path="/workout/video/:id" element={<VideoPlayer />} />
         </Route>
       )}
