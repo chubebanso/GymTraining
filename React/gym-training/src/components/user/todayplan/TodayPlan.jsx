@@ -10,11 +10,12 @@ const TodayPlan = () => {
 
   // Hàm lấy ngày theo giờ Việt Nam
   const getVietnamDate = () => {
-    const vietnamOffset = 7 * 60; // GMT+7 in phút
-    const localTimeOffset = new Date().getTimezoneOffset();
-    const vietnamTime = new Date(new Date().getTime() + (vietnamOffset - localTimeOffset) * 60000);
-    return vietnamTime.toISOString().split('T')[0];
-  };
+  const vietnamTime = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
+  );
+  return vietnamTime.toISOString().split('T')[0];
+};
+
 
   useEffect(() => {
     const fetchWorkouts = async () => {

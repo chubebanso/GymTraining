@@ -13,17 +13,17 @@ const WorkoutDisplay = () => {
   const [todayWorkouts, setTodayWorkouts] = useState([]);
   const navigate = useNavigate();
 
-  // Hàm lấy ngày theo giờ Việt Nam
-  const getVietnamDate = () => {
-    const vietnamOffset = 7 * 60; // GMT+7 in phút
-    const localTimeOffset = new Date().getTimezoneOffset();
-    const vietnamTime = new Date(new Date().getTime() + (vietnamOffset - localTimeOffset) * 60000);
-    return vietnamTime.toISOString().split('T')[0];
-  };
+ const getVietnamDate = () => {
+  const vietnamTime = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
+  );
+  return vietnamTime.toISOString().split('T')[0];
+};
+
 
   useEffect(() => {
     const fetchWorkouts = async () => {
-      const today = getVietnamDate();
+      const today = getVietnamDate(); // Get the current date in Vietnam time
       const accessToken = localStorage.getItem('accessToken');
       try {
         const response = await axios.get(
@@ -37,7 +37,9 @@ const WorkoutDisplay = () => {
         const apiData = response.data;
 
         if (apiData.statusCode === 200 && apiData.data.length > 0) {
-          const fetchedWorkouts = apiData.data.flatMap((schedule) => schedule.workouts);
+          const fetchedWorkouts = apiData.data.flatMap((schedule) => {
+            return schedule.workouts.map(workout => ({ ...workout, schedule_id: schedule.id }));
+          });
           setQuickWorkout(fetchedWorkouts[0]);
           setTodayWorkouts(fetchedWorkouts);
         }
@@ -47,7 +49,7 @@ const WorkoutDisplay = () => {
     };
 
     fetchWorkouts();
-  }, []);
+  }, []); // Empty dependency array ensures this runs only once on component mount
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) => (prevIndex - 3 < 0 ? 0 : prevIndex - 3));
@@ -61,7 +63,7 @@ const WorkoutDisplay = () => {
 
   const handleWorkoutClick = (workout) => {
     setWorkoutAsSelected(workout);
-    navigate(`/userworkoutdetail/${workout.id}`);
+    navigate(`/userworkoutdetail/${workout.schedule_id}/${workout.id}`);
   };
 
   const currentWorkouts = todayWorkouts.slice(currentIndex, currentIndex + 3);
@@ -94,7 +96,7 @@ const WorkoutDisplay = () => {
                   style={{ cursor: "pointer" }}
                 >
                   <img
-                    src={`/avatars//${quickWorkout.image}`}
+                    src={`/avatars/${workout.image}`}
                     alt={workout.name}
                     className="workout-img"
                   />
@@ -114,7 +116,7 @@ const WorkoutDisplay = () => {
                   onClick={() => handleWorkoutClick(quickWorkout)}
                   style={{ cursor: 'pointer' }}
                 >
-                  <img src={`/avatars//${quickWorkout.image}`} alt={quickWorkout.name} className="workout-img" />
+                  <img src={`/avatars/${quickWorkout.image}`} alt={quickWorkout.name} className="workout-img" />
                   <p>{quickWorkout.name}</p>
                 </div>
               ) : (

@@ -17,9 +17,6 @@ const Dashboard = () => {
                 <KcalBurnOverview />
             </div>
           </div>
-          <div className="hom-chart-overview-worout">
-            <div>List upcoming</div>
-          </div>
         </div>
         <div>
        <MonthlyWorkoutComparison />
