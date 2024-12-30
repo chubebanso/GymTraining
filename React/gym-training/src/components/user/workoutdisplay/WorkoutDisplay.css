@@ -264,3 +264,82 @@
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+
+.category-dropdown {
+  position: relative;
+}
+
+.category-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  width: 130px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  /* Giảm kích thước chữ */
+}
+
+.category-option {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: 3px;
+  transition: background-color 0.3s;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.category-option:hover {
+  background-color: #f0f0f0;
+}
+
+.category-option input[type="radio"] {
+  margin-right: 10px;
+}
+.duration-dropdown {
+  position: relative;
+}
+
+.duration-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  width: 110px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 14px;
+  /* Giảm kích thước chữ */
+}
+
+.duration-option {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: 3px;
+  transition: background-color 0.3s;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.duration-option:hover {
+  background-color: #f0f0f0;
+}
+
+.duration-option input[type="radio"] {
+  margin-right: 10px;
+}

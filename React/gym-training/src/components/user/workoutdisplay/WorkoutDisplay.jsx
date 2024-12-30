@@ -11,19 +11,32 @@ const WorkoutDisplay = () => {
   const [quickWorkout, setQuickWorkout] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [todayWorkouts, setTodayWorkouts] = useState([]);
+  const [filteredWorkouts, setFilteredWorkouts] = useState([]);
+  const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [isDurationMenuOpen, setIsDurationMenuOpen] = useState(false);
+  const [selectedDuration, setSelectedDuration] = useState('All');
+const durations = ['All', '15', '30', '45', '60'];
+
+
   const navigate = useNavigate();
 
- const getVietnamDate = () => {
-  const vietnamTime = new Date(
-    new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
-  );
-  return vietnamTime.toISOString().split('T')[0];
-};
+  const categories = ['All', 'Strength', 'Cardio', 'Yoga', 'Body Strength'];
 
+  const getVietnamDate = () => {
+    const formatter = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Ho_Chi_Minh",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+    const [{ value: year }, , { value: month }, , { value: day }] = formatter.formatToParts(new Date());
+    return `${year}-${month}-${day}`;
+  };
 
   useEffect(() => {
     const fetchWorkouts = async () => {
-      const today = getVietnamDate(); // Get the current date in Vietnam time
+      const today = getVietnamDate();
       const accessToken = localStorage.getItem('accessToken');
       try {
         const response = await axios.get(
@@ -42,6 +55,7 @@ const WorkoutDisplay = () => {
           });
           setQuickWorkout(fetchedWorkouts[0]);
           setTodayWorkouts(fetchedWorkouts);
+          setFilteredWorkouts(fetchedWorkouts); // Initially show all workouts
         }
       } catch (error) {
         console.error('Error fetching workouts: ', error);
@@ -49,7 +63,7 @@ const WorkoutDisplay = () => {
     };
 
     fetchWorkouts();
-  }, []); // Empty dependency array ensures this runs only once on component mount
+  }, []);
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) => (prevIndex - 3 < 0 ? 0 : prevIndex - 3));
@@ -57,7 +71,7 @@ const WorkoutDisplay = () => {
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex + 3 >= todayWorkouts.length ? prevIndex : prevIndex + 3
+      prevIndex + 3 >= filteredWorkouts.length ? prevIndex : prevIndex + 3
     );
   };
 
@@ -66,7 +80,40 @@ const WorkoutDisplay = () => {
     navigate(`/userworkoutdetail/${workout.schedule_id}/${workout.id}`);
   };
 
-  const currentWorkouts = todayWorkouts.slice(currentIndex, currentIndex + 3);
+  const toggleCategoryMenu = () => {
+    setIsCategoryMenuOpen(!isCategoryMenuOpen);
+  };
+const filterWorkouts = (category, duration) => {
+  let filtered = todayWorkouts;
+
+  if (category !== 'All') {
+    filtered = filtered.filter(workout => workout.category === category);
+  }
+
+  if (duration !== 'All') {
+    const durationInMinutes = parseInt(duration, 10);
+    filtered = filtered.filter(workout => workout.duration === durationInMinutes);
+  }
+
+  setFilteredWorkouts(filtered);
+  setCurrentIndex(0); // Đặt lại phân trang
+};
+
+  const selectCategory = (category) => {
+  setSelectedCategory(category);
+  setIsCategoryMenuOpen(false);
+  filterWorkouts(category, selectedDuration);
+};
+
+  const currentWorkouts = filteredWorkouts.slice(currentIndex, currentIndex + 3);
+const toggleDurationMenu = () => {
+  setIsDurationMenuOpen(!isDurationMenuOpen);
+};
+const selectDuration = (duration) => {
+  setSelectedDuration(duration);
+  setIsDurationMenuOpen(false);
+  filterWorkouts(selectedCategory, duration);
+};
 
   return (
     <div className="workoutdisplay">
@@ -76,10 +123,57 @@ const WorkoutDisplay = () => {
           <input type="text" placeholder="Search by type, duration, or difficulty..." />
           <img src={searchIcon} alt="search" className="search-icon" />
         </div>
-        <div className="workout-filter">
-          <button className="category">Category</button>
-          <button className="duration">Duration</button>
-        </div>
+              <div className="workout-filter">
+  {/* Phần Category */}
+  <div className="category-dropdown">
+    <button className="category" onClick={toggleCategoryMenu}>
+      {selectedCategory === 'All' ? 'Category' : selectedCategory}
+    </button>
+    {isCategoryMenuOpen && (
+      <div className="category-menu">
+        {categories.map((category) => (
+          <label key={category} className="category-option">
+            <input
+              type="radio"
+              name="category"
+              value={category}
+              checked={selectedCategory === category}
+              onChange={() => selectCategory(category)}
+            />
+            {category}
+          </label>
+        ))}
+      </div>
+    )}
+  </div>
+
+  {/* Phần Duration */}
+  <div className="duration-dropdown">
+    <button className="duration" onClick={toggleDurationMenu}>
+  {selectedDuration === 'All' ? 'Duration' : `${selectedDuration} minutes`}
+</button>
+
+    {isDurationMenuOpen && (
+      <div className="duration-menu">
+       {durations.map((duration) => (
+  <label key={duration} className="duration-option">
+    <input
+      type="radio"
+      name="duration"
+      value={duration}
+      checked={selectedDuration === duration}
+      onChange={() => selectDuration(duration)}
+    />
+    {duration === 'All' ? 'All' : `${duration} minute`}
+  </label>
+))}
+
+      </div>
+    )}
+  </div>
+</div>
+
+
       </div>
 
       <h3 className="workout-list-title">Workout List</h3>
@@ -104,7 +198,6 @@ const WorkoutDisplay = () => {
                 </div>
               ))}
             </div>
-
             <RightCircleOutlined className="next-icon" onClick={handleNext} />
           </div>
           <div className="workout-function-item">

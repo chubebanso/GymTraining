@@ -9,12 +9,17 @@ const TodayPlan = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Hàm lấy ngày theo giờ Việt Nam
-  const getVietnamDate = () => {
-  const vietnamTime = new Date(
-    new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
-  );
-  return vietnamTime.toISOString().split('T')[0];
+const getVietnamDate = () => {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  const [{ value: year }, , { value: month }, , { value: day }] = formatter.formatToParts(new Date());
+  return `${year}-${month}-${day}`;
 };
+
 
 
   useEffect(() => {
