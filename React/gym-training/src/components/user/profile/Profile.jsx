@@ -77,7 +77,7 @@ const Profile = () => {
                 htmlType="submit"
                 style={{ backgroundColor: "#00d07e", borderColor: "#00d07e" }}
               >
-                Change password
+                Edit Profile
               </Button>
             </Col>
           </Row>

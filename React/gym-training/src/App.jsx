@@ -16,6 +16,7 @@ import UserInfo from "./pages/user/UserInfo";
 import UserWorkout from "./pages/user/UserWorkout";
 import UserWorkoutDetail from "./pages/user/UserWorkoutDetail";
 import VideoPlayer from "./components/user/workoutdetail/VideoPlayer.jsx";
+import Performance from "./pages/user/Performance";
 
 const AppRoutes = () => {
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ const AppRoutes = () => {
           <Route path="/" element={<Home />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/userinfo/*" element={<UserInfo />} />
+          <Route path="/performance" element={<Performance /> } />
           <Route path="/userworkout" element={<UserWorkout />} />
     <Route path="/userworkoutdetail/:schedule_id/:workout_id" element={<UserWorkoutDetail />} />
            <Route path="/workout/video/:id" element={<VideoPlayer />} />
@@ -48,7 +50,7 @@ const AppRoutes = () => {
       )}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="*" element={<Error />} />
+      <Route path="/*" element={<Error />} />
     </Routes>
   );
 };
