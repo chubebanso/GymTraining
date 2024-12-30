@@ -34,16 +34,16 @@ public class ScheduleService {
 
         List<Long> workoutId = schedule.getWorkouts().stream().map(Workout::getId).collect(Collectors.toList());
         List<Workout> workouts = this.workoutRepository.findByIdIn(workoutId);
-        System.out.println("Workouts found: " + workouts.size());
-        Schedule currentSchedule = new Schedule();
-        currentSchedule.setTitle(schedule.getTitle());
-        currentSchedule.setDate(schedule.getDate());
-        currentSchedule.setStartTime(schedule.getStartTime());
-        currentSchedule.setEndTime(schedule.getEndTime());
 
         if (workouts.isEmpty()) {
             throw new IllegalArgumentException("Không tìm thấy bài tập nào từ danh sách tên cung cấp.");
         }
+        int totalDuration = workouts.stream().mapToInt(Workout::getDuration).sum();
+        Schedule currentSchedule = new Schedule();
+        currentSchedule.setTitle(schedule.getTitle());
+        currentSchedule.setDate(schedule.getDate());
+        currentSchedule.setStartTime(schedule.getStartTime());
+        currentSchedule.setStartTimeAndDuration(schedule.getStartTime(), totalDuration);
         currentSchedule.setWorkouts(workouts);
         return this.scheduleRepository.save(currentSchedule);
     }
@@ -102,29 +102,33 @@ public class ScheduleService {
             return null;
     }
 
-    public Schedule addWorkoutToSchedule(long scheduleId, long workoutId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new RuntimeException("Schedule not found with id: " + scheduleId));
+    // public Schedule addWorkoutToSchedule(long scheduleId, long workoutId) {
+    // Schedule schedule = scheduleRepository.findById(scheduleId)
+    // .orElseThrow(() -> new RuntimeException("Schedule not found with id: " +
+    // scheduleId));
 
-        Workout workout = workoutRepository.findById(workoutId)
-                .orElseThrow(() -> new RuntimeException("Workout not found with id: " + workoutId));
+    // Workout workout = workoutRepository.findById(workoutId)
+    // .orElseThrow(() -> new RuntimeException("Workout not found with id: " +
+    // workoutId));
 
-        schedule.getWorkouts().add(workout);
+    // schedule.getWorkouts().add(workout);
 
-        return scheduleRepository.save(schedule);
-    }
+    // return scheduleRepository.save(schedule);
+    // }
 
-    public Schedule removeWorkoutFromSchedule(long scheduleId, long workoutId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new RuntimeException("Schedule not found with id: " + scheduleId));
+    // public Schedule removeWorkoutFromSchedule(long scheduleId, long workoutId) {
+    // Schedule schedule = scheduleRepository.findById(scheduleId)
+    // .orElseThrow(() -> new RuntimeException("Schedule not found with id: " +
+    // scheduleId));
 
-        Workout workout = workoutRepository.findById(workoutId)
-                .orElseThrow(() -> new RuntimeException("Workout not found with id: " + workoutId));
+    // Workout workout = workoutRepository.findById(workoutId)
+    // .orElseThrow(() -> new RuntimeException("Workout not found with id: " +
+    // workoutId));
 
-        schedule.getWorkouts().remove(workout);
+    // schedule.getWorkouts().remove(workout);
 
-        return scheduleRepository.save(schedule);
-    }
+    // return scheduleRepository.save(schedule);
+    // }
 
     public Integer computeCaloriesInDay(LocalDate date) {
         Optional<List<Schedule>> listSchedule = this.scheduleRepository.findScheduleByDate(date);
@@ -220,11 +224,10 @@ public class ScheduleService {
                 day = endDate.getDayOfMonth();
                 currentDate = LocalDate.of(year, month, day);
                 fiveDaysAgo = LocalDate.of(year, month, 26);
-            }else{
+            } else {
                 currentDate = LocalDate.of(year, month, day);
                 fiveDaysAgo = currentDate.minusDays(4); // vì tính cả currentDate nên chỉ trừ 4
             }
-
 
             int totalDuration = monthSchedules.stream()
                     .filter(s -> !s.getDate().isBefore(fiveDaysAgo) && !s.getDate().isAfter(currentDate))

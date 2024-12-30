@@ -288,7 +288,7 @@ const AddWorkout = () => {
               >
                 <Select
                   style={{ width: "100%", height: "40px" }}
-                  placeholder="Ex: Full Body Strength, Yoga"
+                  placeholder="Ex: Body Strength, Yoga"
                   showSearch
                   allowClear
                   filterOption={(input, option) =>
@@ -299,7 +299,7 @@ const AddWorkout = () => {
                   <Option value="Strength">Strength</Option>
                   <Option value="Cardio">Cardio</Option>
                   <Option value="Yoga">Yoga</Option>
-                  <Option value="Full_Body_Strength">Full Body Strength</Option>
+                  <Option value="Full_Body_Strength">Body Strength</Option>
                 </Select>
               </Form.Item>
             </div>

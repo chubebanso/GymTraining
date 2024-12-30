@@ -1,6 +1,7 @@
 package vn.group16.gymtraining.domain;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,5 +120,12 @@ public class Schedule {
             this.completedWorkouts.remove(workout);
             workout.getSchedules().remove(this);
         }
+    }
+
+    public void setStartTimeAndDuration(String startTime, int durationInMinutes) {
+        this.startTime = startTime;
+        LocalTime start = LocalTime.parse(startTime);
+        LocalTime end = start.plusMinutes(durationInMinutes);
+        this.endTime = end.toString();
     }
 }
