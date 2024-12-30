@@ -29,6 +29,8 @@ public class WorkoutController {
         this.workoutService = workoutService;
     }
 
+    
+
     @GetMapping("/workouts/category/{category}")
     public ResponseEntity<List<Workout>> getWorkoutByCategory(@PathVariable String category) {
         List<Workout> workouts = workoutService.getWorkoutByCategory(category);
@@ -41,6 +43,15 @@ public class WorkoutController {
     @GetMapping("/workouts/difficulty/{difficultyLevel}")
     public ResponseEntity<List<Workout>> getWorkoutByDifficultyLevel(@PathVariable String difficultyLevel) {
         List<Workout> workouts = workoutService.getWorkoutByDifficultyLevel(difficultyLevel);
+        if (workouts != null && !workouts.isEmpty()) {
+            return ResponseEntity.ok(workouts);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/workouts/duration")
+    public ResponseEntity<List<WorkoutDTO>> getWorkoutsByMaxDuration(@RequestParam("maxDuration") int maxDuration) {
+        List<WorkoutDTO> workouts = workoutService.getWorkoutsByMaxDuration(maxDuration);
         if (workouts != null && !workouts.isEmpty()) {
             return ResponseEntity.ok(workouts);
         }
@@ -61,6 +72,16 @@ public class WorkoutController {
             @RequestBody WorkoutDTO workout) {
         Workout createdWorkout = workoutService.createWorkout(workout);
         return ResponseEntity.ok(createdWorkout);
+    }
+
+    @GetMapping("/workouts/{workout_id}")
+    public ResponseEntity<Workout> getWorkoutById(@PathVariable("workout_id") Long id) {
+        try {
+            Workout workout = this.workoutService.findByWorkoutID(id);
+            return ResponseEntity.ok(workout);
+        } catch (WorkoutException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/workouts/{id}")

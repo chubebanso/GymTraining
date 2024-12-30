@@ -4,9 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,12 +27,12 @@ public class Schedule {
 
     @ManyToMany
     @JoinTable(name = "schedule_workout", joinColumns = @JoinColumn(name = "schedule_id"), inverseJoinColumns = @JoinColumn(name = "workout_id"))
-    @JsonManagedReference // Prevent infinite recursion in workouts relationship
+    //@JsonManagedReference // Prevent infinite recursion in workouts relationship
     private List<Workout> workouts = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "schedule_completed_workout", joinColumns = @JoinColumn(name = "schedule_id"), inverseJoinColumns = @JoinColumn(name = "workout_id"))
-    @JsonManagedReference // Prevent infinite recursion in completed workouts relationship
+    //@JsonManagedReference // Prevent infinite recursion in completed workouts relationship
     private List<Workout> completedWorkouts = new ArrayList<>();
 
     // Getters and Setters

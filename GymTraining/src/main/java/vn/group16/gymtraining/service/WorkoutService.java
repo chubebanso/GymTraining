@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import vn.group16.gymtraining.domain.Exercise;
 import vn.group16.gymtraining.domain.Schedule;
 import vn.group16.gymtraining.domain.Workout;
 import vn.group16.gymtraining.dto.WorkoutDTO;
@@ -110,6 +109,13 @@ public class WorkoutService {
             existingWorkout.setCategory(workoutDetails.getCategory());
             existingWorkout.setMuscleGroups(workoutDetails.getMuscleGroups());
             existingWorkout.setDifficultyLevel(workoutDetails.getDifficultyLevel());
+            existingWorkout.setVideoUrl(workoutDetails.getVideoUrl());
+            if (workoutDetails.getExercises() != null && !workoutDetails.getExercises().isEmpty()) {
+                workoutDetails.getExercises().forEach(exercise -> {
+                    exercise.setWorkout(existingWorkout);
+                });
+                existingWorkout.setExercises(workoutDetails.getExercises());
+            }
 
             return workoutRepository.save(existingWorkout);
         }
@@ -194,5 +200,33 @@ public class WorkoutService {
             }
         }
         return workoutDetails;
+    }
+
+    public List<WorkoutDTO> getWorkoutsByMaxDuration(int maxDuration) {
+        if (maxDuration <= 0) {
+            return Collections.emptyList();
+        }
+        Optional<List<Workout>> workouts = workoutRepository.findByDurationLessThanEqual(maxDuration);
+        if (!workouts.isPresent()) {
+            return Collections.emptyList();
+        }
+        List<WorkoutDTO> workoutDTOs = new ArrayList<>();
+        for (Workout workout : workouts.get()) {
+            WorkoutDTO dto = new WorkoutDTO(
+                    workout.getId(),
+                    workout.getName(),
+                    workout.getDescription(),
+                    workout.getImage(),
+                    workout.getVideoUrl(),
+                    workout.getDuration(),
+                    workout.getCalories(),
+                    workout.getCategory(),
+                    workout.getMuscleGroups(),
+                    workout.getDifficultyLevel(),
+                    workout.getExercises()
+            );
+            workoutDTOs.add(dto);
+        }
+        return workoutDTOs;
     }
 }
