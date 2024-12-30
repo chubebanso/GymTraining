@@ -1,62 +1,187 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./KcalBurnOverview.css";
+import axios from "axios";
 import { FaHeart, FaFireAlt, FaBolt } from "react-icons/fa";
-import { RiRunLine } from "react-icons/ri";
-import { FaBicycle } from "react-icons/fa"; // Replaced icon
-import { GiWeightLiftingUp } from "react-icons/gi";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 
 const KcalBurnOverview = () => {
+  const [workouts, setWorkouts] = useState([]);
+  const [caloriesToday, setCaloriesToday] = useState(0); // State for today's calories
+  const [caloriesLast7Days, setCaloriesLast7Days] = useState(0); // State for last 7 days' calories
+  const [caloriesAllTime, setCaloriesAllTime] = useState(0); // State for all-time calories
+  const dailyGoal = 500; // Example goal for daily calorie burn
+
+  const progressPercentage = Math.min((caloriesToday / dailyGoal) * 100, 100); // Progress capped at 100%
+
+  useEffect(() => {
+    const fetchWorkouts = async () => {
+      try {
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) {
+          console.error("Access token not found!");
+          return;
+        }
+
+        const response = await axios.get(
+          "http://localhost:8080/api/v1/get-schedule-by-date?date=2024-12-28",
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
+        if (response.data.statusCode === 200 && response.data.data.length > 0) {
+          const fetchedWorkouts = response.data.data.flatMap((schedule) =>
+            schedule.completedWorkouts.map((workout) => ({
+              id: workout.id,
+              name: workout.name,
+              image: workout.image,
+              duration: workout.duration,
+              calories: workout.calories,
+            }))
+          );
+          setWorkouts(fetchedWorkouts);
+        }
+      } catch (error) {
+        console.error("Error fetching workouts: ", error);
+      }
+    };
+
+    const fetchCaloriesToday = async () => {
+      try {
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) {
+          console.error("Access token not found!");
+          return;
+        }
+
+        const response = await axios.get(
+          "http://localhost:8080/api/v1/schedule/calories/last-7-day?date=2024-12-28",
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
+        if (response.data.statusCode === 200) {
+          setCaloriesToday(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching today's calories: ", error);
+      }
+    };
+
+    const fetchCaloriesLast7Days = async () => {
+      try {
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) {
+          console.error("Access token not found!");
+          return;
+        }
+
+        const response = await axios.get(
+          "http://localhost:8080/api/v1/schedule/calories/last-7-day?date=2024-12-29",
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
+        if (response.data.statusCode === 200) {
+          setCaloriesLast7Days(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching last 7 days' calories: ", error);
+      }
+    };
+
+    const fetchCaloriesAllTime = async () => {
+      try {
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) {
+          console.error("Access token not found!");
+          return;
+        }
+
+        const response = await axios.get(
+          "http://localhost:8080/api/v1/schedule/calories/all",
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
+        if (response.data.statusCode === 200) {
+          setCaloriesAllTime(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching all-time calories: ", error);
+      }
+    };
+
+    fetchWorkouts();
+    fetchCaloriesToday();
+    fetchCaloriesLast7Days(); // Fetch last 7 days' calories
+    fetchCaloriesAllTime(); // Fetch all-time calories
+  }, []);
+
   return (
     <div className="kcal-burn-overview">
-      <h3>Kcal Burn Overview</h3>
+      <h3 className="overview-title">Kcal Burn Overview</h3>
       <div className="kcal-burn-overview-container">
-        <div className="kcal-progress">
+        <div className="kcal-progress-section">
           <div className="kcal-circle">
-            <p>Today</p>
-            <p><strong>200 Kcal</strong></p>
+            <CircularProgressbar
+              value={progressPercentage}
+              text={`${caloriesToday} Kcal`}
+              styles={buildStyles({
+                pathColor: progressPercentage >= 100 ? "#f54b42" : "#4caf50",
+                textColor: "#333",
+                trailColor: "#d6d6d6",
+                textSize: "12px",
+              })}
+            />
           </div>
           <div className="kcal-progress-info">
             <div className="kcal-stat">
-              <FaHeart /> 700 Kcal (Last 7 days)
+              <FaHeart /> {caloriesLast7Days} Kcal (Last 7 days)
             </div>
             <div className="kcal-stat">
-              <FaFireAlt /> 84k Kcal (All Time)
+              <FaFireAlt /> {caloriesAllTime} Kcal (All Time)
             </div>
             <div className="kcal-stat">
               <FaBolt /> 72 Kcal (Average)
             </div>
           </div>
         </div>
-        <div className="workout-list">
-          <div className="workout-item">
-            <div className="workout-icon">
-              <RiRunLine />
-            </div>
-            <div className="workout-details">
-              <strong>Indoor Run</strong>
-              <p>5.56 km</p>
-              <p>24 min - 348 Kcal</p>
-            </div>
-          </div>
-          <div className="workout-item">
-            <div className="workout-icon">
-              <FaBicycle /> {/* Replaced icon */}
-            </div>
-            <div className="workout-details">
-              <strong>Outdoor Cycle</strong>
-              <p>4.22 km</p>
-              <p>24 min - 248 Kcal</p>
-            </div>
-          </div>
-          <div className="workout-item">
-            <div className="workout-icon">
-              <GiWeightLiftingUp />
-            </div>
-            <div className="workout-details">
-              <strong>Arm Workout</strong>
-              <p>30 min - 348 Kcal</p>
-            </div>
-          </div>
+        <div className="workout-list-section">
+          {workouts.length > 0 ? (
+            workouts.map((workout) => (
+              <div key={workout.id} className="workout-items">
+                <div className="workout-icon">
+                  <img
+                    src={workout.image.startsWith("\\") ? `/avatars/${workout.image.slice(1)}` : `/avatars/${workout.image}`}
+                    alt={workout.name}
+                    className="workout-img"
+                  />
+                </div>
+                <div className="workout-details">
+                  <strong>{workout.name}</strong>
+                  <p>{workout.duration} min</p>
+                </div>
+                <div className="workout-stats">
+                  <p>{workout.calories} kcal</p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>No workouts available for the selected date.</p>
+          )}
         </div>
       </div>
     </div>

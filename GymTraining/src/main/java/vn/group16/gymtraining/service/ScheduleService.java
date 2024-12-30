@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import vn.group16.gymtraining.domain.Schedule;
 import vn.group16.gymtraining.domain.Workout;
+import vn.group16.gymtraining.dto.DurationStatDTO;
 import vn.group16.gymtraining.dto.EventDTO;
 import vn.group16.gymtraining.repository.ScheduleRepository;
 import vn.group16.gymtraining.repository.WorkoutRepository;
@@ -167,5 +168,84 @@ public class ScheduleService {
 
     public List<Schedule> getAllSchedule() {
         return this.scheduleRepository.findAll();
+    }
+
+    public Integer computeCaloriesInLast7Day(LocalDate date) {
+        List<Schedule> listSchedule = this.scheduleRepository.findAll();
+        Integer totalCalories = 0;
+        if (!listSchedule.isEmpty()) {
+            List<Schedule> schedules = listSchedule;
+            for (Schedule schedule : schedules) {
+                if (schedule.getDate().isAfter(date.minusDays(6)) && schedule.getDate().isBefore(date)) {
+                    for (Workout workout : schedule.getCompletedWorkouts()) {
+                        totalCalories += workout.getCalories();
+                    }
+                }
+            }
+            return totalCalories;
+        } else
+            return totalCalories;
+    }
+
+    public Integer computeCaloriesAll() {
+        List<Schedule> listSchedule = this.scheduleRepository.findAll();
+        Integer totalCalories = 0;
+        if (!listSchedule.isEmpty()) {
+            List<Schedule> schedules = listSchedule;
+            for (Schedule schedule : schedules) {
+                for (Workout workout : schedule.getCompletedWorkouts()) {
+                    totalCalories += workout.getCalories();
+                }
+            }
+            return totalCalories;
+        } else
+            return totalCalories;
+    }
+
+    public List<DurationStatDTO> getMonthlyDurationStats(int year, int month) {
+        List<DurationStatDTO> stats = new ArrayList<>();
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+
+        // Get all schedules for the month
+        List<Schedule> monthSchedules = scheduleRepository.findAll().stream()
+                .filter(s -> !s.getDate().isBefore(startDate) && !s.getDate().isAfter(endDate))
+                .collect(Collectors.toList());
+
+        // Create stats for every 5 days
+        for (int day = 5; day <= endDate.getDayOfMonth(); day += 5) {
+            LocalDate currentDate;
+            LocalDate fiveDaysAgo;
+            if (day > 25) {
+                day = endDate.getDayOfMonth();
+                currentDate = LocalDate.of(year, month, day);
+                fiveDaysAgo = LocalDate.of(year, month, 26);
+            }else{
+                currentDate = LocalDate.of(year, month, day);
+                fiveDaysAgo = currentDate.minusDays(4); // vì tính cả currentDate nên chỉ trừ 4
+            }
+
+
+            int totalDuration = monthSchedules.stream()
+                    .filter(s -> !s.getDate().isBefore(fiveDaysAgo) && !s.getDate().isAfter(currentDate))
+                    .flatMap(s -> s.getCompletedWorkouts().stream())
+                    .mapToInt(Workout::getDuration)
+                    .sum();
+
+            stats.add(new DurationStatDTO(day, totalDuration));
+        }
+        if (month == 2) { // nếu là tháng 2 thì thêm những ngày cuối cùng
+            LocalDate currentDate = LocalDate.of(year, month, endDate.getDayOfMonth());
+            LocalDate fiveDaysAgo = LocalDate.of(year, month, 26);
+
+            int totalDuration = monthSchedules.stream()
+                    .filter(s -> !s.getDate().isBefore(fiveDaysAgo) && !s.getDate().isAfter(currentDate))
+                    .flatMap(s -> s.getCompletedWorkouts().stream())
+                    .mapToInt(Workout::getDuration)
+                    .sum();
+
+            stats.add(new DurationStatDTO(28, totalDuration));
+        }
+        return stats;
     }
 }

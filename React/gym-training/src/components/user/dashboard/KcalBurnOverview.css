@@ -1,84 +1,165 @@
-.kcal-burn-overview {
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.kcal-burn-overview h3 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 1.5rem;
-    color: #333;
-}
-
 .kcal-burn-overview-container {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    flex-direction: row; /* Đặt các phần nằm ngang */
+    justify-content: space-between; /* Tách đều các phần */
+    align-items: flex-start; /* Căn trên cùng để thẳng hàng */
+    gap: 20px;
 }
-
-/* Left Section: Progress Circle */
-.kcal-progress {
-    width: 40%;
+.overview-title{
+   margin-left: -900px;
+}
+.kcal-progress-section {
+    width: 800px    ; /* Giảm bớt chiều rộng để cân đối với danh sách bài tập */
+    display: flex;
+    align-items: center;
+    margin-left: 30px;
 }
 
 .kcal-circle {
-    width: 120px;
-    height: 120px;
-    border: 10px solid #f8b400;
+    width: 140px;
+    height: 140px;
+    border: 8px solid #f8b400;
     border-radius: 50%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    margin-bottom: 10px;
-    background: #fff;
+    justify-content: center;
+    margin-bottom: 15px;
 }
 
 .kcal-progress-info {
+    display: flex;
+    align-items: flex-start; /* Đảm bảo các dòng thông tin thẳng nhau */
+    gap: 10px;
     font-size: 0.9rem;
-    color: #666;
-}
+    margin-left: 20px;
+    margin-top: -100px;
 
+}
 .kcal-progress-info .kcal-stat {
     display: flex;
+    flex-direction: column;
+    /* Chuyển hướng hiển thị theo cột */
     align-items: center;
-    margin-bottom: 5px;
-}
-
-.kcal-progress-info .kcal-stat svg {
-    margin-right: 8px;
-    color: #f8b400;
-}
-
-/* Right Section: Workout List */
-.workout-list {
-    width: 50%;
-}
-
-.workout-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
+    /* Căn giữa icon và text */
+    gap: 5px;
+    /* Khoảng cách giữa icon và chữ */
     font-size: 0.9rem;
     color: #333;
 }
 
-.workout-icon {
-    font-size: 2rem;
-    margin-right: 10px;
+.kcal-progress-info .kcal-stat svg {
+    font-size: 1.5rem;
+    /* Tăng kích thước icon nếu cần */
     color: #f8b400;
+}
+.kcal-progress-legend {
+    margin-top: 20px;
+    text-align: left;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.kcal-progress-legend p {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* Khoảng cách giữa ô vuông và chữ */
+    margin: 5px 0;
+}
+
+.legend-box {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    /* Góc bo tròn nhẹ */
+    display: inline-block;
+}
+
+.legend-box.completed {
+    background-color: #f8b400;
+    /* Màu đại diện Progress Completed */
+}
+
+.legend-box.current {
+    background-color: #000;
+    /* Màu đại diện Current Progress */
+}
+
+.legend-box.goal {
+    background-color: #eee;
+    /* Màu đại diện Goal Indicator */
+}
+.workout-list-section {
+    width: 50%; /* Cân đối chiều rộng với phần biểu đồ */
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Khoảng cách giữa các bài tập */
+}
+
+.workout-list-section {
+    margin-top: -40px;
+    width: 300px;
+    /* Adjusted to use available space */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-left: -100px !important;
+    /* Reduced gap for compact layout */
+}
+
+.workout-items{
+    display: flex;
+    align-items: center;
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 8px;
+    /* Adjusted for smaller padding */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    gap: 10px;
+    /* Adjusted gap for spacing */
+    font-size: 0.85rem;
+    /* Slightly smaller text */
+    max-width: 500px;
+    /* Limit width for compact appearance */
+    height: 200px;
+    margin: auto;
+    /* Center items horizontally */
+    .workout-icon {
+            width: 50px;
+            height: 50px;
+            margin-top: -10px;
+            .workout-img{
+                width: 50px;
+                    height: 50px;
+            }
+        }
+        .workout-stats{
+            margin-top: -50px;
+            width: 50px;
+            margin-right: -30px;
+        }
+}
+
+
+
+.workout-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100px;
+    
 }
 
 .workout-details strong {
-    font-size: 1rem;
-    color: #000;
+    font-size: 0.9rem;
+    /* Slightly bold and smaller */
+    color: #333;
 }
 
 .workout-details p {
-    margin: 0;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    /* Smaller text for additional details */
     color: #666;
+    /* Subdued color for secondary details */
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import vn.group16.gymtraining.domain.Schedule;
 import vn.group16.gymtraining.dto.EventDTO;
+import vn.group16.gymtraining.dto.DurationStatDTO;
 import vn.group16.gymtraining.service.ScheduleService;
 
 @RestController
@@ -79,4 +80,31 @@ public class ScheduleController {
         Schedule schedule = scheduleService.addCompletedWorkoutToSchedule(scheduleId, workoutId);
         return ResponseEntity.ok(schedule);
     }
+
+    @GetMapping("/schedule/calories/last-7-day")
+    public ResponseEntity<Integer> computeCaloriesInLast7Day(@RequestParam("date") LocalDate date) {
+        Integer calories = scheduleService.computeCaloriesInLast7Day(date);
+        if (calories != null) {
+            return ResponseEntity.ok(calories);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/schedule/calories/all")
+    public ResponseEntity<Integer> computeCaloriesAll() {
+        Integer calories = scheduleService.computeCaloriesAll();
+        if (calories != null) {
+            return ResponseEntity.ok(calories);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/schedule/duration-stats")
+    public ResponseEntity<List<DurationStatDTO>> getMonthlyDurationStats(
+            @RequestParam("year") int year,
+            @RequestParam("month") int month) {
+        List<DurationStatDTO> stats = scheduleService.getMonthlyDurationStats(year, month);
+        return ResponseEntity.ok(stats);
+    }
+
 }
