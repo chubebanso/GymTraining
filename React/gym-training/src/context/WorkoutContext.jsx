@@ -25,7 +25,10 @@ const WorkoutContextProvider = ({ children }) => {
       if (result.statusCode === 200) {
         setUsers(result.data);
       } else {
-        console.error("Error fetching data:", result ? result.message : "No result data");
+        console.error(
+          "Error fetching data:",
+          result ? result.message : "No result data"
+        );
       }
     } catch (error) {
       console.error("Fetch error:", error);
@@ -116,7 +119,7 @@ const WorkoutContextProvider = ({ children }) => {
   };
   useEffect(() => {
     getUsers();
-    console.log("2");
+    getWorkouts();
   }, []);
   return (
     <WorkoutContext.Provider
@@ -126,7 +129,7 @@ const WorkoutContextProvider = ({ children }) => {
         deleteUser,
         workouts,
         getWorkouts,
-         selectedWorkout,
+        selectedWorkout,
         setWorkoutAsSelected,
       }}
     >

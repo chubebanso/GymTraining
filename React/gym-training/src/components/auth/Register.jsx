@@ -6,8 +6,10 @@ import { Input, Button } from "antd";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from 'axios';
+import useAuth from "./useAuth";
 
 const Register = () => {
+  useAuth();
   //const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
