@@ -6,8 +6,10 @@ import { Input, Button, Checkbox, message } from "antd";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import useAuth from "./useAuth";
 
 const Login = () => {
+  useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
