@@ -217,3 +217,32 @@ h2 {
 .workout-list::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+/* GymCalendar.css */
+
+/* Nút xoá */
+.delete-event-button {
+  background-color: #ff4d4f;
+  /* Màu nền đỏ */
+  color: white;
+  /* Màu chữ trắng */
+  border: none;
+  /* Không có viền */
+  border-radius: 4px;
+  /* Bo góc */
+  padding: 8px 16px;
+  /* Khoảng cách bên trong */
+  cursor: pointer;
+  /* Con trỏ khi di chuột */
+  transition: background-color 0.3s;
+  /* Hiệu ứng chuyển màu */
+}
+
+.delete-event-button:hover {
+  background-color: #ff7875;
+  /* Màu nền khi hover */
+}
+
+.delete-event-button:focus {
+  outline: none;
+  /* Bỏ viền khi nút được chọn */
+}

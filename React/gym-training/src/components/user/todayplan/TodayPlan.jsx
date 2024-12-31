@@ -3,10 +3,12 @@ import './TodayPlan.css';
 import { LeftCircleOutlined } from '@ant-design/icons';
 import { RightCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
 
 const TodayPlan = () => {
   const [workouts, setWorkouts] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const navigate = useNavigate(); // Use the hook
 
   // Hàm lấy ngày theo giờ Việt Nam
 const getVietnamDate = () => {
@@ -58,7 +60,9 @@ const getVietnamDate = () => {
       prevIndex + 3 >= workouts.length ? prevIndex : prevIndex + 3
     );
   };
-
+  const handleWorkoutClick = (workout) => {
+    navigate(`/userworkoutdetail/${workout.schedule_id}/${workout.id}`); // Chuyển đến màn hình tập
+  };
   const currentWorkouts = workouts.slice(currentIndex, currentIndex + 3);
 
   return (
@@ -70,7 +74,7 @@ const getVietnamDate = () => {
         <LeftCircleOutlined className="today-icon" onClick={handlePrev} />
         <div className="todayplan-workouts">
           {currentWorkouts.map((workout) => (
-            <div className="workout-item" key={workout.id}>
+            <div className="workout-item" key={workout.id} onClick={() => handleWorkoutClick(workout)}>
               <img
             src={`/avatars//${workout.image}`}
                 alt={workout.name}
