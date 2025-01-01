@@ -6,7 +6,6 @@ import { createContext } from "react";
 export const WorkoutContext = createContext();
 
 const WorkoutContextProvider = ({ children }) => {
-  const [workouts, setWorkouts] = useState([]);
   const [users, setUsers] = useState([]);
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const getUsers = async () => {
@@ -97,34 +96,12 @@ const WorkoutContextProvider = ({ children }) => {
     }
   };
 
-  const getWorkouts = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8080/api/v1/get-schedule-by-date",
-        { params: { date: "2024-12-25" } }
-      , {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          "Content-Type": "application/json",
-        },
-      });
-      const result = response.data;
-      if (result.statusCode === 200) {
-        const allWorkouts = result.data.flatMap((schedule) => schedule.workout);
-        setWorkouts(allWorkouts || []);
-      } else {
-        console.error("Error fetching data:", result.message);
-      }
-    } catch (error) {
-      console.error("Fetch error:", error);
-    }
-  };
   const setWorkoutAsSelected = (workout) => {
     setSelectedWorkout(workout);
   };
+
   useEffect(() => {
     getUsers();
-    getWorkouts();
   }, []);
   return (
     <WorkoutContext.Provider
@@ -132,8 +109,6 @@ const WorkoutContextProvider = ({ children }) => {
         users,
         createUser,
         deleteUser,
-        workouts,
-        getWorkouts,
         selectedWorkout,
         setWorkoutAsSelected,
       }}

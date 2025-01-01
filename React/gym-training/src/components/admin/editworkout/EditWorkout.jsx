@@ -3,10 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { LeftCircleOutlined } from "@ant-design/icons";
 import ava_workout from "../../../assets/edit_workout_ex.png";
 import ava_workout2 from "../../../assets/edit_workout_ex2.png";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Form, Input, Button, message, Upload, Select } from "antd";
 import plus_img from "../../../assets/plus.svg";
 import trash from "../../../assets/trash.svg";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+
 const { Option } = Select;
 
 const exerciseOptions = [
@@ -32,91 +35,60 @@ const muscleGroupsOptions = [
 const EditWorkout = () => {
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [exerciseRows, setExerciseRows] = useState([]);
-  const [imageFileName, setImageFileName] = useState("");
-  const [workout, setWorkout] = useState(null);
+  const [exerciseRows, setExerciseRows] = useState([
+    { exerciseName: "Band Pull Apart", setsReps: "3x12 Reps" },
+    { exerciseName: "Push Up", setsReps: "4x15 Reps" },
+  ]);
+  const id = parseInt(useParams().id);
+  console.log(id);
   const navigate = useNavigate();
+  const [workoutData, setWorkoutData] = useState(null);
   useEffect(() => {
     const fetchWorkout = async () => {
-      const workoutId = useParams().workout_id; // Assuming the workout ID is passed in the URL
-      const accessToken = localStorage.getItem("accessToken");
-  
-      if (!accessToken) {
-        console.error("Access token not found!");
-        message.error("Login session has expired. Please login again.");
-        return;
-      }
-  
       try {
-        const response = await axios.get(
-          `http://localhost:8080/api/v1/workouts/${workoutId}`, // API to fetch workout by ID
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
+        const response = await axios.get(`http://localhost:8080/api/v1/workouts/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        });
+        console.log("Workout details:", response.data.data);
+        const workout = response.data.data;
+       setWorkoutData(workout);
+        form.setFieldsValue({
+          workoutName: workout.name,
+          description: workout.description,
+          calories: workout.calories,
+          duration: workout.duration,
+          category: workout.category,
+          targetMuscle: workout.muscleGroups.map((group) => group.name),
+          difficultyLevel: workout.difficultyLevel,
+        });
+        const exerciseFields = workout.exercises.reduce((acc, exercise, index) => {
+          acc[`exerciseName_${index}`] = exercise.name;
+          acc[`exerciseReps_${index}`] = exercise.sets;
+          return acc;
+        }, {});
+  
+        form.setFieldsValue(exerciseFields); // Set dynamic exercise fields
+        setExerciseRows(
+          workout.exercises.map((exercise, index) => ({
+            id: index,
+            exerciseName: exercise.name,
+            setsReps: exercise.sets,
+          }))
         );
-  
-        if (response.status === 200) {
-          const workoutDetails = response.data.data;
-          // Assuming the API returns workout details directly without a data wrapper
-          form.setFieldsValue({
-            workoutName: workoutDetails.name,
-            description: workoutDetails.description,
-            duration: workoutDetails.duration,
-            calories: workoutDetails.calories,
-            category: workoutDetails.category,
-            difficultyLevel: workoutDetails.difficultyLevel,
-            targetMuscle: workoutDetails.muscleGroups.map(mg => mg.name),
-            // Add other fields as needed
-          });
-  
-          // Update state if you need to manage exercises or other sub-components
-          setExerciseRows(workoutDetails.exercises.map(ex => ({
-            id: ex.id, // Ensure unique identifier for each exercise row
-            exerciseName: ex.name,
-            setsReps: `${ex.sets}x${ex.reps} Reps` // Concatenate sets and reps if necessary
-          })));
-          setImageFileName(workoutDetails.image);
-          setWorkout(workoutDetails);
-        } else {
-          throw new Error('Failed to fetch workout details');
-        }
       } catch (error) {
-        console.error("Error fetching workout details: ", error);
-        message.error("Failed to fetch workout details. Please try again.");
+        console.error("There was an error fetching the workout details!", error);
       }
     };
-  fetchWorkout();
-  }, []); // Ensure the useEffect hook runs only once on component mount unless dependencies change
-  
 
-  const handleFileUpload = async (file) => {
-    const accessToken = localStorage.getItem("accessToken");
-
-    const formData = new FormData();
-    formData.append("imageFile", file);
-
-    try {
-      const response = await axios.post(
-        "http://localhost:8080/api/v1/users/upload?imageFile",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-
-      const fileName = response.data; // Lấy tên file từ response
-      setImageFileName(fileName);
-      message.success("Upload ảnh thành công!");
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      message.error("Upload ảnh thất bại!");
+    if (id) {
+      fetchWorkout();
     }
-  };
+  }, [id, form]);
+
+    
+  
 
   const addRowExercise = () => {
     setExerciseRows([...exerciseRows, { exerciseName: "", setsReps: "" }]);
@@ -131,49 +103,45 @@ const EditWorkout = () => {
     setIsSubmitting(true);
 
     try {
-      // Convert form values to the format expected by the API
-      const muscleGroups = values.targetMuscle.map(muscle => ({ name: muscle }));
-      const exercises = exerciseRows.map(row => ({
-        name: values[`exerciseName_${row.id}`],
-        sets: parseInt(values[`exerciseSets_${row.id}`].split('x')[0]),
-        reps: parseInt(values[`exerciseSets_${row.id}`].split('x')[1].split(' ')[0])
+      // Chuyển đổi targetMuscle thành mảng các đối tượng với key "name"
+      const muscleGroups = values.targetMuscle.map((muscle) => ({
+        name: muscle, // API yêu cầu { "name": "value" }
       }));
 
-      const workoutData = {
-        name: values.workoutName,
-        description: values.description,
-        duration: values.duration,
-        calories: values.calories,
-        category: values.category,
-        muscleGroups: muscleGroups,
-        difficultyLevel: values.difficultyLevel,
-        exercises: exercises,
-        videoUrl: values.videoUrl,
-      };
+      // Chuẩn bị dữ liệu exercises
+      const exercises = exerciseRows.map((row) => ({
+        name: values[`exerciseName_${row.id}`],
+        sets: values[`exerciseReps_${row.id}`],
+      }));
+    const workoutForm = {
+      name: values.workoutName,
+      description: values.description,
+      duration: values.duration,
+      calories: values.calories,
+      category: values.category,
+      muscleGroups: muscleGroups, // Dùng "muscleGroups" thay vì "muscleGroup"
+      difficultyLevel: values.difficultyLevel,
+      // image: workoutData.image, // Tên file ảnh đã upload
+      // exercises: exercises, // Danh sách bài tập
+      videoUrl: values.videoUrl,
+    };
+    console.log("Workout form:", workoutForm);
+    await axios.put(`http://localhost:8080/api/v1/workouts/${id}`, workoutForm, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+  });
 
-      // Send PUT request to the API
-      const response = await axios.put(`http://localhost:8080/api/v1/workouts/${workout_id}`, workoutData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      // Check response status
-      if (response.status === 200) {
-        message.success("Workout updated successfully!");
-        form.resetFields();
-        navigate("../");
-      } else {
-        throw new Error('Failed to update workout');
-      }
-    } catch (error) {
-      console.error("Error updating workout:", error);
-      message.error("Failed to update workout. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    message.success("Workout updated successfully!");
+    setIsSubmitting(false);
+    navigate("../");
+  } catch (error) {
+    console.error("There was an error updating the account!", error);
+    message.error("Failed to update account!");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
 
   const handleBack = () => {
@@ -301,7 +269,7 @@ const EditWorkout = () => {
                     { required: true, message: "Please enter sets/reps!" },
                   ]}
                 >
-                  <Input.TextArea placeholder="Ex: 3x12 Reps" />
+                  <Input.TextArea placeholder="Ex: 10 (reps/sets)" />
                 </Form.Item>
                 <img
                   className="workout-icon"

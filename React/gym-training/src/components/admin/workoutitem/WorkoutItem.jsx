@@ -14,7 +14,7 @@ const { confirm } = Modal;
 const WorkoutItem = ({ workout }) => {
   const navigate = useNavigate();
   const handleEditBtn = () => {
-    navigate(`edit/${workout.workoutID}`, { state: { workout } });
+    navigate(`edit/${workout.workoutID}`);
   };
 
   const handleDeleteBtn = () => {
