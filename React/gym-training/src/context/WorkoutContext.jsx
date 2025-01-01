@@ -101,8 +101,13 @@ const WorkoutContextProvider = ({ children }) => {
     try {
       const response = await axios.get(
         "http://localhost:8080/api/v1/get-schedule-by-date",
-        { params: { date: "2024-11-27" } }
-      );
+        { params: { date: "2024-12-25" } }
+      , {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          "Content-Type": "application/json",
+        },
+      });
       const result = response.data;
       if (result.statusCode === 200) {
         const allWorkouts = result.data.flatMap((schedule) => schedule.workout);

@@ -37,8 +37,8 @@ const AppRoutes = () => {
           <Route path="/userinfo/*" element={<UserInfo />} />
           <Route path="/performance" element={<Performance /> } />
           <Route path="/userworkout" element={<UserWorkout />} />
-    <Route path="/userworkoutdetail/:schedule_id/:workout_id" element={<UserWorkoutDetail />} />
-           <Route path="/workout/video/:id" element={<VideoPlayer />} />
+          <Route path="/userworkoutdetail/:schedule_id/:workout_id" element={<UserWorkoutDetail />} />
+          <Route path="/workout/video/:id" element={<VideoPlayer />} />
         </Route>
       )}
       {userRole === "ADMIN" && (

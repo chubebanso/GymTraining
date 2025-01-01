@@ -3,7 +3,6 @@ package vn.group16.gymtraining.controller;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,8 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import vn.group16.gymtraining.domain.Schedule;
-import vn.group16.gymtraining.dto.EventDTO;
 import vn.group16.gymtraining.dto.DurationStatDTO;
+import vn.group16.gymtraining.dto.EventDTO;
+import vn.group16.gymtraining.dto.WorkoutCountStatDTO;
 import vn.group16.gymtraining.service.ScheduleService;
 
 @RestController
@@ -104,6 +104,14 @@ public class ScheduleController {
             @RequestParam("year") int year,
             @RequestParam("month") int month) {
         List<DurationStatDTO> stats = scheduleService.getMonthlyDurationStats(year, month);
+        return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("schedule/workouts-stats")
+    public ResponseEntity<List<WorkoutCountStatDTO>> getMonthlyWorkoutCountStats(
+            @RequestParam("year") int year,
+            @RequestParam("month") int month) {
+        List<WorkoutCountStatDTO> stats = scheduleService.getMonthlyWorkoutCountStats(year, month);
         return ResponseEntity.ok(stats);
     }
 

@@ -1,9 +1,9 @@
 import "./EditWorkout.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { LeftCircleOutlined } from "@ant-design/icons";
 import ava_workout from "../../../assets/edit_workout_ex.png";
 import ava_workout2 from "../../../assets/edit_workout_ex2.png";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Form, Input, Button, message, Upload, Select } from "antd";
 import plus_img from "../../../assets/plus.svg";
 import trash from "../../../assets/trash.svg";
@@ -32,10 +32,91 @@ const muscleGroupsOptions = [
 const EditWorkout = () => {
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [exerciseRows, setExerciseRows] = useState([
-    { exerciseName: "Band Pull Apart", setsReps: "3x12 Reps" },
-    { exerciseName: "Push Up", setsReps: "4x15 Reps" },
-  ]);
+  const [exerciseRows, setExerciseRows] = useState([]);
+  const [imageFileName, setImageFileName] = useState("");
+  const [workout, setWorkout] = useState(null);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const fetchWorkout = async () => {
+      const workoutId = useParams().workout_id; // Assuming the workout ID is passed in the URL
+      const accessToken = localStorage.getItem("accessToken");
+  
+      if (!accessToken) {
+        console.error("Access token not found!");
+        message.error("Login session has expired. Please login again.");
+        return;
+      }
+  
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/v1/workouts/${workoutId}`, // API to fetch workout by ID
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+  
+        if (response.status === 200) {
+          const workoutDetails = response.data.data;
+          // Assuming the API returns workout details directly without a data wrapper
+          form.setFieldsValue({
+            workoutName: workoutDetails.name,
+            description: workoutDetails.description,
+            duration: workoutDetails.duration,
+            calories: workoutDetails.calories,
+            category: workoutDetails.category,
+            difficultyLevel: workoutDetails.difficultyLevel,
+            targetMuscle: workoutDetails.muscleGroups.map(mg => mg.name),
+            // Add other fields as needed
+          });
+  
+          // Update state if you need to manage exercises or other sub-components
+          setExerciseRows(workoutDetails.exercises.map(ex => ({
+            id: ex.id, // Ensure unique identifier for each exercise row
+            exerciseName: ex.name,
+            setsReps: `${ex.sets}x${ex.reps} Reps` // Concatenate sets and reps if necessary
+          })));
+          setImageFileName(workoutDetails.image);
+          setWorkout(workoutDetails);
+        } else {
+          throw new Error('Failed to fetch workout details');
+        }
+      } catch (error) {
+        console.error("Error fetching workout details: ", error);
+        message.error("Failed to fetch workout details. Please try again.");
+      }
+    };
+  fetchWorkout();
+  }, []); // Ensure the useEffect hook runs only once on component mount unless dependencies change
+  
+
+  const handleFileUpload = async (file) => {
+    const accessToken = localStorage.getItem("accessToken");
+
+    const formData = new FormData();
+    formData.append("imageFile", file);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/users/upload?imageFile",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      const fileName = response.data; // Lấy tên file từ response
+      setImageFileName(fileName);
+      message.success("Upload ảnh thành công!");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      message.error("Upload ảnh thất bại!");
+    }
+  };
 
   const addRowExercise = () => {
     setExerciseRows([...exerciseRows, { exerciseName: "", setsReps: "" }]);
@@ -45,19 +126,56 @@ const EditWorkout = () => {
     setExerciseRows(exerciseRows.filter((_, idx) => idx !== index));
   };
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     console.log("Form values:", values);
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      message.success("Workout updated successfully!");
-      form.resetFields();
+    try {
+      // Convert form values to the format expected by the API
+      const muscleGroups = values.targetMuscle.map(muscle => ({ name: muscle }));
+      const exercises = exerciseRows.map(row => ({
+        name: values[`exerciseName_${row.id}`],
+        sets: parseInt(values[`exerciseSets_${row.id}`].split('x')[0]),
+        reps: parseInt(values[`exerciseSets_${row.id}`].split('x')[1].split(' ')[0])
+      }));
+
+      const workoutData = {
+        name: values.workoutName,
+        description: values.description,
+        duration: values.duration,
+        calories: values.calories,
+        category: values.category,
+        muscleGroups: muscleGroups,
+        difficultyLevel: values.difficultyLevel,
+        exercises: exercises,
+        videoUrl: values.videoUrl,
+      };
+
+      // Send PUT request to the API
+      const response = await axios.put(`http://localhost:8080/api/v1/workouts/${workout_id}`, workoutData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      // Check response status
+      if (response.status === 200) {
+        message.success("Workout updated successfully!");
+        form.resetFields();
+        navigate("../");
+      } else {
+        throw new Error('Failed to update workout');
+      }
+    } catch (error) {
+      console.error("Error updating workout:", error);
+      message.error("Failed to update workout. Please try again.");
+    } finally {
       setIsSubmitting(false);
-      navigate("../");
-    }, 1000);
+    }
   };
 
-  const navigate = useNavigate();
+
   const handleBack = () => {
     navigate("../");
   };
@@ -73,12 +191,20 @@ const EditWorkout = () => {
       {/* Main Form Section */}
       <Form form={form} onFinish={onFinish} className="workout-form">
         <div className="workout-info">
-          {/* Left Side: General Information */}
           <div className="workout-info-left">
             <span>General Information</span>
             <span>Preview</span>
-            <img src={ava_workout} alt="Workout" />
-            <Button className="upload-btn">Upload Photo</Button>
+            <img
+              src={imageFileName ? `/avatars//${imageFileName}` : ava_workout}
+              alt="Uploaded"
+            />
+            <Upload
+              beforeUpload={handleFileUpload}
+              showUploadList={false}
+              accept="image/*"
+            >
+              <Button className="upload-btn">Upload Photo</Button>
+            </Upload>
           </div>
 
           {/* Right Side: Workout Details Form */}
@@ -87,7 +213,6 @@ const EditWorkout = () => {
               <div className="component-name">Name workout</div>
               <Form.Item
                 name="workoutName"
-                initialValue="Leg Day"
                 rules={[
                   { required: true, message: "Please enter the workout name!" },
                 ]}
@@ -100,7 +225,6 @@ const EditWorkout = () => {
               <div className="component-name">Description</div>
               <Form.Item
                 name="description"
-                initialValue="A great workout for legs."
                 rules={[
                   { required: true, message: "Please enter a description!" },
                 ]}
@@ -114,7 +238,6 @@ const EditWorkout = () => {
                 <div className="component-name">Calories Burned</div>
                 <Form.Item
                   name="calories"
-                  initialValue="500"
                   rules={[
                     {
                       required: true,
@@ -130,7 +253,6 @@ const EditWorkout = () => {
                 <div className="component-name">Duration</div>
                 <Form.Item
                   name="duration"
-                  initialValue="45m"
                   rules={[
                     { required: true, message: "Please enter duration!" },
                   ]}
@@ -142,20 +264,20 @@ const EditWorkout = () => {
           </div>
         </div>
         <div className="workout-info">
-          <div className="workout-info-left">
-            <span>Exercise List</span>
+        <div className="workout-info-left">
+          <h4>Exercise List</h4>
+        </div>
+        <div className="workout-info-right">
+          <div className="workout-info-header">
+            <div className="component-name">Exercise Name</div>
+            <div className="component-name">Sets/Reps</div>
+            <img
+              src={plus_img}
+              alt="Add Exercise"
+              onClick={addRowExercise}
+              className="workout-icon"
+            />
           </div>
-          <div className="workout-info-right">
-            <div className="workout-info-header">
-              <div className="component-name">Name exercise</div>
-              <div className="component-name">Sets/Reps</div>
-              <img
-                src={plus_img}
-                alt="Add Exercise"
-                onClick={addRowExercise}
-                className="workout-icon"
-              />
-            </div>
 
             {/* Render các input fields */}
             {exerciseRows.map((row) => (
@@ -163,7 +285,6 @@ const EditWorkout = () => {
                 <Form.Item
                   className="exercise-name"
                   name={`exerciseName_${row.id}`}
-                  initialValue={row.exerciseName}
                   rules={[
                     { required: true, message: "Please enter exercise name!" },
                   ]}
@@ -176,7 +297,6 @@ const EditWorkout = () => {
                 <Form.Item
                   className="exercise-reps"
                   name={`exerciseReps_${row.id}`}
-                  initialValue={row.setsReps}
                   rules={[
                     { required: true, message: "Please enter sets/reps!" },
                   ]}
@@ -223,7 +343,6 @@ const EditWorkout = () => {
               <div className="component-name">Category</div>
               <Form.Item
                 name="category"
-                initialValue="Strength"
                 rules={[
                   { required: true, message: "Please select a category!" },
                 ]}
@@ -250,7 +369,6 @@ const EditWorkout = () => {
               <div className="component-name">Target Muscle Groups</div>
               <Form.Item
                 name="targetMuscle"
-                initialValue="Legs"
                 rules={[
                   {
                     required: true,
@@ -282,7 +400,6 @@ const EditWorkout = () => {
               <div className="component-name">Difficulty Level</div>
               <Form.Item
                 name="difficultyLevel"
-                initialValue="Easy"
                 rules={[
                   {
                     required: true,
@@ -303,7 +420,6 @@ const EditWorkout = () => {
                   <Option value="BEGINNER">Beginner</Option>
                   <Option value="INTERMEDIATE">Intermediate</Option>
                   <Option value="ADVANCED">Advanced</Option>
-                  <Option value="EXPERT">Expert</Option>
                 </Select>
               </Form.Item>
             </div>
