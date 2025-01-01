@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { LeftCircleOutlined } from "@ant-design/icons";
 import ava_workout from "../../../assets/edit_workout_ex.png";
 import ava_workout2 from "../../../assets/edit_workout_ex2.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, Input, Button, message, Upload, Select } from "antd";
 import plus_img from "../../../assets/plus.svg";
 import trash from "../../../assets/trash.svg";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+
 const { Option } = Select;
 
 const exerciseOptions = [
@@ -36,6 +39,56 @@ const EditWorkout = () => {
     { exerciseName: "Band Pull Apart", setsReps: "3x12 Reps" },
     { exerciseName: "Push Up", setsReps: "4x15 Reps" },
   ]);
+  const id = parseInt(useParams().id);
+  console.log(id);
+  const navigate = useNavigate();
+  const [workoutData, setWorkoutData] = useState(null);
+  useEffect(() => {
+    const fetchWorkout = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/api/v1/workouts/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        });
+        console.log("Workout details:", response.data.data);
+        const workout = response.data.data;
+       setWorkoutData(workout);
+        form.setFieldsValue({
+          workoutName: workout.name,
+          description: workout.description,
+          calories: workout.calories,
+          duration: workout.duration,
+          category: workout.category,
+          targetMuscle: workout.muscleGroups.map((group) => group.name),
+          difficultyLevel: workout.difficultyLevel,
+        });
+        const exerciseFields = workout.exercises.reduce((acc, exercise, index) => {
+          acc[`exerciseName_${index}`] = exercise.name;
+          acc[`exerciseReps_${index}`] = exercise.sets;
+          return acc;
+        }, {});
+  
+        form.setFieldsValue(exerciseFields); // Set dynamic exercise fields
+        setExerciseRows(
+          workout.exercises.map((exercise, index) => ({
+            id: index,
+            exerciseName: exercise.name,
+            setsReps: exercise.sets,
+          }))
+        );
+      } catch (error) {
+        console.error("There was an error fetching the workout details!", error);
+      }
+    };
+
+    if (id) {
+      fetchWorkout();
+    }
+  }, [id, form]);
+
+    
+  
 
   const addRowExercise = () => {
     setExerciseRows([...exerciseRows, { exerciseName: "", setsReps: "" }]);
@@ -45,19 +98,52 @@ const EditWorkout = () => {
     setExerciseRows(exerciseRows.filter((_, idx) => idx !== index));
   };
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     console.log("Form values:", values);
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      message.success("Workout updated successfully!");
-      form.resetFields();
-      setIsSubmitting(false);
-      navigate("../");
-    }, 1000);
-  };
+    try {
+      // Chuyển đổi targetMuscle thành mảng các đối tượng với key "name"
+      const muscleGroups = values.targetMuscle.map((muscle) => ({
+        name: muscle, // API yêu cầu { "name": "value" }
+      }));
 
-  const navigate = useNavigate();
+      // Chuẩn bị dữ liệu exercises
+      const exercises = exerciseRows.map((row) => ({
+        name: values[`exerciseName_${row.id}`],
+        sets: values[`exerciseReps_${row.id}`],
+      }));
+    const workoutForm = {
+      name: values.workoutName,
+      description: values.description,
+      duration: values.duration,
+      calories: values.calories,
+      category: values.category,
+      muscleGroups: muscleGroups, // Dùng "muscleGroups" thay vì "muscleGroup"
+      difficultyLevel: values.difficultyLevel,
+      // image: workoutData.image, // Tên file ảnh đã upload
+      // exercises: exercises, // Danh sách bài tập
+      videoUrl: values.videoUrl,
+    };
+    console.log("Workout form:", workoutForm);
+    await axios.put(`http://localhost:8080/api/v1/workouts/${id}`, workoutForm, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+  });
+
+    message.success("Workout updated successfully!");
+    setIsSubmitting(false);
+    navigate("../");
+  } catch (error) {
+    console.error("There was an error updating the account!", error);
+    message.error("Failed to update account!");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+
   const handleBack = () => {
     navigate("../");
   };
@@ -181,7 +267,7 @@ const EditWorkout = () => {
                     { required: true, message: "Please enter sets/reps!" },
                   ]}
                 >
-                  <Input.TextArea placeholder="Ex: 3x12 Reps" />
+                  <Input.TextArea placeholder="Ex: 10 (reps/sets)" />
                 </Form.Item>
                 <img
                   className="workout-icon"
