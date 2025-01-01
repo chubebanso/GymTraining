@@ -1,11 +1,10 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef } from "react";
 import { Calendar } from "@fullcalendar/core";
 import googleCalendarPlugin from "@fullcalendar/google-calendar";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction"; // Import interaction plugin
-import axios from "axios"; // Axios for API requests
+import interactionPlugin from "@fullcalendar/interaction";
+import axios from "axios";
 import { Modal, Input, Form, Checkbox, DatePicker, TimePicker, Button } from "antd";
 import "./GymCalendar.css";
 import moment from "moment";
@@ -24,16 +23,13 @@ const GymCalendar = () => {
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     const fetchWorkouts = async () => {
-      
       try {
         const response = await axios.get('http://localhost:8080/api/v1/workouts', {
-            headers: {
-              "Authorization": `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-            },
-          });
-        
-        
+          headers: {
+            "Authorization": `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        });
         if (response.data.statusCode === 200) {
           // Set the workouts from API data
           setWorkouts(response.data.data);
@@ -52,10 +48,9 @@ const GymCalendar = () => {
         console.error("No access token found. Please log in.");
         return;
       }
-
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/v1/get-all-event",
+          "http://localhost:8080/api/v1/get-all-schedule",
           {
             headers: {
               "Authorization": `Bearer ${accessToken}`,
@@ -67,9 +62,10 @@ const GymCalendar = () => {
         if (response.data.statusCode === 200) {
           const events = response.data.data.map((event) => ({
             title: event.title,
-            start: event.start,
-            end: event.end,
+            start: event.date + 'T' + event.startTime,
+            end: event.date + 'T' + event.endTime,
             id: event.id, // You can use event ID for more details if necessary
+            workouts: event.workouts || [], // Thêm thông tin workouts vào sự kiện
           }));
           setEvents(events); // Set the events
         } else {
@@ -82,7 +78,6 @@ const GymCalendar = () => {
 
     fetchWorkouts(); // Fetch workouts
     fetchEvents(); // Fetch events
-
   }, []);
 
   const handleCancel = () => {
@@ -91,88 +86,117 @@ const GymCalendar = () => {
     form.resetFields(); // Reset form when closing the popup
   };
 
- const handleOk = () => {
-  form
-    .validateFields()
-    .then(async (values) => {
-      const accessToken = localStorage.getItem("accessToken");
-      if (!accessToken) {
-        console.error("Access token not found. Please log in.");
-        return;
-      }
-
-      // Tạo requestData với định dạng chính xác
-      const requestData = {
-        title: values.title,
-        date: values.startDate.format("YYYY-MM-DD"), // Ngày bắt đầu
-        startTime: values.startTime.format("HH:mm"), // Thời gian bắt đầu
-        endTime: values.endTime.format("HH:mm"),     // Thời gian kết thúc
-        workouts: selectedWorkouts.map((id) => ({ id })), // Định dạng [{ "id": 10 }, ...]
-      };
-
-      try {
-        const response = await axios.post(
-          "http://localhost:8080/api/v1/schedule", // Endpoint để lưu sự kiện
-          requestData,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (response.data.statusCode === 200) {
-          console.log("Event saved successfully:", response.data.message);
-
-          // Cập nhật state events để hiển thị trên calendar
-          const newEvent = {
-            title: response.data.data.title,
-            start: `${response.data.data.date}T${response.data.data.startTime}`,
-            end: `${response.data.data.date}T${response.data.data.endTime}`,
-            id: response.data.data.id,
-          };
-          setEvents([...events, newEvent]);
-
-          setShowEventPopup(false);
-          form.resetFields();
-          setSelectedWorkouts([]); // Reset selected workouts
-        } else {
-          console.error("Failed to save event:", response.data.message);
+  const handleOk = () => {
+    console.log("Saving event..."); // Thêm log khi nhấn nút Save Event
+    form
+      .validateFields()
+      .then(async (values) => {
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) {
+          console.error("Access token not found. Please log in.");
+          return;
         }
-      } catch (error) {
-        console.error("Error saving event:", error);
-      }
-    })
-    .catch((info) => {
-      console.log("Validate Failed:", info);
-    });
-};
 
+        const requestData = {
+          title: values.title.trim(), // Trim để loại bỏ khoảng trắng
+          date: values.startDate.format("YYYY-MM-DD"), // Ngày bắt đầu
+          startTime: values.startTime.format("HH:mm"), // Thời gian bắt đầu
+          workouts: selectedWorkouts.map((id) => ({ id })), // Định dạng [{ "id": 1 }, { "id": 2 }]
+        };
 
+        console.log("Request Data:", requestData); // Thêm log để xem dữ liệu gửi đi
+
+        try {
+          const response = await axios.post(
+            "http://localhost:8080/api/v1/schedule", // Endpoint để lưu sự kiện
+            requestData,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          if (response.data.statusCode === 200) {
+            console.log("Event saved successfully:", response.data.message);
+
+            // Cập nhật state events để hiển thị trên calendar
+            const newEvent = {
+              id: response.data.data.id, // Lưu ID của sự kiện mới
+              title: response.data.data.title,
+              start: `${response.data.data.date}T${response.data.data.startTime}`,
+              end: `${response.data.data.date}T${response.data.data.endTime}`, // Thêm thời gian kết thúc
+              workouts: response.data.data.workouts, // Lưu thông tin workouts nếu cần
+            };
+            setEvents([...events, newEvent]);
+
+            setShowEventPopup(false);
+            form.resetFields();
+            setSelectedWorkouts([]); // Reset selected workouts
+          } else {
+            console.error("Failed to save event:", response.data.message);
+          }
+        } catch (error) {
+          console.error("Error saving event:", error);
+        }
+      })
+      .catch((info) => {
+        console.log("Validate Failed:", info);
+      });
+  };
 
   const handleWorkoutSelect = (checkedValues) => {
-  console.log("Checked values:", checkedValues); // Kiểm tra các giá trị
-  setSelectedWorkouts(checkedValues); // Cập nhật danh sách workout IDs được chọn
-};
+    setSelectedWorkouts(checkedValues);
+  };
 
+  const handleStartTimeChange = (time) => {
+    form.setFieldsValue({ startTime: time });
+  };
 
-  // Handle event click to show details
+  const handleDeleteEvent = async (eventId) => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      console.error("Access token not found. Please log in.");
+      return;
+    }
+
+    try {
+      const response = await axios.delete(
+        `http://localhost:8080/api/v1/delete-event/${eventId}`, // Endpoint để xoá sự kiện
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.data.statusCode === 200) {
+        console.log("Event deleted successfully:", response.data.message);
+        setEvents(events.filter(event => event.id !== eventId)); // Cập nhật state để loại bỏ sự kiện đã xoá
+      } else {
+        console.error("Failed to delete event:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error deleting event:", error);
+    }
+  };
+
   const handleEventClick = (info) => {
     const clickedEvent = info.event;
     console.log("Event Clicked:", clickedEvent);
 
-    // Set the details of the clicked event
     setEventDetails({
       title: clickedEvent.title,
       start: moment(clickedEvent.start).format("YYYY-MM-DD HH:mm"),
       end: moment(clickedEvent.end).format("YYYY-MM-DD HH:mm"),
+      workouts: clickedEvent.extendedProps.workouts || [], // Lấy thông tin workouts từ event
     });
 
     setShowEventDetailsPopup(true); // Show the popup with event details
   };
 
-  // FullCalendar setup
   useEffect(() => {
     const calendarEl = calendarRef.current;
 
@@ -194,14 +218,14 @@ const GymCalendar = () => {
       height: "100vh",
       initialView: "dayGridMonth",
       dateClick: function(info) {
-        console.log("Clicked on: " + info.dateStr);
-        console.log("Coordinates: " + info.jsEvent.pageX + "," + info.jsEvent.pageY);
-        console.log("Current view: " + info.view.type);
-
-        // Change the day's background color
-        info.dayEl.style.backgroundColor = '#f0f0f0'; // Example of changing the clicked date's background
-
         const selectedDate = moment(info.date); // Convert the clicked date to moment.js format
+        const today = moment().startOf("day"); // Get today's date at midnight
+
+        if (selectedDate.isBefore(today)) {
+          alert("Không thể thêm sự kiện vào ngày đã qua."); // Thêm thông báo khi click vào ngày trước đó
+          return;
+        }
+
         form.setFieldsValue({ startDate: selectedDate });
         setShowEventPopup(true); // Open the "Add Event" popup when clicking on a date
       },
@@ -209,14 +233,12 @@ const GymCalendar = () => {
       eventClick: handleEventClick, // Handle event click to show details
     });
 
-    // Render calendar with the events
     calendar.render();
   }, [events, form]);
 
   return (
     <>
       <div className="calendar-wrapper">
-        {/* Add Event Popup */}
         {showEventPopup && (
           <div className="add-event-container">
             <div className="event-form">
@@ -243,41 +265,25 @@ const GymCalendar = () => {
                   name="startTime"
                   rules={[{ required: true, message: "Please select a start time!" }]}
                 >
-                  <TimePicker format="HH:mm" disabled={showEventDetailsPopup} />
-                </Form.Item>
-
-                <Form.Item
-                  label="End Time"
-                  name="endTime"
-                  rules={[{ required: true, message: "Please select an end time!" }]}
-                >
-                  <TimePicker format="HH:mm" disabled={showEventDetailsPopup} />
+                  <TimePicker format="HH:mm" onChange={handleStartTimeChange} />
                 </Form.Item>
               </Form>
             </div>
 
             <div className="workout-selection">
               <h2>Select Workouts</h2>
-              <div className="workout-list">
-        <Checkbox.Group
-  style={{ width: "100%" }}
-  value={selectedWorkouts}
-  onChange={handleWorkoutSelect}
->
-  {workouts.map((workout) => (
-    <div className="workout-item" key={workout.id}>
-      <Checkbox value={workout.id}>
-        <div className="workout-content">
-          <span className="workout-name">{workout.name}</span>
-        </div>
-      </Checkbox>
-    </div>
-  ))}
-</Checkbox.Group>
+              <Checkbox.Group
+                style={{ width: "100%" }}
+                value={selectedWorkouts}
+                onChange={handleWorkoutSelect}
+              >
+                {workouts.map((workout) => (
+                  <div className="workout-item" key={workout.id}>
+                    <Checkbox value={workout.id}>{workout.name}</Checkbox>
+                  </div>
+                ))}
+              </Checkbox.Group>
 
-
-
-              </div>
               <div className="action-buttons">
                 <Button type="primary" onClick={handleOk}>
                   Save Event
@@ -288,7 +294,6 @@ const GymCalendar = () => {
           </div>
         )}
 
-        {/* Event Details Popup */}
         {showEventDetailsPopup && (
           <Modal
             title="Event Details"
@@ -299,6 +304,20 @@ const GymCalendar = () => {
             <p><strong>Title:</strong> {eventDetails?.title}</p>
             <p><strong>Start:</strong> {eventDetails?.start}</p>
             <p><strong>End:</strong> {eventDetails?.end}</p>
+            <p><strong>Workouts:</strong></p>
+            <ul>
+              {eventDetails?.workouts.length > 0 ? (
+                eventDetails.workouts.map(workout => (
+                  <li key={workout.id}>
+                    <img src={`avatars/${workout.image}`} alt={workout.name} style={{ width: '50px', marginRight: '10px' }} />
+                    {workout.name}
+                  </li>
+                ))
+              ) : (
+                <li>Không có workout nào.</li> // Thông báo nếu không có workout
+              )}
+            </ul>
+            <Button className="delete-event-button" type="danger" onClick={() => handleDeleteEvent(eventDetails.id)}>Delete Event</Button>
           </Modal>
         )}
 

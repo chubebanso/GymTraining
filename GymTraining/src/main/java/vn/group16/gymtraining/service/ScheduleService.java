@@ -251,39 +251,4 @@ public class ScheduleService {
         }
         return stats;
     }
-
-    public List<WorkoutCountStatDTO> getMonthlyWorkoutCountStats(int year, int month) {
-        List<WorkoutCountStatDTO> stats = new ArrayList<>();
-        LocalDate startDate = LocalDate.of(year, month, 1);
-        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
-    
-        List<Schedule> monthSchedules = scheduleRepository.findAll()
-            .stream()
-            .filter(schedule -> !schedule.getCompletedWorkouts().isEmpty())
-            .collect(Collectors.toList());
-    
-        // Create stats for every 5 days
-        for (int day = 5; day <= endDate.getDayOfMonth(); day += 5) {
-            LocalDate currentDate;
-            LocalDate fiveDaysAgo;
-            
-            if (day > 25) {
-                day = endDate.getDayOfMonth();
-                currentDate = LocalDate.of(year, month, day);
-                fiveDaysAgo = LocalDate.of(year, month, 26);
-            } else {
-                currentDate = LocalDate.of(year, month, day);
-                fiveDaysAgo = currentDate.minusDays(4);
-            }
-    
-            int totalWorkouts = monthSchedules.stream()
-                .filter(s -> !s.getDate().isBefore(fiveDaysAgo) && !s.getDate().isAfter(currentDate))
-                .mapToInt(s -> s.getCompletedWorkouts().size())
-                .sum();
-    
-            stats.add(new WorkoutCountStatDTO(day, totalWorkouts));
-        }
-    
-        return stats;
-    }
 }
