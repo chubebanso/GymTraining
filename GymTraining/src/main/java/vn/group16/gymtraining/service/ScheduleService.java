@@ -161,6 +161,7 @@ public class ScheduleService {
         if (!workoutExists) {
             throw new RuntimeException("Workout not in this schedule");
         }
+        schedule.getCompletedWorkouts().remove(workout);
         // Check if workout already exists in completedWorkouts
         if (schedule.getCompletedWorkouts().stream()
                 .anyMatch(completedWorkout -> completedWorkout.getId().equals(workout.getId()))) {

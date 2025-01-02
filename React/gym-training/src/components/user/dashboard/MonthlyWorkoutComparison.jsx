@@ -16,7 +16,7 @@ const MonthlyWorkoutComparison = () => {
         }
 
         const currentMonthResponse = await axios.get(
-          "http://localhost:8080/api/v1/schedule/duration-stats?year=2024&month=12",
+          "http://localhost:8080/api/v1/schedule/duration-stats?year=2025&month=1",
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -26,7 +26,7 @@ const MonthlyWorkoutComparison = () => {
 
         // Assuming last month is November 2024 for comparison
         const lastMonthResponse = await axios.get(
-          "http://localhost:8080/api/v1/schedule/duration-stats?year=2024&month=11",
+          "http://localhost:8080/api/v1/schedule/duration-stats?year=2024&month=12",
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

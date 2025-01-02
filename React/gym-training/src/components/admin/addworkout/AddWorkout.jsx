@@ -19,6 +19,12 @@ const exerciseOptions = [
   { value: "Pull-up", label: "Pull-up" },
   { value: "Plank", label: "Plank" },
   { value: "Band Pull Apart", label: "Band Pull Apart" },
+  { value: "Squeeze Bridge", label: "Squeeze Bridge" },
+  { value: "Side Step Sumo Squat", label: "Side Step Sumo Squat" },
+  { value: "Lunges Squat", label: "Lunges Squat" },
+  { value: "Squat Jump", label: "Squat Jump" },
+  { value: "Leg Curl", label: "Leg Curl" },
+  { value: "Squat To Kneel", label: "Squat To Kneel" },
   // Add other exercises as needed
 ];
 
