@@ -2,11 +2,12 @@ import "./Login.css";
 import login_image from "../../assets/login_image.png";
 import { UserOutlined } from "@ant-design/icons";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
-import { Input, Button, Checkbox, message } from "antd";
+import { Input, Button, Checkbox } from "antd";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import useAuth from "./useAuth";
+import { toaster, Toaster } from "../ui/toaster";
 
 const Login = () => {
   useAuth();
@@ -24,7 +25,10 @@ const Login = () => {
 
   const handleSubmit = async () => {
     if (!username || !password) {
-      message.error("Please enter both email and password.");
+      toaster.create({
+        title: "All fields are required",
+        type: "error",
+      });
       return;
     }
 
@@ -33,33 +37,59 @@ const Login = () => {
       password,
     };
 
-    try {
-      const response = await axios.post("http://localhost:8080/api/v1/login", loginData, {
+    const loginPromise = axios.post(
+      "http://localhost:8080/api/v1/login",
+      loginData,
+      {
         headers: {
           "Content-Type": "application/json",
         },
-      });
+      }
+    );
+
+    toaster.promise(loginPromise, {
+      loading: { title: "Logging in...", description: "Please wait." },
+      success: {
+        title: "Login Successful",
+        description: "Welcome back!",
+      },
+      error: {
+        title: "Login Failed",
+        description: "An error occurred. Please try again.",
+      },
+    });
+
+    try {
+      const response = await loginPromise;
 
       if (response.data.statusCode === 200) {
         const { accessToken, userLogin, role } = response.data.data;
-        
+
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("user", JSON.stringify(userLogin));
-         localStorage.setItem("role", role.name);
-        message.success("Login successful!");
+        localStorage.setItem("role", role.name);
 
-        // Check the role and navigate accordingly
-        if (role.name === "ADMIN") {
-          navigate("/admin/home");  // Admin redirect
-        } else {
-          navigate("/");  // User redirect
-        }
+        // Delay navigation to allow toaster to complete
+        setTimeout(() => {
+          if (role.name === "ADMIN") {
+            navigate("/admin/home");
+          } else {
+            navigate("/");
+          }
+        }, 2000); // 3 seconds delay
       } else {
-        message.error(response.data.message || "Login failed. Please try again.");
+        toaster.error({
+          title: "Login Failed",
+          description:
+            response.data.message || "Login failed. Please try again.",
+        });
       }
     } catch (error) {
-      message.error("An error occurred. Please try again.");
       console.error(error);
+      toaster.error({
+        title: "Error",
+        description: "An error occurred. Please try again.",
+      });
     }
   };
 
@@ -113,6 +143,7 @@ const Login = () => {
       <div className="login-img">
         <img src={login_image} alt="login_image" />
       </div>
+      <Toaster />
     </div>
   );
 };

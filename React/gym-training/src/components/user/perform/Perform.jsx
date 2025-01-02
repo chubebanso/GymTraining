@@ -23,7 +23,7 @@ const Perform = () => {
       try {
         const token = localStorage.getItem("accessToken"); // Retrieve the token from localStorage
         const response = await axios.get(
-          `http://localhost:8080/api/v1/workouts/recent-workout?date=${selectedDate}`,
+          `http://localhost:8080/api/v1/workouts/history-workout-by-date?date=${selectedDate}`,
           {
             headers: {
               Authorization: `Bearer ${token}`, // Add the Bearer token to the headers
