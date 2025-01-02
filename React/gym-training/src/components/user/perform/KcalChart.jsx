@@ -9,6 +9,8 @@ import {
   CategoryScale,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 // Register Chart.js components
 ChartJS.register(
@@ -22,40 +24,73 @@ ChartJS.register(
 );
 
 const KcalChart = () => {
-  // Static dataset for the week
-  const data = {
-    labels: ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"], // Days of the week
-    datasets: [
-      {
-        label: "Kcal Burned",
-        data: [100, 150, 120, 200, 180, 160, 140], // Example kcal values
-        borderColor: "red",
-        backgroundColor: "rgba(255, 0, 0, 0.1)",
-        tension: 0.4, // Smooth curve
-        pointBackgroundColor: "black",
-        pointBorderColor: "white",
-        pointBorderWidth: 2,
-        borderWidth: 2,
-      },
-    ],
-  };
+  const [chartData, setChartData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Chart options
+  useEffect(() => {
+    const fetchData = async () => {
+      const today = new Date();
+      const year = today.getFullYear(); // Current year
+      const month = today.getMonth() + 1; // Current month (0-based, so add 1)
+
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/v1/schedule/calories-stats-in-month?year=${year}&month=${month}`
+        );
+
+        if (response.data.statusCode === 200) {
+          const apiData = response.data.data;
+
+          // Transform API data into chart format
+          const labels = apiData.map((item) => `Day ${item.day}`);
+          const totalCalories = apiData.map((item) => item.totalCalories);
+
+          setChartData({
+            labels,
+            datasets: [
+              {
+                label: "Kcal Burned",
+                data: totalCalories,
+                borderColor: "red",
+                backgroundColor: "rgba(255, 0, 0, 0.1)",
+                tension: 0.4, // Smooth curve
+                pointBackgroundColor: "black",
+                pointBorderColor: "white",
+                pointBorderWidth: 2,
+                borderWidth: 2,
+              },
+            ],
+          });
+        } else {
+          setError("Failed to fetch data from the API.");
+        }
+      } catch (err) {
+        console.error("Error fetching Kcal data:", err);
+        setError("An error occurred while fetching the data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const options = {
     responsive: true,
     plugins: {
       legend: {
-        display: false, // Hides legend since it’s a single dataset
+        display: false, // Hide legend since it’s a single dataset
       },
       tooltip: {
-        enabled: true, // Enables tooltips to display kcal details
+        enabled: true, // Enable tooltips to display kcal details
       },
     },
     scales: {
       x: {
         title: {
           display: true,
-          text: "Days of the Week",
+          text: "Days of the Month",
         },
         grid: {
           display: false,
@@ -74,7 +109,19 @@ const KcalChart = () => {
     },
   };
 
-  return <Line data={data} options={options} />;
+  return (
+    <div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p className="error">{error}</p>
+      ) : chartData ? (
+        <Line data={chartData} options={options} />
+      ) : (
+        <p>No data available for the selected month.</p>
+      )}
+    </div>
+  );
 };
 
 export default KcalChart;
