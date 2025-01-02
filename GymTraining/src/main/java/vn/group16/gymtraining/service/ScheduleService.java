@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import vn.group16.gymtraining.domain.Schedule;
 import vn.group16.gymtraining.domain.Workout;
+import vn.group16.gymtraining.dto.CaloriesStatDTO;
+import vn.group16.gymtraining.dto.CaloriesStatWeekDTO;
 import vn.group16.gymtraining.dto.DurationStatDTO;
 import vn.group16.gymtraining.dto.EventDTO;
 import vn.group16.gymtraining.repository.ScheduleRepository;
@@ -248,6 +250,92 @@ public class ScheduleService {
                     .sum();
 
             stats.add(new DurationStatDTO(28, totalDuration));
+        }
+        return stats;
+    }
+
+    public List<CaloriesStatDTO> getMonthlyCaloriesStats(int year, int month) {
+        List<CaloriesStatDTO> stats = new ArrayList<>();
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+
+        // Get all schedules for the month
+        List<Schedule> monthSchedules = scheduleRepository.findAll().stream()
+                .filter(s -> !s.getDate().isBefore(startDate) && !s.getDate().isAfter(endDate))
+                .collect(Collectors.toList());
+
+        // Create stats for every 5 days
+        for (int day = 5; day <= endDate.getDayOfMonth(); day += 5) {
+            LocalDate currentDate;
+            LocalDate fiveDaysAgo;
+            if (day > 25) {
+                day = endDate.getDayOfMonth();
+                currentDate = LocalDate.of(year, month, day);
+                fiveDaysAgo = LocalDate.of(year, month, 26);
+            } else {
+                currentDate = LocalDate.of(year, month, day);
+                fiveDaysAgo = currentDate.minusDays(4); // vì tính cả currentDate nên chỉ trừ 4
+            }
+
+            int totalCalories = monthSchedules.stream()
+                    .filter(s -> !s.getDate().isBefore(fiveDaysAgo) && !s.getDate().isAfter(currentDate))
+                    .flatMap(s -> s.getCompletedWorkouts().stream())
+                    .mapToInt(Workout::getCalories)
+                    .sum();
+
+            stats.add(new CaloriesStatDTO(day, totalCalories));
+        }
+        if (month == 2) { // nếu là tháng 2 thì thêm những ngày cuối cùng
+            LocalDate currentDate = LocalDate.of(year, month, endDate.getDayOfMonth());
+            LocalDate fiveDaysAgo = LocalDate.of(year, month, 26);
+
+            int totalCalories = monthSchedules.stream()
+                    .filter(s -> !s.getDate().isBefore(fiveDaysAgo) && !s.getDate().isAfter(currentDate))
+                    .flatMap(s -> s.getCompletedWorkouts().stream())
+                    .mapToInt(Workout::getCalories)
+                    .sum();
+
+            stats.add(new CaloriesStatDTO(28, totalCalories));
+        }
+        return stats;
+    }
+
+    // get calories stats in this week and last week by date
+    public List<CaloriesStatWeekDTO> getWeeklyCaloriesStats(LocalDate date) {
+        List<CaloriesStatWeekDTO> stats = new ArrayList<>();
+        // Get the Monday and Sunday of the week
+        LocalDate mondayDate = date.minusDays(date.getDayOfWeek().getValue() - 1);
+        LocalDate sundayDate = mondayDate.plusDays(6);
+
+
+        // Get all schedules for the this week
+        List<Schedule> thisWeekSchedules = scheduleRepository.findAll().stream()
+                .filter(s -> !s.getDate().isBefore(mondayDate) && !s.getDate().isAfter(sundayDate))
+                .collect(Collectors.toList());
+
+        // Get all schedules for the last week
+        List<Schedule> lastWeekSchedules = scheduleRepository.findAll().stream()
+                .filter(s -> !s.getDate().isBefore(mondayDate.minusDays(7)) && !s.getDate().isAfter(sundayDate.minusDays(7)))
+                .collect(Collectors.toList());
+
+        // Create stats for every day
+        for (int day = 2; day <= 8; day++) {
+            LocalDate currentDate = mondayDate.plusDays(day - 2);
+            LocalDate lastWeekDate = currentDate.minusDays(7);
+
+            int totalCaloriesInThisWeek = thisWeekSchedules.stream()
+                    .filter(s -> s.getDate().isEqual(currentDate))
+                    .flatMap(s -> s.getCompletedWorkouts().stream())
+                    .mapToInt(Workout::getCalories)
+                    .sum();
+            
+            int totalCaloriesInLastWeek = lastWeekSchedules.stream()
+                    .filter(s -> s.getDate().isEqual(lastWeekDate))
+                    .flatMap(s -> s.getCompletedWorkouts().stream())
+                    .mapToInt(Workout::getCalories)
+                    .sum();
+            
+            stats.add(new CaloriesStatWeekDTO(day, totalCaloriesInLastWeek, totalCaloriesInThisWeek));
         }
         return stats;
     }

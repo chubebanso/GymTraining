@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.micrometer.core.ipc.http.HttpSender.Request;
 import vn.group16.gymtraining.domain.Schedule;
 import vn.group16.gymtraining.dto.EventDTO;
+import vn.group16.gymtraining.dto.CaloriesStatDTO;
+import vn.group16.gymtraining.dto.CaloriesStatWeekDTO;
 import vn.group16.gymtraining.dto.DurationStatDTO;
 import vn.group16.gymtraining.service.ScheduleService;
 
@@ -107,4 +111,26 @@ public class ScheduleController {
         return ResponseEntity.ok(stats);
     }
 
+    @GetMapping("/schedule/calories-stats-in-month")
+    public ResponseEntity<List<CaloriesStatDTO>> getMonthlyCaloriesStats(
+            @RequestParam("year") int year,
+            @RequestParam("month") int month) {
+        List<CaloriesStatDTO> stats = scheduleService.getMonthlyCaloriesStats(year, month);
+        return ResponseEntity.ok(stats);
+    }
+
+    //API get calories stats in week by date
+    @GetMapping("/schedule/calories-stats-in-week")
+    public ResponseEntity<List<CaloriesStatWeekDTO>> getWeeklyCaloriesStats(
+            @RequestParam("date") LocalDate date) {
+        List<CaloriesStatWeekDTO> stats = scheduleService.getWeeklyCaloriesStats(date);
+        return ResponseEntity.ok(stats);
+    }
+
+    @DeleteMapping("/schedule/delete")
+    public ResponseEntity<Void> deleteSchedule(@RequestParam("id") long id) {
+        scheduleService.deleteSchedule(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+    
 }
