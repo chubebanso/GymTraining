@@ -14,6 +14,14 @@ const KcalBurnOverview = () => {
 
   const progressPercentage = Math.min((caloriesToday / dailyGoal) * 100, 100); // Progress capped at 100%
 
+  const getVietnamDate = () => {
+    const vietnamTimeOffset = 7 * 60;
+    const localDate = new Date();
+    const utcDate = new Date(localDate.getTime() + localDate.getTimezoneOffset() * 60000);
+    const vietnamDate = new Date(utcDate.getTime() + vietnamTimeOffset * 60000);
+    return vietnamDate.toLocaleDateString('en-CA');
+  };
+  const today = getVietnamDate();
   useEffect(() => {
     const fetchWorkouts = async () => {
       try {
@@ -22,9 +30,9 @@ const KcalBurnOverview = () => {
           console.error("Access token not found!");
           return;
         }
-
+        
         const response = await axios.get(
-          "http://localhost:8080/api/v1/get-schedule-by-date?date=2024-12-28",
+          `http://localhost:8080/api/v1/get-schedule-by-date?date=${today}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -58,7 +66,7 @@ const KcalBurnOverview = () => {
         }
 
         const response = await axios.get(
-          "http://localhost:8080/api/v1/schedule/calories/last-7-day?date=2024-12-28",
+          `http://localhost:8080/api/v1/schedule/calories/last-7-day?date=${today}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -83,7 +91,7 @@ const KcalBurnOverview = () => {
         }
 
         const response = await axios.get(
-          "http://localhost:8080/api/v1/schedule/calories/last-7-day?date=2024-12-29",
+          `http://localhost:8080/api/v1/schedule/calories/last-7-day?date=${today}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

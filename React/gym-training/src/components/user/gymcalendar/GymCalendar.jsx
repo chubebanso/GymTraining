@@ -5,7 +5,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import axios from "axios";
-import { Modal, Input, Form, Checkbox, DatePicker, TimePicker, Button } from "antd";
+import { Modal, Input, Form, Checkbox, DatePicker, TimePicker, Button, notification } from "antd";
 import "./GymCalendar.css";
 import moment from "moment";
 
@@ -134,6 +134,12 @@ const GymCalendar = () => {
             setShowEventPopup(false);
             form.resetFields();
             setSelectedWorkouts([]); // Reset selected workouts
+
+            // Thêm thông báo khi sự kiện được lưu
+            notification.success({
+              message: 'Sự kiện đã được lưu!',
+              description: 'Sự kiện của bạn đã được tạo thành công.',
+            });
           } else {
             console.error("Failed to save event:", response.data.message);
           }
@@ -152,6 +158,33 @@ const GymCalendar = () => {
 
   const handleStartTimeChange = (time) => {
     form.setFieldsValue({ startTime: time });
+  };
+
+  // Function to disable hours before now
+  const disabledHours = () => {
+    const currentHour = moment().hour();
+    const hours = [];
+    for (let i = 0; i < currentHour; i++) {
+      hours.push(i);
+    }
+    return hours; // Return hours before the current hour
+  };
+
+  // Function to disable minutes before now
+  const disabledMinutes = (selectedHour) => {
+    const currentMinute = moment().minute();
+    const minutes = [];
+    if (selectedHour === moment().hour()) {
+      for (let i = 0; i < currentMinute; i++) {
+        minutes.push(i);
+      }
+    }
+    return minutes; // Return minutes before the current minute if the selected hour is the current hour
+  };
+
+  const handleDateChange = (date) => {
+    // Reset start time when date is changed
+    form.setFieldsValue({ startTime: null });
   };
 
   const handleDeleteEvent = async (eventId) => {
@@ -196,6 +229,29 @@ const GymCalendar = () => {
 
     setShowEventDetailsPopup(true); // Show the popup with event details
   };
+
+  // Hàm để kiểm tra và hiển thị thông báo sắp đến giờ tập
+  const checkUpcomingWorkouts = () => {
+    const now = moment();
+    events.forEach(event => {
+      const eventStartTime = moment(event.start);
+      const timeDiff = eventStartTime.diff(now, 'minutes');
+      if (timeDiff > 0 && timeDiff <= 30) {
+        notification.info({
+          message: 'Sắp đến giờ tập!',
+          description: `Sự kiện ${event.title} sẽ bắt đầu trong ${timeDiff} phút.`,
+        });
+      }
+    });
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      checkUpcomingWorkouts(); // Kiểm tra mỗi 5 phút
+    }, 10000); // 300000 ms = 5 phút
+
+    return () => clearInterval(interval); // Dọn dẹp interval khi component unmount
+  }, [events]);
 
   useEffect(() => {
     const calendarEl = calendarRef.current;
@@ -257,7 +313,10 @@ const GymCalendar = () => {
                   name="startDate"
                   rules={[{ required: true, message: "Please select a start date!" }]}
                 >
-                  <DatePicker disabled={showEventDetailsPopup} />
+                  <DatePicker 
+                    disabled={showEventDetailsPopup} 
+                    onChange={handleDateChange} // Call handleDateChange when date is selected
+                  />
                 </Form.Item>
 
                 <Form.Item
@@ -265,7 +324,12 @@ const GymCalendar = () => {
                   name="startTime"
                   rules={[{ required: true, message: "Please select a start time!" }]}
                 >
-                  <TimePicker format="HH:mm" onChange={handleStartTimeChange} />
+                  <TimePicker 
+                    format="HH:mm" 
+                    onChange={handleStartTimeChange} 
+                    disabledHours={disabledHours} 
+                    disabledMinutes={disabledMinutes} 
+                  />
                 </Form.Item>
               </Form>
             </div>
