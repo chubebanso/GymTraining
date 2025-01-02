@@ -1,5 +1,5 @@
 import "./EditWorkout.css";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { LeftCircleOutlined } from "@ant-design/icons";
 import ava_workout from "../../../assets/edit_workout_ex.png";
 import ava_workout2 from "../../../assets/edit_workout_ex2.png";
@@ -159,20 +159,12 @@ const EditWorkout = () => {
       {/* Main Form Section */}
       <Form form={form} onFinish={onFinish} className="workout-form">
         <div className="workout-info">
+          {/* Left Side: General Information */}
           <div className="workout-info-left">
             <span>General Information</span>
             <span>Preview</span>
-            <img
-              src={imageFileName ? `/avatars//${imageFileName}` : ava_workout}
-              alt="Uploaded"
-            />
-            <Upload
-              beforeUpload={handleFileUpload}
-              showUploadList={false}
-              accept="image/*"
-            >
-              <Button className="upload-btn">Upload Photo</Button>
-            </Upload>
+            <img src={ava_workout} alt="Workout" />
+            <Button className="upload-btn">Upload Photo</Button>
           </div>
 
           {/* Right Side: Workout Details Form */}
@@ -181,6 +173,7 @@ const EditWorkout = () => {
               <div className="component-name">Name workout</div>
               <Form.Item
                 name="workoutName"
+                initialValue="Leg Day"
                 rules={[
                   { required: true, message: "Please enter the workout name!" },
                 ]}
@@ -193,6 +186,7 @@ const EditWorkout = () => {
               <div className="component-name">Description</div>
               <Form.Item
                 name="description"
+                initialValue="A great workout for legs."
                 rules={[
                   { required: true, message: "Please enter a description!" },
                 ]}
@@ -206,6 +200,7 @@ const EditWorkout = () => {
                 <div className="component-name">Calories Burned</div>
                 <Form.Item
                   name="calories"
+                  initialValue="500"
                   rules={[
                     {
                       required: true,
@@ -221,6 +216,7 @@ const EditWorkout = () => {
                 <div className="component-name">Duration</div>
                 <Form.Item
                   name="duration"
+                  initialValue="45m"
                   rules={[
                     { required: true, message: "Please enter duration!" },
                   ]}
@@ -232,20 +228,20 @@ const EditWorkout = () => {
           </div>
         </div>
         <div className="workout-info">
-        <div className="workout-info-left">
-          <h4>Exercise List</h4>
-        </div>
-        <div className="workout-info-right">
-          <div className="workout-info-header">
-            <div className="component-name">Exercise Name</div>
-            <div className="component-name">Sets/Reps</div>
-            <img
-              src={plus_img}
-              alt="Add Exercise"
-              onClick={addRowExercise}
-              className="workout-icon"
-            />
+          <div className="workout-info-left">
+            <span>Exercise List</span>
           </div>
+          <div className="workout-info-right">
+            <div className="workout-info-header">
+              <div className="component-name">Name exercise</div>
+              <div className="component-name">Sets/Reps</div>
+              <img
+                src={plus_img}
+                alt="Add Exercise"
+                onClick={addRowExercise}
+                className="workout-icon"
+              />
+            </div>
 
             {/* Render các input fields */}
             {exerciseRows.map((row) => (
@@ -253,6 +249,7 @@ const EditWorkout = () => {
                 <Form.Item
                   className="exercise-name"
                   name={`exerciseName_${row.id}`}
+                  initialValue={row.exerciseName}
                   rules={[
                     { required: true, message: "Please enter exercise name!" },
                   ]}
@@ -265,6 +262,7 @@ const EditWorkout = () => {
                 <Form.Item
                   className="exercise-reps"
                   name={`exerciseReps_${row.id}`}
+                  initialValue={row.setsReps}
                   rules={[
                     { required: true, message: "Please enter sets/reps!" },
                   ]}
@@ -311,6 +309,7 @@ const EditWorkout = () => {
               <div className="component-name">Category</div>
               <Form.Item
                 name="category"
+                initialValue="Strength"
                 rules={[
                   { required: true, message: "Please select a category!" },
                 ]}
@@ -337,6 +336,7 @@ const EditWorkout = () => {
               <div className="component-name">Target Muscle Groups</div>
               <Form.Item
                 name="targetMuscle"
+                initialValue="Legs"
                 rules={[
                   {
                     required: true,
@@ -368,6 +368,7 @@ const EditWorkout = () => {
               <div className="component-name">Difficulty Level</div>
               <Form.Item
                 name="difficultyLevel"
+                initialValue="Easy"
                 rules={[
                   {
                     required: true,
@@ -388,6 +389,7 @@ const EditWorkout = () => {
                   <Option value="BEGINNER">Beginner</Option>
                   <Option value="INTERMEDIATE">Intermediate</Option>
                   <Option value="ADVANCED">Advanced</Option>
+                  <Option value="EXPERT">Expert</Option>
                 </Select>
               </Form.Item>
             </div>
