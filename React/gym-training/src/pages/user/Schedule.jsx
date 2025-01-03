@@ -1,5 +1,5 @@
 import { useState } from "react";
-import TodoPlan from "../../components/user/todayplan/TodayPlan";
+import TodayPlan from "../../components/user/todayplan/TodayPlan";
 import GymCalendar from "../../components/user/gymcalendar/GymCalendar";
 
 const Schedule = () => {
@@ -8,7 +8,8 @@ const Schedule = () => {
   return (
     <div className="schedule">
       {/* Pass workouts and setter to both components */}
-      <TodoPlan workouts={workouts} setWorkouts={setWorkouts} />
+      <TodayPlan/>
+      {/* <TodoPlan workouts={workouts} setWorkouts={setWorkouts} /> */}
       <GymCalendar workouts={workouts} setWorkouts={setWorkouts} />
     </div>
   );

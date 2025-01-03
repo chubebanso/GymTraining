@@ -1,13 +1,19 @@
-import { useEffect, useState } from "react";
-import "./TodayPlan.css";
-import { LeftCircleOutlined, RightCircleOutlined } from "@ant-design/icons";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useContext } from 'react';
+import './TodayPlan.css';
+import { LeftCircleOutlined } from '@ant-design/icons';
+import { RightCircleOutlined } from '@ant-design/icons';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
+import { WorkoutContext } from '../../../context/WorkoutContext'; // Import UserContext
 import PropTypes from "prop-types";
 
-const TodayPlan = ({ workouts, setWorkouts }) => {
+const TodayPlan = () => {
+  const [workouts, setWorkouts] = useState([]);
+//const TodayPlan = ({ workouts, setWorkouts }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Use the hook
+  const { setWorkoutAsSelected } = useContext(WorkoutContext); // Lấy workoutContext từ UserContext
+
 
   // Get today's date in Vietnam timezone
   const getVietnamDate = () => {
@@ -66,7 +72,8 @@ const TodayPlan = ({ workouts, setWorkouts }) => {
   };
 
   const handleWorkoutClick = (workout) => {
-    navigate(`/userworkoutdetail/${workout.schedule_id}/${workout.id}`);
+    setWorkoutAsSelected(workout); // Set workout as selected
+    navigate(`/userworkoutdetail/${workout.schedule_id}/${workout.id}`); // Chuyển đến màn hình tập
   };
 
   const currentWorkouts = workouts.slice(currentIndex, currentIndex + 3);
@@ -82,7 +89,7 @@ const TodayPlan = ({ workouts, setWorkouts }) => {
           {currentWorkouts.map((workout) => (
             <div
               className="todayplan-item"
-              key={workout.composite_id} 
+              key={workout.composite_id}
               onClick={() => handleWorkoutClick(workout)}
             >
               <img
@@ -111,18 +118,18 @@ const TodayPlan = ({ workouts, setWorkouts }) => {
   );
 };
 
-TodayPlan.propTypes = {
-  workouts: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      name: PropTypes.string.isRequired,
-      description: PropTypes.string,
-      image: PropTypes.string,
-      progress: PropTypes.number,
-      schedule_id: PropTypes.number,
-    })
-  ).isRequired,
-  setWorkouts: PropTypes.func.isRequired,
-};
+// TodayPlan.propTypes = {
+//   workouts: PropTypes.arrayOf(
+//     PropTypes.shape({
+//       id: PropTypes.number.isRequired,
+//       name: PropTypes.string.isRequired,
+//       description: PropTypes.string,
+//       image: PropTypes.string,
+//       progress: PropTypes.number,
+//       schedule_id: PropTypes.number,
+//     })
+//   ).isRequired,
+//   setWorkouts: PropTypes.func.isRequired,
+// };
 
 export default TodayPlan;

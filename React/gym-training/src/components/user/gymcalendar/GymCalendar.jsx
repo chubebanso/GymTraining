@@ -352,8 +352,8 @@ const GymCalendar = ({ workouts, setWorkouts }) => {
                   <TimePicker
                     format="HH:mm"
                     onChange={handleStartTimeChange}
-                    disabledHours={disabledHours}
-                    disabledMinutes={disabledMinutes}
+                    disabledHours={moment().isSame(form.getFieldValue('startDate'), 'day') ? disabledHours : () => []}
+                    disabledMinutes={moment().isSame(form.getFieldValue('startDate'), 'day') ? disabledMinutes : () => []}
                   />
                 </Form.Item>
               </Form>
