@@ -25,7 +25,7 @@ const Profile = () => {
             <span>theliems@gmail.com</span>
           </div>
         </div>
-        <button onClick={handleChangePassword}>Change Password</button>
+        <button style={{ backgroundColor: "#00d07e", borderColor: "#00d07e", color:"#fff" }} onClick={handleChangePassword}>Change Password</button>
       </div>
       <div className="profile-info">
         <Form

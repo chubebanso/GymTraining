@@ -1,21 +1,31 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Calendar } from "@fullcalendar/core";
 import googleCalendarPlugin from "@fullcalendar/google-calendar";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import axios from "axios";
-import { Modal, Input, Form, Checkbox, DatePicker, TimePicker, Button, notification } from "antd";
+import {
+  Modal,
+  Input,
+  Form,
+  Checkbox,
+  DatePicker,
+  TimePicker,
+  Button,
+  notification,
+} from "antd";
 import "./GymCalendar.css";
 import moment from "moment";
+import PropTypes from "prop-types";
 
-const GymCalendar = () => {
+const GymCalendar = ({ workouts, setWorkouts }) => {
   const calendarRef = useRef(null);
   const [showEventPopup, setShowEventPopup] = useState(false); // For "Add Event" popup
   const [showEventDetailsPopup, setShowEventDetailsPopup] = useState(false); // For event details popup
   const [form] = Form.useForm(); // Create form instance using Ant Design's useForm
   const [selectedWorkouts, setSelectedWorkouts] = useState([]); // Store selected workout
-  const [workouts, setWorkouts] = useState([]); // Store workouts fetched from the API
+  // const [workouts, setWorkouts] = useState([]); // Store workouts fetched from the API
   const [events, setEvents] = useState([]); // Store events from the API
   const [eventDetails, setEventDetails] = useState(null); // Store clicked event details
 
@@ -24,12 +34,15 @@ const GymCalendar = () => {
     const accessToken = localStorage.getItem("accessToken");
     const fetchWorkouts = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/v1/workouts', {
-          headers: {
-            "Authorization": `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await axios.get(
+          "http://localhost:8080/api/v1/workouts",
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
         if (response.data.statusCode === 200) {
           // Set the workouts from API data
           setWorkouts(response.data.data);
@@ -53,7 +66,7 @@ const GymCalendar = () => {
           "http://localhost:8080/api/v1/get-all-schedule",
           {
             headers: {
-              "Authorization": `Bearer ${accessToken}`,
+              Authorization: `Bearer ${accessToken}`,
               "Content-Type": "application/json",
             },
           }
@@ -62,8 +75,8 @@ const GymCalendar = () => {
         if (response.data.statusCode === 200) {
           const events = response.data.data.map((event) => ({
             title: event.title,
-            start: event.date + 'T' + event.startTime,
-            end: event.date + 'T' + event.endTime,
+            start: event.date + "T" + event.startTime,
+            end: event.date + "T" + event.endTime,
             id: event.id, // You can use event ID for more details if necessary
             workouts: event.workouts || [], // Thêm thông tin workouts vào sự kiện
           }));
@@ -78,7 +91,7 @@ const GymCalendar = () => {
 
     fetchWorkouts(); // Fetch workouts
     fetchEvents(); // Fetch events
-  }, []);
+  }, [setWorkouts]);
 
   const handleCancel = () => {
     setShowEventPopup(false);
@@ -137,8 +150,8 @@ const GymCalendar = () => {
 
             // Thêm thông báo khi sự kiện được lưu
             notification.success({
-              message: 'Sự kiện đã được lưu!',
-              description: 'Sự kiện của bạn đã được tạo thành công.',
+              message: "Sự kiện đã được lưu!",
+              description: "Sự kiện của bạn đã được tạo thành công.",
             });
           } else {
             console.error("Failed to save event:", response.data.message);
@@ -196,7 +209,7 @@ const GymCalendar = () => {
 
     try {
       const response = await axios.delete(
-        `http://localhost:8080/api/v1/delete-event/${eventId}`, // Endpoint để xoá sự kiện
+        `http://localhost:8080/api/v1/schedule/delete?id=${eventId}`, // Endpoint để xoá sự kiện
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -207,7 +220,7 @@ const GymCalendar = () => {
 
       if (response.data.statusCode === 200) {
         console.log("Event deleted successfully:", response.data.message);
-        setEvents(events.filter(event => event.id !== eventId)); // Cập nhật state để loại bỏ sự kiện đã xoá
+        setEvents(events.filter((event) => event.id !== eventId)); // Cập nhật state để loại bỏ sự kiện đã xoá
       } else {
         console.error("Failed to delete event:", response.data.message);
       }
@@ -221,6 +234,7 @@ const GymCalendar = () => {
     console.log("Event Clicked:", clickedEvent);
 
     setEventDetails({
+      id: clickedEvent.id,
       title: clickedEvent.title,
       start: moment(clickedEvent.start).format("YYYY-MM-DD HH:mm"),
       end: moment(clickedEvent.end).format("YYYY-MM-DD HH:mm"),
@@ -233,12 +247,12 @@ const GymCalendar = () => {
   // Hàm để kiểm tra và hiển thị thông báo sắp đến giờ tập
   const checkUpcomingWorkouts = () => {
     const now = moment();
-    events.forEach(event => {
+    events.forEach((event) => {
       const eventStartTime = moment(event.start);
-      const timeDiff = eventStartTime.diff(now, 'minutes');
+      const timeDiff = eventStartTime.diff(now, "minutes");
       if (timeDiff > 0 && timeDiff <= 30) {
         notification.info({
-          message: 'Sắp đến giờ tập!',
+          message: "Sắp đến giờ tập!",
           description: `Sự kiện ${event.title} sẽ bắt đầu trong ${timeDiff} phút.`,
         });
       }
@@ -257,7 +271,12 @@ const GymCalendar = () => {
     const calendarEl = calendarRef.current;
 
     const calendar = new Calendar(calendarEl, {
-      plugins: [googleCalendarPlugin, dayGridPlugin, timeGridPlugin, interactionPlugin],
+      plugins: [
+        googleCalendarPlugin,
+        dayGridPlugin,
+        timeGridPlugin,
+        interactionPlugin,
+      ],
       headerToolbar: {
         left: "prev,next today",
         center: "title",
@@ -273,7 +292,7 @@ const GymCalendar = () => {
       },
       height: "100vh",
       initialView: "dayGridMonth",
-      dateClick: function(info) {
+      dateClick: function (info) {
         const selectedDate = moment(info.date); // Convert the clicked date to moment.js format
         const today = moment().startOf("day"); // Get today's date at midnight
 
@@ -303,7 +322,9 @@ const GymCalendar = () => {
                 <Form.Item
                   label="Title"
                   name="title"
-                  rules={[{ required: true, message: "Please input your title!" }]}
+                  rules={[
+                    { required: true, message: "Please input your title!" },
+                  ]}
                 >
                   <Input disabled={showEventDetailsPopup} />
                 </Form.Item>
@@ -311,10 +332,12 @@ const GymCalendar = () => {
                 <Form.Item
                   label="Start Date"
                   name="startDate"
-                  rules={[{ required: true, message: "Please select a start date!" }]}
+                  rules={[
+                    { required: true, message: "Please select a start date!" },
+                  ]}
                 >
-                  <DatePicker 
-                    disabled={showEventDetailsPopup} 
+                  <DatePicker
+                    disabled={showEventDetailsPopup}
                     onChange={handleDateChange} // Call handleDateChange when date is selected
                   />
                 </Form.Item>
@@ -322,13 +345,15 @@ const GymCalendar = () => {
                 <Form.Item
                   label="Start Time"
                   name="startTime"
-                  rules={[{ required: true, message: "Please select a start time!" }]}
+                  rules={[
+                    { required: true, message: "Please select a start time!" },
+                  ]}
                 >
-                  <TimePicker 
-                    format="HH:mm" 
-                    onChange={handleStartTimeChange} 
-                    disabledHours={disabledHours} 
-                    disabledMinutes={disabledMinutes} 
+                  <TimePicker
+                    format="HH:mm"
+                    onChange={handleStartTimeChange}
+                    disabledHours={disabledHours}
+                    disabledMinutes={disabledMinutes}
                   />
                 </Form.Item>
               </Form>
@@ -341,8 +366,11 @@ const GymCalendar = () => {
                 value={selectedWorkouts}
                 onChange={handleWorkoutSelect}
               >
-                {workouts.map((workout) => (
-                  <div className="workout-item" key={workout.id}>
+                {workouts.map((workout, index) => (
+                  <div
+                    className="workout-item"
+                    key={`${workout.id}-${workout.name}-${index}`}
+                  >
                     <Checkbox value={workout.id}>{workout.name}</Checkbox>
                   </div>
                 ))}
@@ -361,19 +389,31 @@ const GymCalendar = () => {
         {showEventDetailsPopup && (
           <Modal
             title="Event Details"
-            visible={showEventDetailsPopup}
+            open={showEventDetailsPopup}
             onCancel={handleCancel}
             footer={null}
           >
-            <p><strong>Title:</strong> {eventDetails?.title}</p>
-            <p><strong>Start:</strong> {eventDetails?.start}</p>
-            <p><strong>End:</strong> {eventDetails?.end}</p>
-            <p><strong>Workouts:</strong></p>
+            <p>
+              <strong>Title:</strong> {eventDetails?.title}
+            </p>
+            <p>
+              <strong>Start:</strong> {eventDetails?.start}
+            </p>
+            <p>
+              <strong>End:</strong> {eventDetails?.end}
+            </p>
+            <p>
+              <strong>Workouts:</strong>
+            </p>
             <ul>
               {eventDetails?.workouts.length > 0 ? (
-                eventDetails.workouts.map(workout => (
-                  <li key={workout.id}>
-                    <img src={`avatars/${workout.image}`} alt={workout.name} style={{ width: '50px', marginRight: '10px' }} />
+                eventDetails.workouts.map((workout) => (
+                  <li key={`${workout.id}-${workout.name}`}>
+                    <img
+                      src={`avatars/${workout.image}`}
+                      alt={workout.name}
+                      style={{ width: "50px", marginRight: "10px" }}
+                    />
                     {workout.name}
                   </li>
                 ))
@@ -381,7 +421,13 @@ const GymCalendar = () => {
                 <li>Không có workout nào.</li> // Thông báo nếu không có workout
               )}
             </ul>
-            <Button className="delete-event-button" type="danger" onClick={() => handleDeleteEvent(eventDetails.id)}>Delete Event</Button>
+            <Button
+              className="delete-event-button"
+              type="danger"
+              onClick={() => handleDeleteEvent(eventDetails.id)}
+            >
+              Delete Event
+            </Button>
           </Modal>
         )}
 
@@ -389,6 +435,10 @@ const GymCalendar = () => {
       </div>
     </>
   );
+};
+GymCalendar.propTypes = {
+  workouts: PropTypes.array.isRequired,
+  setWorkouts: PropTypes.func.isRequired,
 };
 
 export default GymCalendar;

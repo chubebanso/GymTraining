@@ -35,9 +35,8 @@
 .workout-detail-main {
   display: flex;
   justify-content: space-between;
-  padding: 20px;
-  border-radius: 10px;
-  margin: 20px;
+  padding: 1rem;
+  border-radius: 18px;
 }
 
 .workout-detail-main-left {

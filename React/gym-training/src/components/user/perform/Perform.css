@@ -4,16 +4,25 @@
 .perform-chart {
   width: 75%;
 }
+.perform-chart h2 {
+  margin: 0;
+  text-align: center;
+  font-weight: 650;
+}
 .perform-details {
   display: flex;
 }
 .perform-details-chart {
   width: 50%;
   padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
 }
 .perform-details-chart h3 {
     margin-top: 0;
-    text-align: left;
+    text-align: center;
+    font-weight: 650;
   }
 .perform-achieve {
   width: 50%;
@@ -24,7 +33,8 @@
 }
 .perform-achieve h3 {
   margin: 0;
-  text-align: left;
+  text-align: center;
+  font-weight: 650;
 }
 .perform-workout {
   width: 25%;
@@ -35,6 +45,7 @@
 }
 .perform-workout h3 {
   margin-bottom: 0;
+  font-weight: 650;
 }
 .history-item {
   display: flex;
@@ -109,8 +120,6 @@
   width: 36px;
   height: 36px;
 }
-
-
 .error {
     color: red;
     font-size: 14px;

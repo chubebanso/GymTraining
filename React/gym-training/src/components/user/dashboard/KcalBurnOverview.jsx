@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./KcalBurnOverview.css";
 import axios from "axios";
 import { FaHeart, FaFireAlt, FaBolt } from "react-icons/fa";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import ava_account from "../../../assets/ava_account.png";
 
 const KcalBurnOverview = () => {
   const [workouts, setWorkouts] = useState([]);
@@ -17,9 +18,11 @@ const KcalBurnOverview = () => {
   const getVietnamDate = () => {
     const vietnamTimeOffset = 7 * 60;
     const localDate = new Date();
-    const utcDate = new Date(localDate.getTime() + localDate.getTimezoneOffset() * 60000);
+    const utcDate = new Date(
+      localDate.getTime() + localDate.getTimezoneOffset() * 60000
+    );
     const vietnamDate = new Date(utcDate.getTime() + vietnamTimeOffset * 60000);
-    return vietnamDate.toLocaleDateString('en-CA');
+    return vietnamDate.toLocaleDateString("en-CA");
   };
   const today = getVietnamDate();
   useEffect(() => {
@@ -30,7 +33,7 @@ const KcalBurnOverview = () => {
           console.error("Access token not found!");
           return;
         }
-        
+
         const response = await axios.get(
           `http://localhost:8080/api/v1/get-schedule-by-date?date=${today}`,
           {
@@ -169,21 +172,26 @@ const KcalBurnOverview = () => {
         </div>
         <div className="workout-list-section">
           {workouts.length > 0 ? (
-            workouts.map((workout) => (
-              <div key={workout.id} className="workout-items">
-                <div className="workout-icon">
+            workouts.slice(0, 3).map((workout) => (
+              <div key={workout.id} className="history-item">
+                <div>
                   <img
-                    src={workout.image.startsWith("\\") ? `/avatars/${workout.image.slice(1)}` : `/avatars/${workout.image}`}
-                    alt={workout.name}
-                    className="workout-img"
+                    className="item-img"
+                    src={
+                      workout.image ? `/avatars//${workout.image}` : ava_account
+                    }
+                    alt=""
                   />
                 </div>
-                <div className="workout-details">
-                  <strong>{workout.name}</strong>
-                  <p>{workout.duration} min</p>
-                </div>
-                <div className="workout-stats">
-                  <p>{workout.calories} kcal</p>
+                <div className="item-info">
+                  <div className="item-info-name">
+                    <p>{workout.name}</p>
+                    <p>{workout.description}</p>
+                  </div>
+                  <div className="item-info-name">
+                    <p>{workout.duration}</p>
+                    <p>{workout.calories}</p>
+                  </div>
                 </div>
               </div>
             ))
