@@ -1,10 +1,14 @@
-import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { LeftCircleOutlined } from "@ant-design/icons";     
 import "./VideoPlayer.css";
 
 const VideoPlayer = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate(-1);
+  };
 
   // Dữ liệu bài tập được truyền từ navigate
   const workout = location.state;
@@ -20,7 +24,10 @@ const VideoPlayer = () => {
   return (
     <div className="video-player-container">
       {/* Nút quay lại */}
-      <button className="back-button" onClick={() => navigate(-1)}>← Back</button>
+      <div className="video-header">
+        <LeftCircleOutlined className="back-icon" onClick={handleBack} />
+        <div className="video-header-title">Back</div>
+      </div>
 
       {/* Tiêu đề bài tập */}
       <h1 className="video-title">{workout.name}</h1>

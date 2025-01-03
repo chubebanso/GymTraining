@@ -1,12 +1,7 @@
-import React from 'react'
-import WorkoutDetail from "../../components/user/workoutdetail/WorkoutDetail"
+import WorkoutDetail from "../../components/user/workoutdetail/WorkoutDetail";
 
 const UserWorkoutDetail = () => {
-  return (
-    <div>
-        <WorkoutDetail />
-    </div>
-  )
-}
+  return <WorkoutDetail />;
+};
 
-export default UserWorkoutDetail
+export default UserWorkoutDetail;

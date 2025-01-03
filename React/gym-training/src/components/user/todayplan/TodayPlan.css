@@ -1,101 +1,102 @@
 .todayplan {
-    display: flex;
-    flex-direction: column;
-    margin: 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  margin:1rem 1rem 0 1rem;
 }
 
 .todayplan-head {
-    text-align: left;
+  text-align: left;
+  font-weight: 600;
 }
 
 .todayplan-main {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
 }
 
 .todayplan-workouts {
-    display: flex;
-    gap: 1rem;
-    overflow: hidden;
-    width: 100%;
-    justify-content: center;
+  display: flex;
+  gap: 1rem;
+  overflow: hidden;
+  width: 100%;
+  justify-content: center;
 }
 
-.workout-item {
-    text-align: left;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 1rem;
-    background: #fff;
-    width: 250px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.todayplan-item {
+  text-align: left;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 1rem;
+  background: #fff;
+  max-width: 400px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .workout-image {
-    width: 70px;
-    /* Giảm kích thước ảnh */
-    height: 70px;
-    border-radius: 8px;
-    object-fit: cover;
+  width: 100px;
+  /* Giảm kích thước ảnh */
+  height: 100px;
+  border-radius: 8px;
+  object-fit: cover;
 }
 
-.workout-details {
-    flex: 1;
+.workout-detail {
+  flex: 1;
+  width: 160px;
 }
 
 .workout-title {
-    font-size: 1rem;
-    font-weight: bold;
-    margin: 0;
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0;
 }
 
 .workout-description {
-    font-size: 0.9rem;
-    color: #777;
-    margin: 5px 0;
+  font-size: 0.9rem;
+  color: #777;
+  margin: 5px 0;
 }
 
 .progress-bar {
-    height: 8px;
-    width: 100%;
-    background-color: #e0e0e0;
-    border-radius: 4px;
-    overflow: hidden;
-    margin: 5px 0;
+  height: 8px;
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  margin: 5px 0;
 }
 
 .progress-bar-fill {
-    height: 100%;
-    background-color: #4caf50;
-    transition: width 0.3s ease-in-out;
+  height: 100%;
+  background-color: #4caf50;
+  transition: width 0.3s ease-in-out;
 }
 
 .workout-progress {
-    font-size: 0.9rem;
-    color: #555;
-    text-align: right;
+  font-size: 0.9rem;
+  color: #555;
+  text-align: right;
 }
 
 .today-icon {
-    font-size: 2rem;
-    cursor: pointer;
-    color: #333;
-    transition: color 0.3s;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #333;
+  transition: color 0.3s;
 }
 
 .today-icon:hover {
-    color: #4caf50;
+  color: #4caf50;
 }
 
 .todayplan hr {
-    border: none;
-    height: 1px;
-    width: calc(100% - 4rem);
-    background: linear-gradient(to right, gray, lightgray);
-    margin-top: 1rem;
+  border: none;
+  height: 1px;
+  width: calc(100% - 4rem);
+  background: linear-gradient(to right, gray, lightgray);
+  margin-top: 1rem;
 }

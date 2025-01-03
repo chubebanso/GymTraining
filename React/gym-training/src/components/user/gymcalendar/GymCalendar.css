@@ -7,9 +7,8 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   /* Thêm bóng đổ nhẹ để làm nổi bật */
   /* Đảm bảo các phần tử không tràn ra ngoài */
-  padding: 20px;
+  padding: 1rem;
   /* Thêm khoảng cách giữa viền và nội dung */
-  margin: 20px;
   /* Đặt khoảng cách xung quanh thẻ calendar */
 }
 
@@ -110,7 +109,7 @@
 }
 
 .workout-name {
-  font-weight: 600;
+  font-weight: 700;
   color: #333;
   margin-right: 10px;
 }
@@ -148,6 +147,8 @@
   z-index: 1000;
   width: 800px;
   padding: 20px;
+  max-height: 75vh;
+  
 }
 
 .event-form {
@@ -159,6 +160,8 @@
 .workout-selection {
   flex: 1;
   padding: 20px;
+  overflow-y: auto;
+
 }
 
 .workout-list {

@@ -1,5 +1,5 @@
 import "./Header.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import ava_account from "../../../assets/ava_account.png";
 import logo_admin from "../../../assets/logo_admin.png";
 import { useState, useEffect, useRef } from "react";
@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from "react";
 const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation(); // Get the current location
   const dropdownRef = useRef(null); // Ref for the dropdown menu
 
   const toggleMenu = () => {
@@ -41,14 +42,25 @@ const Header = () => {
     };
   }, []);
 
+  // Function to check if a link is active
+  const isActive = (path) => location.pathname === path;
+
   return (
     <div className="header">
       <img src={logo_admin} alt="logo" className="logo" />
       <div className="navbar">
-        <Link to="/">Home</Link>
-        <Link to="/schedule">Schedule</Link>
-        <Link to="/userworkout">Workouts</Link>
-        <Link to="/performance">Performance</Link>
+        <Link to="/" className={isActive("/") ? "active" : ""}>
+          Home
+        </Link>
+        <Link to="/schedule" className={isActive("/schedule") ? "active" : ""}>
+          Schedule
+        </Link>
+        <Link to="/userworkout" className={isActive("/userworkout") ? "active" : ""}>
+          Workouts
+        </Link>
+        <Link to="/performance" className={isActive("/performance") ? "active" : ""}>
+          Performance
+        </Link>
       </div>
       <div className="avatar-container" ref={dropdownRef}>
         <img

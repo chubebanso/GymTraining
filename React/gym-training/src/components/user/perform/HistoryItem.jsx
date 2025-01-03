@@ -14,8 +14,8 @@ const HistoryItem = ({ workout }) => {
           <p>{workout.description}</p>
         </div>
         <div className="item-info-name">
-          <p>{workout.duration}</p>
-          <p>{workout.calories}</p>
+          <p>{workout.duration} mins</p>
+          <p>{workout.calories} kcal</p>
         </div>
       </div>
     </div>
@@ -29,7 +29,7 @@ HistoryItem.propTypes = {
     name: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     image: PropTypes.string.isRequired,
-    duration: PropTypes.string.isRequired,
-    calories: PropTypes.string.isRequired,
+    duration: PropTypes.number.isRequired,
+    calories: PropTypes.number.isRequired,
   }).isRequired,
 };

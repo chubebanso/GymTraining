@@ -30,13 +30,11 @@ const KcalChart = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const today = new Date();
-      const year = today.getFullYear(); // Current year
-      const month = today.getMonth() + 1; // Current month (0-based, so add 1)
+      const today = new Date().toISOString().split("T")[0]; // Today's date in YYYY-MM-DD format
 
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/v1/schedule/calories-stats-in-month?year=${year}&month=${month}`
+          `http://localhost:8080/api/v1/schedule/calories-stats-in-week?date=${today}`
         );
 
         if (response.data.statusCode === 200) {
@@ -44,20 +42,28 @@ const KcalChart = () => {
 
           // Transform API data into chart format
           const labels = apiData.map((item) => `Day ${item.day}`);
-          const totalCalories = apiData.map((item) => item.totalCalories);
+          const lastWeekData = apiData.map((item) => item.totalCaloriesInLastWeek);
+          const thisWeekData = apiData.map((item) => item.totalCaloriesInThisWeek);
 
           setChartData({
             labels,
             datasets: [
               {
-                label: "Kcal Burned",
-                data: totalCalories,
+                label: "Last Week",
+                data: lastWeekData,
+                borderColor: "blue",
+                backgroundColor: "rgba(0, 0, 255, 0.1)",
+                tension: 0.4, // Smooth curve
+                pointBackgroundColor: "blue",
+                borderWidth: 2,
+              },
+              {
+                label: "This Week",
+                data: thisWeekData,
                 borderColor: "red",
                 backgroundColor: "rgba(255, 0, 0, 0.1)",
                 tension: 0.4, // Smooth curve
-                pointBackgroundColor: "black",
-                pointBorderColor: "white",
-                pointBorderWidth: 2,
+                pointBackgroundColor: "red",
                 borderWidth: 2,
               },
             ],
@@ -80,7 +86,7 @@ const KcalChart = () => {
     responsive: true,
     plugins: {
       legend: {
-        display: false, // Hide legend since it’s a single dataset
+        position: "bottom", // Display legend at the bottom
       },
       tooltip: {
         enabled: true, // Enable tooltips to display kcal details
@@ -90,7 +96,7 @@ const KcalChart = () => {
       x: {
         title: {
           display: true,
-          text: "Days of the Month",
+          text: "Days of the Week",
         },
         grid: {
           display: false,
@@ -118,7 +124,7 @@ const KcalChart = () => {
       ) : chartData ? (
         <Line data={chartData} options={options} />
       ) : (
-        <p>No data available for the selected month.</p>
+        <p>No data available for the selected week.</p>
       )}
     </div>
   );

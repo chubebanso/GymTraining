@@ -20,6 +20,7 @@
     height: 50%;
     border-bottom: 1px solid rgba(227, 227, 227, 1);
     padding: 1rem;
+    overflow-y: scroll;
 }
 
 .home-chart-overview {

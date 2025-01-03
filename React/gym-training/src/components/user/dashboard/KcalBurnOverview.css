@@ -6,10 +6,10 @@
     gap: 20px;
 }
 .overview-title{
-   margin-left: -900px;
+   margin-left: 0px;
 }
 .kcal-progress-section {
-    width: 800px    ; /* Giảm bớt chiều rộng để cân đối với danh sách bài tập */
+    width: 700px;
     display: flex;
     align-items: center;
     margin-left: 30px;
@@ -91,7 +91,7 @@
     /* Màu đại diện Goal Indicator */
 }
 .workout-list-section {
-    width: 50%; /* Cân đối chiều rộng với phần biểu đồ */
+    width: 100%;/* Cân đối chiều rộng với phần biểu đồ */
     display: flex;
     flex-direction: column;
     gap: 15px; /* Khoảng cách giữa các bài tập */
